@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "strategy-coach-app"
+version = "0.1.0"
+description = "AI Strategic Co-pilot: A multi-agent workflow system for strategy development"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+langchain = "^0.3.27"
+langgraph = "^0.6.4"
+langchain-openai = "^0.3.29"
+langchain-anthropic = "^0.3.18"
+fastapi = "^0.116.1"
+uvicorn = "^0.35.0"
+pydantic = "^2.11.7"
+pydantic-settings = "^2.10.1"
+python-dotenv = "^1.1.1"
+httpx = "^0.28.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+pytest-cov = "^5.0.0"
+black = "^24.10.0"
+ruff = "^0.7.0"
+mypy = "^1.13.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = "-v --cov=src --cov-report=term-missing"
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
