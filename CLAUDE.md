@@ -6,7 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AI Strategic Co-pilot - A fully-functional multi-agent workflow system that guides business leaders through developing organizational strategy using specialized AI agents with research-backed methodologies.
 
-**Project Status**: ✅ COMPLETE - All development tasks finished (Sections 1.0-6.0 including Web UI)
+**Project Status**: 
+- ✅ **COMPLETE** - Core functionality (Tasks 1.0-6.0 including Web UI)
+- 🚧 **PLANNED** - Enhanced features (Tasks 7.0-8.0)
+  - Task 7.0: Progress Feedback & Strategic Completeness System
+  - Task 8.0: Mistral AI Integration for Multi-Model Support
+- 🔄 **ACTIVE** - Bug fixes and improvements
+
+**Current Configuration**:
+- Default LLM: Claude Sonnet 4.0 (`claude-sonnet-4-20250514`)
+- Supported Providers: Anthropic ✅, OpenAI ✅, Google ✅, Mistral 🚧
+
+## Recent Updates (Aug 2025)
+
+- **Claude Sonnet 4.0 Upgrade**: Improved conversation quality and strategic reasoning
+- **Cursor Auto-Focus**: Better UX with automatic input field focus
+- **Progress Feedback Feature**: Added to PRD for better user guidance (Task 7.0)
+- **Mistral AI Integration**: Planned multi-model support (Task 8.0)
+- **Cognitive Bias Detection**: Enhancement planned for Logic Agent
+- **Documentation Updates**: Comprehensive guides for all new features
 
 ## Architecture
 
@@ -35,10 +53,12 @@ pip install -r requirements.txt
 
 # 2. Configure API keys (create .env file)
 echo "ANTHROPIC_API_KEY=your-key-here" > .env
-# or
-echo "OPENAI_API_KEY=your-key-here" > .env
-# or
-echo "GOOGLE_API_KEY=your-key-here" > .env
+echo "DEFAULT_LLM_PROVIDER=anthropic" >> .env
+echo "DEFAULT_MODEL=claude-sonnet-4-20250514" >> .env
+# Optional providers:
+# echo "OPENAI_API_KEY=your-key-here" >> .env
+# echo "GOOGLE_API_KEY=your-key-here" >> .env
+# echo "MISTRAL_API_KEY=your-key-here" >> .env  # Coming soon
 
 # 3. Start the API server
 uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
@@ -193,8 +213,13 @@ OPENAI_API_KEY=sk-...
 GOOGLE_API_KEY=AIza...
 
 # LLM Configuration
-DEFAULT_LLM_PROVIDER=anthropic  # or 'openai' or 'google'
-DEFAULT_MODEL=claude-3-5-haiku-20241022  # or 'gpt-4' or 'gemini-2.0-flash-exp'
+DEFAULT_LLM_PROVIDER=anthropic  # Options: anthropic, openai, google, mistral (coming)
+DEFAULT_MODEL=claude-sonnet-4-20250514  # Best for strategic reasoning
+# Alternative models:
+# anthropic: claude-3-5-haiku-20241022 (faster, cheaper)
+# openai: gpt-4, gpt-3.5-turbo
+# google: gemini-2.0-flash-exp
+# mistral: mistral-large-latest (planned)
 
 # Optional
 DEBUG=False
@@ -205,16 +230,32 @@ RATE_LIMIT_REQUESTS_PER_MINUTE=60
 
 ## Known Issues
 
-1. **Duplicate Messages** (ISSUE_DUPLICATE_MESSAGES.md)
-   - Web UI displays duplicate welcome messages
-   - Cosmetic issue, doesn't affect functionality
-   
-2. **Chart.js Stack Overflow** 
+### 🔴 Open Issues
+
+1. **Duplicate Interactive Selections** (ISSUE_DUPLICATE_INTERACTIVE_SELECTIONS.md)
+   - Interactive dialog boxes are duplicated in AI responses
+   - Creates visual clutter and confusion
+   - Priority: Medium
+
+2. **Logic Agent Cognitive Bias Detection** (ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
+   - Logic Agent needs Kahneman's framework for bias detection
+   - Enhancement to identify cognitive biases in strategic thinking
+   - Priority: High
+
+3. **Chart.js Stack Overflow** 
    - Console errors when updating strategy map visualization
    - Chart still displays but may have performance issues
+   - Priority: Low
 
-3. **Interactive Selection** (ISSUE_INTERACTIVE_SELECTION.md)
-   - Feature request for interactive option selection in UI
+### ✅ Resolved Issues
+
+1. **Cursor Focus** (ISSUE_CURSOR_FOCUS.md) - RESOLVED
+   - Input field now auto-focuses after AI response
+   - Improves conversation flow UX
+
+2. **Duplicate Messages** (ISSUE_DUPLICATE_MESSAGES.md) - PARTIALLY RESOLVED
+   - Fixed initialization issue preventing duplicates
+   - Some edge cases may still occur
 
 4. **Question Quality** (ISSUE_QUESTION_QUALITY.md)
    - Improvements needed for avoiding cognitive biases in questions

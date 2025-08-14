@@ -1,6 +1,29 @@
-# AI Strategic Co-pilot
+# AI Strategic Co-pilot 🚀
 
 An AI-powered strategic co-pilot that guides business leaders through a rigorous, Socratic process of developing, refining, and testing their organizational strategy using a multi-agent workflow system.
+
+**Status**: Production Ready | **Version**: 1.0 | **Default Model**: Claude Sonnet 4.0
+
+## Features
+
+✨ **Multi-Agent Strategic Coaching**
+- WHY Agent: Simon Sinek's Golden Circle methodology
+- Analogy Agent: Carroll & Sørensen's analogical reasoning
+- Logic Agent: Deductive argument validation
+- Open Strategy Agent: Implementation planning
+
+🎯 **Research-Backed Methodologies**
+- Purpose discovery through introspective questioning
+- Pattern matching with successful strategies
+- Logical consistency validation
+- Stakeholder engagement planning
+
+🚀 **Modern Tech Stack**
+- FastAPI for high-performance API
+- LangGraph for agent orchestration
+- Support for multiple LLM providers
+- Real-time conversation streaming
+- Interactive web UI with progress tracking
 
 ## Overview
 
@@ -18,9 +41,10 @@ The system uses an Orchestrator-Worker model built with LangGraph:
 ### Prerequisites
 - Python 3.10 or higher
 - One of the following API keys:
-  - Google Gemini API key (recommended)
-  - OpenAI API key
-  - Anthropic API key
+  - Anthropic API key (recommended for Claude Sonnet 4.0)
+  - OpenAI API key (GPT-4 support)
+  - Google Gemini API key (Gemini 2.0 support)
+  - Mistral API key (coming soon)
 
 ### Installation
 
@@ -47,22 +71,38 @@ cp .env.example .env
 # Edit .env with your API keys
 ```
 
-Available LLM providers:
-- **Google Gemini** (Recommended): Set `GOOGLE_API_KEY` in `.env`
-- **OpenAI**: Set `OPENAI_API_KEY` in `.env`
-- **Anthropic**: Set `ANTHROPIC_API_KEY` in `.env`
+Configure your preferred LLM provider in `.env`:
+```env
+# Recommended configuration
+ANTHROPIC_API_KEY=your-key-here
+DEFAULT_LLM_PROVIDER=anthropic
+DEFAULT_MODEL=claude-sonnet-4-20250514
+
+# Alternative providers
+OPENAI_API_KEY=your-openai-key
+GOOGLE_API_KEY=your-google-key
+MISTRAL_API_KEY=your-mistral-key  # Coming soon
+```
 
 The system will automatically detect and use the available API key.
 
 ### Running the Application
 
-Start the FastAPI server:
+1. **Start the API server:**
 ```bash
 uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-The API will be available at `http://localhost:8000`
-API documentation: `http://localhost:8000/docs`
+2. **Start the Web UI (in a separate terminal):**
+```bash
+cd web
+python3 -m http.server 8081
+```
+
+3. **Access the application:**
+- Web UI: `http://localhost:8081`
+- API Documentation: `http://localhost:8000/docs`
+- Health Check: `http://localhost:8000/health`
 
 ## Development
 

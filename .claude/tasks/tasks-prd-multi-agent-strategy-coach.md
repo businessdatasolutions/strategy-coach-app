@@ -1,3 +1,19 @@
+## Task Summary
+
+**Completed**: Tasks 1.0-6.0 (100% complete)
+- ✅ Project Infrastructure (1.0)
+- ✅ Core State Management (2.0)
+- ✅ Specialist Agents (3.0)
+- ✅ Strategy Map Agent (4.0)
+- ✅ Conversation API (5.0)
+- ✅ Web UI Implementation (6.0)
+
+**Planned**: Tasks 7.0-8.0
+- 🚧 Progress Feedback System (7.0) - 12 subtasks
+- 🚧 Mistral AI Integration (8.0) - 15 subtasks
+
+**Total Progress**: 6/8 major tasks complete (75%)
+
 ## Relevant Files
 
 - `pyproject.toml` - Poetry configuration and project metadata
