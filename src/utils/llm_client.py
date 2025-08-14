@@ -55,16 +55,16 @@ def get_llm_client(model_name: Optional[str] = None) -> BaseChatModel:
         elif provider == "anthropic" or provider.startswith("claude"):
             return _create_anthropic_client(config, model_name)
         else:
-            # Try to use Google if available, then OpenAI, then Anthropic
-            if config.google_api_key:
-                logger.info("Using Google Gemini as default provider")
-                return _create_google_client(config, model_name)
+            # Try to use Anthropic first, then OpenAI, then Google
+            if config.anthropic_api_key:
+                logger.info("Using Anthropic as default provider")
+                return _create_anthropic_client(config, model_name)
             elif config.openai_api_key:
                 logger.info("Using OpenAI as default provider")
                 return _create_openai_client(config, model_name)
-            elif config.anthropic_api_key:
-                logger.info("Using Anthropic as default provider")
-                return _create_anthropic_client(config, model_name)
+            elif config.google_api_key:
+                logger.info("Using Google Gemini as default provider")
+                return _create_google_client(config, model_name)
             else:
                 raise LLMClientError("No LLM API keys configured")
     
@@ -109,7 +109,9 @@ def _create_anthropic_client(config: Any, model_name: Optional[str] = None) -> C
     # Determine model
     model = model_name or config.default_model
     if model.startswith("gpt"):  # If default is OpenAI model, use Claude instead
-        model = "claude-3-haiku-20240307"
+        model = "claude-3-5-haiku-20241022"
+    elif not model.startswith("claude"):  # Ensure we're using a Claude model
+        model = "claude-3-5-haiku-20241022"
     
     # Create client with configuration
     client_params = {

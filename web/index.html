@@ -399,6 +399,7 @@
                 nextSteps: [],
                 apiUrl: 'http://localhost:8000',
                 strategyChart: null,
+                initialized: false,  // Guard against double initialization
                 
                 // Interactive selection state
                 interactiveMode: false,
@@ -407,6 +408,13 @@
                 
                 // Initialize
                 async init() {
+                    // Prevent double initialization
+                    if (this.initialized) {
+                        console.log('Already initialized, skipping');
+                        return;
+                    }
+                    this.initialized = true;
+                    
                     await this.checkConnection();
                     if (this.isConnected) {
                         await this.startNewSession();
@@ -433,6 +441,12 @@
                 
                 // Start new session
                 async startNewSession() {
+                    // Prevent starting a new session if one is already in progress
+                    if (this.sessionId) {
+                        console.log('Session already exists:', this.sessionId);
+                        return;
+                    }
+                    
                     try {
                         const response = await fetch(`${this.apiUrl}/conversation/start`, {
                             method: 'POST',
@@ -452,7 +466,10 @@
                         this.currentPhase = data.current_phase || 'why';
                         this.nextSteps = data.next_steps || [];
                         
-                        this.addMessage('assistant', data.message);
+                        // Only add message once
+                        if (data.message) {
+                            this.addMessage('assistant', data.message);
+                        }
                         this.currentAgent = 'Strategic Coach';
                     } catch (error) {
                         console.error('Failed to start session:', error);
@@ -514,6 +531,14 @@
                         this.addMessage('system', 'Failed to send message. Please check your connection and try again.');
                     } finally {
                         this.isTyping = false;
+                        
+                        // Auto-focus input field for better UX
+                        this.$nextTick(() => {
+                            const inputField = document.querySelector('input[type="text"]');
+                            if (inputField) {
+                                inputField.focus();
+                            }
+                        });
                     }
                 },
                 
@@ -586,12 +611,14 @@
                 // New session
                 async newSession() {
                     if (confirm('Start a new session? Your current progress will be saved.')) {
+                        // Clear existing state
                         this.messages = [];
                         this.completeness = 0;
                         this.completedPhases = [];
                         this.currentPhase = 'why';
                         this.currentAgent = 'Initializing...';
                         this.nextSteps = [];
+                        this.sessionId = null;  // Clear session ID
                         
                         // Properly reinitialize the chart
                         if (this.strategyChart) {

@@ -746,7 +746,40 @@ Future improvements can include:
 * Collaborative session sharing
 * Advanced strategy map visualization with D3.js
 
-## 10. Non-Goals (Out of Scope)
+## 10. Progress Feedback & Strategic Completeness
+
+### 10.1. Continuous Progress Visibility
+
+The system must provide users with regular, meaningful feedback on their progression towards a fully completed strategy map. This addresses the critical user experience requirement of understanding "where they are" and "where they're going" in the strategic development process.
+
+**Key Requirements:**
+
+* **Progress Milestones**: Clear indicators when key strategic components are completed (WHY discovered, HOW validated, WHAT planned)
+* **Completeness Scoring**: Real-time percentage showing strategy map completeness across all four perspectives
+* **Gap Analysis**: Identification of missing or underdeveloped areas requiring attention
+* **Achievement Recognition**: Positive reinforcement when strategic breakthroughs are made
+* **Next Phase Preparation**: Clear transition indicators when ready to move between WHY → HOW → WHAT phases
+
+### 10.2. Progress Feedback Implementation
+
+**Strategy Map Completeness Tracking:**
+* Each of the four perspectives (Stakeholder, Internal Process, Learning & Growth, Value Creation) should have measurable completion criteria
+* Six Value Components should show individual progress scores
+* Overall strategy coherence and logical consistency should be tracked
+
+**User Experience Enhancements:**
+* **Progress Celebrations**: Acknowledge when significant strategic insights are achieved
+* **Direction Indicators**: Show what the next conversation focus will accomplish
+* **Completion Roadmap**: Visual indication of remaining work to reach full strategy
+* **Phase Transition Ceremonies**: Clear demarcation when moving between strategic phases
+
+**Technical Implementation:**
+* Strategy Map Agent calculates completion scores for each perspective
+* Router considers completeness when making agent selection decisions
+* Synthesizer includes progress context in every response
+* UI displays progress visually through charts, progress bars, and milestone indicators
+
+## 11. Non-Goals (Out of Scope)
 * The coach will **not** provide its own business advice, opinions, or recommendations.
 * The coach will **not** perform any external data gathering, market analysis, or competitor research.
 * The coach will **not** generate financial models, projections, or forecasts.
