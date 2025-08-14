@@ -117,3 +117,20 @@
   - [ ] 7.10 Create phase transition ceremonies with clear progression messaging
   - [ ] 7.11 Add real-time progress notifications and achievement feedback to chat interface
   - [ ] 7.12 Test progress feedback system across complete strategic conversations
+
+- [ ] 8.0 Implement Mistral AI Integration for Multi-Model Support
+  - [ ] 8.1 Install Mistral Python SDK and add to requirements.txt
+  - [ ] 8.2 Add Mistral API configuration to config.py and .env.example
+  - [ ] 8.3 Implement Mistral client initialization in llm_client.py
+  - [ ] 8.4 Create model mapping for Mistral models (Large, Medium, Small, Mixtral)
+  - [ ] 8.5 Add Mistral-specific prompt formatting and optimization
+  - [ ] 8.6 Implement rate limiting and error handling for Mistral API
+  - [ ] 8.7 Add Mistral to provider priority fallback chain
+  - [ ] 8.8 Test all specialist agents with Mistral Large model
+  - [ ] 8.9 Optimize prompts for Mistral's instruction format
+  - [ ] 8.10 Add cost tracking for Mistral API usage
+  - [ ] 8.11 Create model selection logic based on task complexity
+  - [ ] 8.12 Document Mistral configuration in CLAUDE.md and README
+  - [ ] 8.13 Add Mistral model comparison tests with existing providers
+  - [ ] 8.14 Implement dynamic model switching based on conversation phase
+  - [ ] 8.15 Test end-to-end conversations with all Mistral model tiers

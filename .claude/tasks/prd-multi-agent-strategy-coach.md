@@ -779,7 +779,63 @@ The system must provide users with regular, meaningful feedback on their progres
 * Synthesizer includes progress context in every response
 * UI displays progress visually through charts, progress bars, and milestone indicators
 
-## 11. Non-Goals (Out of Scope)
+## 11. Multi-Model LLM Support
+
+### 11.1. Mistral AI Integration
+
+The system now supports Mistral AI models as an alternative LLM provider, expanding the range of available language models for strategic coaching conversations. This provides flexibility in model selection based on cost, performance, and capability requirements.
+
+**Key Features:**
+
+* **Multiple Model Support**: Access to Mistral's full range of models including:
+  - Mistral Large (flagship model for complex reasoning)
+  - Mistral Medium (balanced performance and cost)
+  - Mistral Small (efficient for simpler tasks)
+  - Mixtral 8x7B (mixture of experts model)
+  - Mistral Embed (for semantic search capabilities)
+
+* **Seamless Provider Switching**: Easy configuration switching between:
+  - OpenAI (GPT-4, GPT-3.5)
+  - Anthropic (Claude 3.5, Claude Sonnet 4.0)
+  - Google (Gemini Pro)
+  - **Mistral AI** (All Mistral models)
+
+* **Cost Optimization**: Ability to select models based on task complexity:
+  - Use Mistral Large for complex strategic reasoning
+  - Use Mistral Small for simple question-answer interactions
+  - Dynamic model selection based on conversation phase
+
+### 11.2. Implementation Details
+
+**Configuration Requirements:**
+```env
+# Add to .env file
+MISTRAL_API_KEY=your-mistral-api-key
+DEFAULT_LLM_PROVIDER=mistral
+DEFAULT_MODEL=mistral-large-latest
+```
+
+**LLM Client Enhancement:**
+* Extend `llm_client.py` to support Mistral API endpoints
+* Implement model-specific prompt formatting for Mistral
+* Add fallback logic for Mistral rate limits
+* Support for Mistral's function calling capabilities
+
+**Agent Compatibility:**
+* Ensure all specialist agents work with Mistral models
+* Optimize prompts for Mistral's instruction-following format
+* Validate strategy map generation with Mistral responses
+* Test conversation quality across all Mistral model tiers
+
+### 11.3. Benefits of Mistral Integration
+
+* **European Data Sovereignty**: Mistral AI is based in Europe, offering compliance advantages
+* **Open-Weight Models**: Some Mistral models are open-source, allowing self-hosting options
+* **Competitive Pricing**: Cost-effective alternative to other providers
+* **Multilingual Excellence**: Strong performance in multiple languages
+* **Specialized Capabilities**: Mixture of experts architecture for diverse tasks
+
+## 12. Non-Goals (Out of Scope)
 * The coach will **not** provide its own business advice, opinions, or recommendations.
 * The coach will **not** perform any external data gathering, market analysis, or competitor research.
 * The coach will **not** generate financial models, projections, or forecasts.
