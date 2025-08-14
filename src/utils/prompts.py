@@ -252,6 +252,12 @@ class PromptTemplateManager:
             input_variables=["agent_type", "conversation_history", "current_state"],
             template=self._get_stage_determination_template()
         )
+        
+        # Bias-aware questioning guidelines template
+        self.templates["bias_aware_guidelines"] = PromptTemplate(
+            input_variables=[],
+            template=self._get_bias_aware_questioning_guidelines()
+        )
     
     # Template content methods (these would contain the actual prompt text)
     
@@ -266,6 +272,12 @@ METHODOLOGY: Start with WHY - The Golden Circle
 
 CURRENT FOCUS: Discovering the Core PURPOSE (WHY)
 
+CRITICAL GUIDELINES (Based on Choi & Pak, 2005):
+- Keep response to 150-200 words maximum
+- Ask ONLY ONE question per response
+- Avoid leading questions, complex wording, and assumptions
+- Use neutral, open-ended questions
+
 Context about the organization:
 {company_context}
 
@@ -275,22 +287,24 @@ Conversation so far:
 User's latest input:
 {user_input}
 
-As a WHY specialist, help discover the organization's core purpose by:
+PURPOSE DISCOVERY APPROACH:
+1. Acknowledge their input briefly
+2. Provide minimal context if helpful
+3. Ask ONE focused question about their purpose
 
-1. **Purpose Exploration**: Ask powerful questions that uncover the fundamental reason this organization exists beyond making money
-2. **Belief Discovery**: Explore the driving beliefs and convictions that inspire action
-3. **Impact Focus**: Understand the positive change this organization seeks to create in the world
+GOOD QUESTION PATTERNS:
+✓ "What inspired the founding of your organization?"
+✓ "How would you describe the change you want to create?"
+✓ "What drives your passion for this work?"
+✓ "What would be different if your organization didn't exist?"
 
-Use these Golden Circle WHY discovery techniques:
-- Ask "Why do you do what you do?" and follow up with "Why does that matter?"
-- Explore personal passion and connection to the work
-- Investigate the organization's origin story and founding motivation
-- Focus on contribution to others rather than self-benefit
-- Look for emotional drivers and deeper meaning
+AVOID:
+✗ "Don't you think your purpose is X?"
+✗ "Is it about innovation or customer service?" (false dichotomy)
+✗ Multiple questions in one response
+✗ Assuming their motivation
 
-Provide thoughtful, engaging questions and insights that help the user articulate their WHY clearly and compellingly. Be encouraging and help them think deeper about purpose.
-
-Remember: Great organizations are built around a clear WHY that inspires both employees and customers."""
+Remember: Facilitate discovery through ONE clear, unbiased question."""
     
     def _get_why_agent_belief_template(self) -> str:
         """Get the WHY Agent belief exploration template."""
@@ -1013,6 +1027,65 @@ Current State: {current_state}
 Conversation History: {conversation_history}
 
 Analyze the conversation to determine which stage of the methodology should be employed next."""
+    
+    def _get_bias_aware_questioning_guidelines(self) -> str:
+        """
+        Get bias-aware questioning guidelines based on Choi & Pak (2005) research.
+        Reference: Choi, B. C. K., & Pak, A. W. P. (2005). A catalog of biases in questionnaires. 
+        Preventing Chronic Disease, 2(1), A13.
+        """
+        return """CRITICAL: Follow these research-based guidelines to avoid questionnaire biases (Choi & Pak, 2005):
+
+## RESPONSE CONSTRAINTS
+1. Keep responses to 150-200 words maximum
+2. Ask ONLY ONE question per response
+3. Use clear, simple language without jargon
+
+## QUESTION DESIGN - AVOID THESE BIASES:
+
+**Wording Problems:**
+- Ambiguous questions: Be specific and clear
+- Complex questions: Keep questions simple and focused
+- Double-barreled questions: Never combine two questions in one
+- Technical jargon: Use everyday language
+- Vague words: Be precise in your language
+
+**Leading Questions:**
+- Framing bias: Present information neutrally
+- Leading questions: Never suggest the "right" answer
+- Mind-set bias: Don't let previous questions influence current ones
+
+**Scale Problems:**
+- Forced choice: Provide adequate response options
+- False dichotomies: Avoid unnecessary either/or choices
+
+## ADMINISTRATION BIASES TO AVOID:
+
+**Response Tendencies:**
+- End aversion: Don't rely on extreme scale positions
+- Primacy/recency: Don't depend on list order for choices
+- Social desirability: Avoid questions that pressure for "acceptable" answers
+- Hypothesis guessing: Don't reveal what answer you expect
+
+**Memory Issues:**
+- Recall bias: Focus on recent, memorable events
+- Telescope effect: Be specific about time frames
+
+## GOOD QUESTION PATTERNS:
+✓ "How would you describe [aspect]?"
+✓ "What factors influence [decision]?"
+✓ "What role does [topic] play?"
+✓ "Could you elaborate on [area]?"
+✓ "What has been your experience with [subject]?"
+
+## BAD QUESTION PATTERNS:
+✗ "Don't you think [leading statement]?"
+✗ "Should you do A or B?" (when C, D, E exist)
+✗ "Why haven't you [assumption]?"
+✗ "Obviously [statement], right?"
+✗ Multiple questions in one response
+
+Remember: Facilitate discovery through neutral, open-ended, single questions."""
 
 
 class PromptOptimizer:

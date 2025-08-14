@@ -51,12 +51,13 @@ class ConversationSynthesizer:
     def synthesize_response(self, state: AgentState) -> str:
         """
         Synthesize a coherent response based on agent output and conversation context.
+        Enforces bias-aware guidelines from Choi & Pak (2005).
         
         Args:
             state: Current agent state
             
         Returns:
-            Synthesized response string
+            Synthesized response string (150-200 words max with single question)
         """
         logger.info(f"Synthesizing response for session {state['session_id']}")
         
@@ -69,19 +70,22 @@ class ConversationSynthesizer:
         # Generate response based on type and context
         response = self._generate_response(response_type, context, state)
         
-        # Add follow-up questions if appropriate
-        if self._should_add_questions(context, response_type):
-            questions = self._generate_follow_up_questions(context, state)
-            if questions:
-                response += f"\n\n{questions}"
+        # Apply length constraints (150-200 words target)
+        response = self._enforce_length_limit(response, max_words=200)
         
-        # Add progress indication
-        if context.strategy_completeness > 10:  # Only show progress after some work is done
-            progress_note = self._generate_progress_note(context)
+        # Add ONE follow-up question if appropriate
+        if self._should_add_questions(context, response_type):
+            question = self._generate_single_question(context, state)
+            if question:
+                response += f"\n\n{question}"
+        
+        # Add brief progress indication only if significant milestone
+        if context.strategy_completeness in [25, 50, 75, 90]:
+            progress_note = self._generate_brief_progress_note(context)
             if progress_note:
                 response += f"\n\n{progress_note}"
         
-        logger.info(f"Response synthesized ({response_type.value}, {len(response)} chars)")
+        logger.info(f"Response synthesized ({response_type.value}, {len(response)} chars, ~{len(response.split())} words)")
         return response
     
     def _build_synthesis_context(self, state: AgentState) -> SynthesisContext:
@@ -441,3 +445,155 @@ class ConversationSynthesizer:
                 "How will you measure progress?"
             ]
         }
+    
+    def _enforce_length_limit(self, text: str, max_words: int = 200) -> str:
+        """
+        Enforce word count limits on response text.
+        Based on Choi & Pak (2005) guidelines to avoid response fatigue.
+        
+        Args:
+            text: Original text
+            max_words: Maximum word count (default 200)
+            
+        Returns:
+            Truncated text if necessary
+        """
+        words = text.split()
+        if len(words) <= max_words:
+            return text
+        
+        # Truncate intelligently at sentence boundary
+        truncated_words = words[:max_words]
+        truncated_text = ' '.join(truncated_words)
+        
+        # Find last complete sentence
+        last_period = truncated_text.rfind('.')
+        last_question = truncated_text.rfind('?')
+        last_exclamation = truncated_text.rfind('!')
+        
+        last_sentence_end = max(last_period, last_question, last_exclamation)
+        if last_sentence_end > 0:
+            return truncated_text[:last_sentence_end + 1]
+        
+        return truncated_text + "..."
+    
+    def _generate_single_question(self, context: SynthesisContext, state: AgentState) -> str:
+        """
+        Generate a single, unbiased question based on context.
+        Avoids multiple questions per Choi & Pak (2005).
+        
+        Args:
+            context: Synthesis context
+            state: Agent state
+            
+        Returns:
+            Single focused question or empty string
+        """
+        # Get appropriate questions for phase
+        phase_questions = self._generate_phase_appropriate_questions(context, state)
+        
+        if not phase_questions:
+            return ""
+        
+        # Select the most relevant single question
+        selected_question = self._select_most_relevant_question(phase_questions, context)
+        
+        # Ensure question is not leading or biased
+        return self._make_question_unbiased(selected_question)
+    
+    def _generate_brief_progress_note(self, context: SynthesisContext) -> str:
+        """
+        Generate a brief progress indicator for milestone completions.
+        
+        Args:
+            context: Synthesis context
+            
+        Returns:
+            Brief progress note or empty string
+        """
+        completeness = int(context.strategy_completeness)
+        
+        if completeness == 25:
+            return "📊 Strategy foundation 25% complete."
+        elif completeness == 50:
+            return "📊 Halfway through strategy development."
+        elif completeness == 75:
+            return "📊 Strategy 75% complete - finalizing details."
+        elif completeness == 90:
+            return "📊 Nearly complete - review and refine."
+        
+        return ""
+    
+    def _generate_phase_appropriate_questions(self, context: SynthesisContext, state: AgentState) -> List[str]:
+        """Generate questions appropriate for current phase."""
+        questions = []
+        
+        if context.current_phase == "why":
+            if "why" not in state["strategy_completeness"] or not state["strategy_completeness"]["why"]:
+                questions = [
+                    "What inspired the founding of your organization?",
+                    "What change do you want to create in the world?",
+                    "What drives your passion for this work?"
+                ]
+        elif context.current_phase == "how":
+            questions = [
+                "What approaches have worked well in your industry?",
+                "How do you currently make strategic decisions?",
+                "What patterns do you see in successful strategies?"
+            ]
+        elif context.current_phase == "what":
+            questions = [
+                "Who are the key stakeholders for implementation?",
+                "What resources will be needed?",
+                "How will you measure success?"
+            ]
+        
+        return questions
+    
+    def _select_most_relevant_question(self, questions: List[str], context: SynthesisContext) -> str:
+        """Select the most relevant question from a list."""
+        if not questions:
+            return ""
+        
+        # For now, select based on gaps identified
+        # In future, could use more sophisticated relevance scoring
+        if context.gaps_identified:
+            # Prioritize questions related to gaps
+            return questions[0]
+        
+        # Default to first question
+        return questions[0]
+    
+    def _make_question_unbiased(self, question: str) -> str:
+        """
+        Ensure a question is unbiased and open-ended.
+        Based on Choi & Pak (2005) bias catalog.
+        
+        Args:
+            question: Original question
+            
+        Returns:
+            Unbiased version of the question
+        """
+        # Remove leading phrases
+        biased_starts = [
+            "Don't you think",
+            "Wouldn't you agree",
+            "Isn't it true that",
+            "Obviously",
+            "Surely"
+        ]
+        
+        for phrase in biased_starts:
+            if question.lower().startswith(phrase.lower()):
+                # Reframe as open question
+                return "How would you describe your perspective on this?"
+        
+        # Check for false dichotomies
+        if " or " in question and "?" in question:
+            # Reframe to avoid forced choice
+            topic = question.split(" or ")[0].split()[-1]
+            return f"What factors influence your approach to {topic}?"
+        
+        # Return original if no bias detected
+        return question
