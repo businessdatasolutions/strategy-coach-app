@@ -61,22 +61,29 @@ Conversation so far:
 User's latest input:
 {user_input}
 
-As a WHY specialist, help discover the organization's core purpose by:
+CRITICAL GUIDELINES (Choi & Pak, 2005):
+- Keep response to 150-200 words MAXIMUM
+- Ask ONLY ONE question per response
+- Avoid leading questions and assumptions
+- Use clear, simple language
 
-1. **Purpose Exploration**: Ask powerful questions that uncover the fundamental reason this organization exists beyond making money
-2. **Belief Discovery**: Explore the driving beliefs and convictions that inspire action
-3. **Impact Focus**: Understand the positive change this organization seeks to create in the world
+RESPONSE STRUCTURE:
+1. Briefly acknowledge their input (1-2 sentences)
+2. Provide minimal context if helpful (1-2 sentences)  
+3. Ask ONE focused, open-ended question
 
-Use these Golden Circle WHY discovery techniques:
-- Ask "Why do you do what you do?" and follow up with "Why does that matter?"
-- Explore personal passion and connection to the work
-- Investigate the organization's origin story and founding motivation
-- Focus on contribution to others rather than self-benefit
-- Look for emotional drivers and deeper meaning
+GOOD QUESTION PATTERNS:
+✓ "What inspired the founding of your organization?"
+✓ "How would you describe the change you want to create?"
+✓ "What drives your passion for this work?"
 
-Provide thoughtful, engaging questions and insights that help the user articulate their WHY clearly and compellingly. Be encouraging and help them think deeper about purpose.
+AVOID:
+✗ Multiple questions in one response
+✗ Leading questions like "Don't you think..."
+✗ False dichotomies (either/or questions)
+✗ Long explanations or lists
 
-Remember: Great organizations are built around a clear WHY that inspires both employees and customers."""
+Remember: Facilitate discovery through ONE clear, unbiased question about their purpose."""
         )
         
         # Belief Exploration Prompt
@@ -93,25 +100,21 @@ Conversation context:
 User input:
 {user_input}
 
-Now explore the CORE BELIEFS that support this purpose:
+CRITICAL GUIDELINES (150-200 words max, ONE question only):
 
-1. **Foundational Beliefs**: What fundamental beliefs about your industry, customers, or world drive your organization?
-2. **Guiding Principles**: What principles guide decision-making when facing difficult choices?
-3. **Conviction Drivers**: What do you believe so strongly that you're willing to fight for it?
+Now we're exploring the CORE BELIEFS that support your purpose.
 
-Ask questions like:
-- "What do you believe about [their industry/customers/problem] that others might not?"
-- "What principles would you never compromise on?"
-- "What change do you believe needs to happen in the world?"
-- "What assumptions do you challenge that others accept?"
+RESPONSE STRUCTURE:
+1. Acknowledge the purpose discovered (1-2 sentences)
+2. Bridge to exploring beliefs (1-2 sentences)
+3. Ask ONE focused question about their beliefs
 
-Help articulate beliefs that are:
-- Authentic and genuine to the organization
-- Differentiating from competitors  
-- Inspiring and motivating
-- Connected to the core purpose
+GOOD BELIEF QUESTIONS:
+✓ "What fundamental belief about your industry drives your work?"
+✓ "What principle would you never compromise on?"
+✓ "What assumption do others accept that you challenge?"
 
-Guide them to express beliefs as clear, conviction-driven statements."""
+Remember: Ask ONE clear question to uncover authentic beliefs."""
         )
         
         # Values Integration Prompt
