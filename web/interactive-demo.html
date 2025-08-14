@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strategic Co-pilot - Interactive Selection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">💡</span>
+                    <div>
+                        <h1 class="text-xl font-bold">AI Strategic Co-pilot</h1>
+                        <p class="text-sm text-gray-600">Develop your organizational strategy with AI-powered guidance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Interactive Selection Panel -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">🎯 Interactive Belief Selection</h2>
+                <p class="text-gray-700 mb-6">Which of these core beliefs resonate with your organization? Select 2-5 that best align with your values.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ selected: [] }">
+                    <!-- Belief Options -->
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200 hover:border-purple-400 cursor-pointer transition-all">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600">
+                            <div>
+                                <p class="font-medium">People are our greatest asset</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">human</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border-2 border-purple-400 cursor-pointer transition-all bg-purple-50">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600" checked>
+                            <div>
+                                <p class="font-medium">Customer success is our success</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">social</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border-2 border-purple-400 cursor-pointer transition-all bg-purple-50">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600" checked>
+                            <div>
+                                <p class="font-medium">Technology should empower, not complicate</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">intellectual</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border-2 border-purple-400 cursor-pointer transition-all bg-purple-50">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600" checked>
+                            <div>
+                                <p class="font-medium">Continuous learning drives innovation</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">intellectual</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border-2 border-purple-400 cursor-pointer transition-all bg-purple-50">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600" checked>
+                            <div>
+                                <p class="font-medium">Innovation drives sustainable growth</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">financial</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200 hover:border-purple-400 cursor-pointer transition-all">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600">
+                            <div>
+                                <p class="font-medium">Transparency builds trust</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">social</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200 hover:border-purple-400 cursor-pointer transition-all">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600">
+                            <div>
+                                <p class="font-medium">Quality over quantity always</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">manufactured</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200 hover:border-purple-400 cursor-pointer transition-all">
+                        <div class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3 w-5 h-5 text-purple-600">
+                            <div>
+                                <p class="font-medium">Sustainability guides our decisions</p>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">natural</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold text-purple-600">4 selected</span> (min: 2, max: 5)
+                    </div>
+                    <button class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                        Submit Selection
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat message below -->
+            <div class="bg-white rounded-lg shadow p-4">
+                <p class="text-sm text-gray-500">AI Strategic Coach • 11:51 AM</p>
+                <p class="mt-2">Excellent! These beliefs will form the foundation of your strategic framework. Let's explore how these values translate into action...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
