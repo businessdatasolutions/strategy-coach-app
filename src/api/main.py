@@ -187,6 +187,10 @@ class ConversationMessageResponse(BaseModel):
     recommendations: List[str] = Field(description="Strategic recommendations")
     session_id: str = Field(description="Session identifier")
     processing_stage: str = Field(description="Current processing stage")
+    interactive_elements: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Interactive UI elements for user selection"
+    )
 
 
 class ConversationExportResponse(BaseModel):
@@ -705,6 +709,9 @@ async def send_message(
         
         logger.info(f"Processed message for session {session_id} - Phase: {updated_state['current_phase']}")
         
+        # Check for interactive elements from agent
+        interactive_elements = updated_state.get("interactive_elements")
+        
         return ConversationMessageResponse(
             response=ai_response,
             current_phase=updated_state["current_phase"],
@@ -713,7 +720,8 @@ async def send_message(
             questions=questions,
             recommendations=recommendations[:3],  # Limit to top 3 recommendations
             session_id=session_id,
-            processing_stage=updated_state.get("processing_stage", "completed")
+            processing_stage=updated_state.get("processing_stage", "completed"),
+            interactive_elements=interactive_elements
         )
         
     except HTTPException:

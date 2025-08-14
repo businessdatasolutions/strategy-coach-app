@@ -224,6 +224,10 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
                 discovered_purpose = self._extract_discovered_purpose(state)
                 response = self._explore_beliefs(conversation_context, user_input, discovered_purpose)
                 
+                # Add interactive belief selection if user hasn't selected beliefs yet
+                if "selected_beliefs" not in state.get("user_context", {}):
+                    state["interactive_elements"] = self._generate_interactive_beliefs()
+                
             elif why_stage == "values_integration":
                 purpose = self._extract_discovered_purpose(state)
                 beliefs = self._extract_discovered_beliefs(state)
@@ -352,6 +356,28 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
         except Exception as e:
             logger.error(f"LLM error in purpose exploration: {str(e)}")
             return self._get_fallback_purpose_response()
+    
+    def _generate_interactive_beliefs(self) -> Dict[str, Any]:
+        """Generate interactive belief selection element."""
+        return {
+            "type": "multi_select",
+            "prompt": "Which of these core beliefs resonate with your organization?",
+            "options": [
+                {"id": "1", "text": "People are our greatest asset", "category": "human"},
+                {"id": "2", "text": "Innovation drives sustainable growth", "category": "strategy"},
+                {"id": "3", "text": "Customer success is our success", "category": "customer"},
+                {"id": "4", "text": "Technology should empower, not complicate", "category": "technology"},
+                {"id": "5", "text": "Transparency builds trust", "category": "values"},
+                {"id": "6", "text": "Small businesses deserve enterprise tools", "category": "market"},
+                {"id": "7", "text": "Continuous learning fuels excellence", "category": "culture"},
+                {"id": "8", "text": "Collaboration multiplies impact", "category": "teamwork"},
+                {"id": "9", "text": "Quality over quantity always", "category": "standards"},
+                {"id": "10", "text": "Sustainability is non-negotiable", "category": "responsibility"}
+            ],
+            "min_selections": 2,
+            "max_selections": 5,
+            "allow_other": True
+        }
     
     def _explore_beliefs(self, conversation_context: str, user_input: str, discovered_purpose: str) -> str:
         """Generate response for belief exploration stage."""
