@@ -216,31 +216,15 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
             conversation_context = self._extract_conversation_context(state)
             user_context = state.get("user_context", {})
             
-            # Check if user explicitly wants interactive elements FIRST (regardless of stage)
-            if self._user_explicitly_requests_choices(user_input):
-                # Generate appropriate response and interactive elements
-                if why_stage == "purpose_discovery":
-                    response = self._explore_purpose(conversation_context, user_input, user_context)
-                elif why_stage == "belief_exploration":
-                    discovered_purpose = self._extract_discovered_purpose(state)
-                    response = self._explore_beliefs(conversation_context, user_input, discovered_purpose)
-                else:
-                    response = self._explore_purpose(conversation_context, user_input, user_context)
-                
-                # Always provide interactive when explicitly requested
-                state["interactive_elements"] = self._generate_interactive_beliefs()
-            
-            # Generate response based on stage
-            elif why_stage == "purpose_discovery":
+            # Generate response based on stage - NO INTERACTIVE ELEMENTS FOR NOW
+            if why_stage == "purpose_discovery":
                 response = self._explore_purpose(conversation_context, user_input, user_context)
                 
             elif why_stage == "belief_exploration":
                 discovered_purpose = self._extract_discovered_purpose(state)
                 response = self._explore_beliefs(conversation_context, user_input, discovered_purpose)
                 
-                # Only add interactive belief selection if contextually appropriate
-                if self._should_generate_interactive_beliefs(state, user_input, response):
-                    state["interactive_elements"] = self._generate_interactive_beliefs()
+                # REMOVED: Interactive elements functionality disabled for testing agent compatibility
                 
             elif why_stage == "values_integration":
                 purpose = self._extract_discovered_purpose(state)
@@ -371,97 +355,6 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
             logger.error(f"LLM error in purpose exploration: {str(e)}")
             return self._get_fallback_purpose_response()
     
-    def _user_explicitly_requests_choices(self, user_input: str) -> bool:
-        """Check if user explicitly requests interactive choices/options."""
-        user_input_lower = user_input.lower()
-        
-        explicit_choice_requests = [
-            "provide me with a list",
-            "give me choices", 
-            "show me options",
-            "list of choices",
-            "can i choose from",
-            "selection",
-            "what are my options",
-            "can i select",
-            "checkboxes",
-            "multiple choice",
-            "choose from a list"
-        ]
-        
-        return any(request in user_input_lower for request in explicit_choice_requests)
-    
-    def _should_generate_interactive_beliefs(self, state: AgentState, user_input: str, ai_response: str) -> bool:
-        """Determine if interactive belief selection is appropriate for current context."""
-        
-        # Check if user has already provided beliefs through selections
-        user_context = state.get("user_context", {})
-        if "selected_beliefs" in user_context:
-            return False  # User already made selections
-        
-        user_input_lower = user_input.lower()
-        response_lower = ai_response.lower()
-        
-        # ALWAYS provide interactive if user explicitly requests choices/options
-        user_requests_choices = [
-            "provide me with a list",
-            "give me choices",
-            "show me options",
-            "list of choices",
-            "choose from",
-            "selection",
-            "what are my options",
-            "can i choose",
-            "checkboxes"
-        ]
-        
-        if any(request in user_input_lower for request in user_requests_choices):
-            return True  # User explicitly wants interactive selection
-        
-        # Provide interactive if conversation has progressed and we're in belief exploration
-        conversation_turns = len(state["conversation_history"]) // 2
-        
-        # After sufficient exploration, offer interactive selection for efficiency
-        if conversation_turns >= 5:  # After some back-and-forth
-            # Don't provide interactive during validation phases
-            validation_indicators = [
-                "does this capture",
-                "does it inspire", 
-                "validation",
-                "confirm",
-                "is this accurate"
-            ]
-            
-            if any(indicator in response_lower for indicator in validation_indicators):
-                return False  # Still block during validation
-            
-            # Provide interactive to help move conversation forward
-            return True
-        
-        # Early in conversation, use open-ended questions unless user requests selection
-        return False
-    
-    def _generate_interactive_beliefs(self) -> Dict[str, Any]:
-        """Generate interactive belief selection element."""
-        return {
-            "type": "multi_select",
-            "prompt": "Which of these core beliefs resonate with your organization?",
-            "options": [
-                {"id": "1", "text": "People are our greatest asset", "category": "human"},
-                {"id": "2", "text": "Innovation drives sustainable growth", "category": "strategy"},
-                {"id": "3", "text": "Customer success is our success", "category": "customer"},
-                {"id": "4", "text": "Technology should empower, not complicate", "category": "technology"},
-                {"id": "5", "text": "Transparency builds trust", "category": "values"},
-                {"id": "6", "text": "Small businesses deserve enterprise tools", "category": "market"},
-                {"id": "7", "text": "Continuous learning fuels excellence", "category": "culture"},
-                {"id": "8", "text": "Collaboration multiplies impact", "category": "teamwork"},
-                {"id": "9", "text": "Quality over quantity always", "category": "standards"},
-                {"id": "10", "text": "Sustainability is non-negotiable", "category": "responsibility"}
-            ],
-            "min_selections": 2,
-            "max_selections": 5,
-            "allow_other": True
-        }
     
     def _explore_beliefs(self, conversation_context: str, user_input: str, discovered_purpose: str) -> str:
         """Generate response for belief exploration stage."""

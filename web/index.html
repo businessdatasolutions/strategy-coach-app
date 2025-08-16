@@ -235,63 +235,8 @@
                     </div>
                 </div>
                 
-                <!-- Interactive Selection Panel -->
-                <div x-show="interactiveMode" x-cloak 
-                     class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mx-4 mb-4">
-                    <h3 class="font-semibold text-gray-800 mb-4" x-text="currentInteractive?.prompt || 'Select your options:'"></h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                        <template x-for="option in (currentInteractive?.options || [])" :key="option.id">
-                            <div @click="toggleOption(option.id)"
-                                 :class="selectedOptions.includes(option.id) 
-                                     ? 'bg-blue-100 border-blue-500 shadow-md' 
-                                     : 'bg-white border-gray-300 hover:border-blue-400'"
-                                 class="border-2 rounded-lg p-4 cursor-pointer transition-all duration-200">
-                                
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0 mr-3">
-                                        <div :class="selectedOptions.includes(option.id) 
-                                                ? 'bg-blue-500 border-blue-500' 
-                                                : 'bg-white border-gray-400'"
-                                             class="w-5 h-5 rounded border-2 flex items-center justify-center">
-                                            <svg x-show="selectedOptions.includes(option.id)" 
-                                                 class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" 
-                                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                                                      clip-rule="evenodd"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow">
-                                        <p class="text-gray-800 font-medium" x-text="option.text"></p>
-                                        <p x-show="option.category" 
-                                           class="text-xs text-gray-500 mt-1" 
-                                           x-text="'Category: ' + option.category"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                    
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600">
-                            <span x-text="selectedOptions.length"></span> of 
-                            <span x-text="currentInteractive?.max_selections || 'unlimited'"></span> selected
-                        </p>
-                        <div class="space-x-2">
-                            <button @click="selectedOptions = []" 
-                                    class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                                Clear
-                            </button>
-                            <button @click="submitSelections()" 
-                                    :disabled="selectedOptions.length < (currentInteractive?.min_selections || 1)"
-                                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-                                           disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                Submit Selection
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <!-- Interactive Selection Panel - DISABLED FOR TESTING COMPATIBILITY -->
+                <!-- Will be re-enabled when working on gamification features -->
                 
                 <!-- Input Area -->
                 <div class="border-t border-gray-100 p-4 bg-gray-50 rounded-b-xl">
@@ -404,11 +349,12 @@
                 chartInitializing: false,  // Prevent concurrent chart initialization
                 chartUpdatePending: false,  // Prevent multiple pending updates
                 
-                // Interactive selection state
-                interactiveMode: false,
-                selectedOptions: [],
-                currentInteractive: null,
-                activeInteractiveIds: new Set(), // Track active interactive element IDs
+                // Interactive selection state - DISABLED FOR TESTING COMPATIBILITY
+                // Will be re-enabled when working on gamification features
+                // interactiveMode: false,
+                // selectedOptions: [],
+                // currentInteractive: null,
+                // activeInteractiveIds: new Set(),
                 
                 // Initialize
                 async init() {
@@ -512,13 +458,8 @@
                         this.completeness = Math.round(data.completeness_percentage || 0);
                         this.nextSteps = data.recommendations || [];
                         
-                        // Check for interactive elements - avoid duplicates
-                        if (data.interactive_elements) {
-                            this.handleInteractiveElement(data.interactive_elements);
-                        } else {
-                            // Clear interactive mode if no new interactive elements
-                            this.clearInteractiveIfStale();
-                        }
+                        // Interactive elements handling DISABLED for testing compatibility
+                        // Will be re-enabled when working on gamification features
                         
                         // Update completed phases based on completeness
                         if (this.completeness > 30 && !this.completedPhases.includes('why')) {
