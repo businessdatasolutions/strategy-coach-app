@@ -210,12 +210,23 @@ Please let me know if this feels right, needs adjustment, or if you'd like to re
             conversation_context = self._extract_conversation_context(state)
             user_context = state.get("user_context", {})
             
-            # Check if we're awaiting user validation
-            if state.get("awaiting_user_validation", False):
-                # Process user validation response instead of generating new content
+            # Generate response based on stage - with proper validation state handling
+            if why_stage == "validation_pause":
+                # Process user validation response
                 response = self._process_user_validation(state, user_input)
                 
-            # Generate response based on stage - with validation pause logic
+            elif why_stage == "transition_ready":
+                # User has validated, ready to move to HOW phase
+                response = """Excellent! I'm glad the WHY synthesis feels authentic to your organization's core purpose.
+
+Now that we've established your foundational WHY, we can explore HOW you'll bring this purpose to life through your strategic approach and methodology.
+
+What would you say is your most distinctive approach to making this WHY tangible in your day-to-day operations?"""
+                
+                # Mark WHY phase as complete for phase transition
+                state["strategy_completeness"]["why"] = True
+                state["awaiting_user_validation"] = False
+                
             elif why_stage == "purpose_discovery":
                 response = self._explore_purpose(conversation_context, user_input, user_context)
                 
@@ -229,21 +240,22 @@ Please let me know if this feels right, needs adjustment, or if you'd like to re
                 response = self._integrate_values(conversation_context, user_input, purpose, beliefs)
                 
             elif why_stage == "synthesis":
-                # Check if synthesis already provided and not yet validated
-                if state.get("synthesis_provided", False) and not state.get("user_validation_confirmed", False):
-                    # Don't regenerate synthesis, ask for validation
-                    response = "I've shared a comprehensive WHY synthesis with you. Does this capture the essence of why your organization exists? Please let me know if it feels authentic or if you'd like to refine any part of it."
-                else:
-                    # Generate synthesis for the first time
-                    purpose = self._extract_discovered_purpose(state)
-                    beliefs = self._extract_discovered_beliefs(state)
-                    values = self._extract_discovered_values(state)
-                    response = self._synthesize_why_framework(purpose, beliefs, values, conversation_context)
-                    
-                    # Mark that synthesis has been provided and we're awaiting validation
-                    state["synthesis_provided"] = True
-                    state["awaiting_user_validation"] = True
-                    state["last_synthesis_turn"] = len(state["conversation_history"])
+                # Replace complex synthesis with simple progression prompt
+                purpose = self._extract_discovered_purpose(state)
+                
+                # Create simple WHY summary from conversation
+                why_summary = self._create_simple_why_summary(conversation_context, purpose)
+                
+                response = f"""Based on our conversation, your WHY appears to be: {why_summary}
+
+This captures the essence of why AFAS exists - to empower entrepreneurs through trust-based, integrated software solutions.
+
+Ready for HOW?"""
+                
+                # Set the ready for HOW prompt and pause conversation
+                state["ready_for_how_prompt"] = f"Your WHY: {why_summary}. Ready to explore HOW?"
+                state["synthesis_provided"] = True
+                state["awaiting_user_validation"] = True
                 
             else:
                 # Default to purpose discovery
@@ -282,7 +294,14 @@ Please let me know if this feels right, needs adjustment, or if you'd like to re
             return state
     
     def _determine_why_stage(self, state: AgentState) -> str:
-        """Determine the current stage of WHY exploration based on conversation progress."""
+        """Determine the current stage of WHY exploration based on conversation progress and validation state."""
+        
+        # CRITICAL FIX: Check validation state first before determining stage
+        if state.get("awaiting_user_validation", False):
+            return "validation_pause"
+        
+        if state.get("user_validation_confirmed", False):
+            return "transition_ready"
         
         conversation = state["conversation_history"]
         
@@ -317,7 +336,9 @@ Please let me know if this feels right, needs adjustment, or if you'd like to re
         # Determine stage based on conversation progress
         conversation_turns = len(conversation) // 2  # User-AI pairs
         
-        if conversation_turns >= 6 and purpose_indicators >= 2 and belief_indicators >= 1:
+        # FIXED: Only return synthesis if not already provided
+        if (conversation_turns >= 6 and purpose_indicators >= 2 and belief_indicators >= 1 and 
+            not state.get("synthesis_provided", False)):
             if values_indicators >= 1:
                 return "synthesis"
             else:
@@ -419,6 +440,29 @@ What would you say is your most distinctive approach to making this WHY tangible
         else:
             # Unclear response, ask for clarification
             return "I want to make sure I understand your response to the WHY synthesis. Does it feel authentic to your organization's purpose, or would you like to refine it? Please let me know so we can either move forward or adjust accordingly."
+    
+    def _create_simple_why_summary(self, conversation_context: str, purpose: str) -> str:
+        """Create a simple, one-sentence WHY summary from conversation."""
+        
+        # Extract key themes from conversation
+        context_lower = conversation_context.lower()
+        
+        # Look for AFAS-specific themes
+        if "trust" in context_lower and "entrepreneur" in context_lower:
+            return "To empower entrepreneurs through trust-based software that eliminates administrative burdens"
+        elif "entrepreneur" in context_lower and ("simple" in context_lower or "integrate" in context_lower):
+            return "To inspire better entrepreneurship through integrated, simple business software"
+        elif "trust" in context_lower and ("people" in context_lower or "employee" in context_lower):
+            return "To demonstrate that business success comes from trusting and empowering people"
+        elif "entrepreneur" in context_lower:
+            return "To support entrepreneurs in achieving their vision without administrative obstacles"
+        else:
+            # Fallback based on purpose extraction
+            if purpose and len(purpose) > 20:
+                # Extract key phrases from purpose
+                return "To inspire better entrepreneurship through integrated business software"
+            else:
+                return "To empower entrepreneurs and eliminate business software complexity"
     
     def _explore_beliefs(self, conversation_context: str, user_input: str, discovered_purpose: str) -> str:
         """Generate response for belief exploration stage."""

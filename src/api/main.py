@@ -195,6 +195,10 @@ class ConversationMessageResponse(BaseModel):
         default=False,
         description="Whether the AI is waiting for user validation before proceeding"
     )
+    ready_for_how_prompt: Optional[str] = Field(
+        default=None,
+        description="Prompt for Ready for HOW radio button progression"
+    )
 
 
 class ConversationExportResponse(BaseModel):
@@ -291,7 +295,22 @@ def get_session_state(session_id: str) -> AgentState:
             status_code=404,
             detail=f"Session {session_id} not found. Please start a new conversation."
         )
-    return session_store[session_id]
+    
+    state = session_store[session_id]
+    
+    # Ensure validation state fields exist (compatibility with older sessions)
+    if "synthesis_provided" not in state:
+        state["synthesis_provided"] = False
+    if "awaiting_user_validation" not in state:
+        state["awaiting_user_validation"] = False
+    if "user_validation_confirmed" not in state:
+        state["user_validation_confirmed"] = False
+    if "validation_response" not in state:
+        state["validation_response"] = None
+    if "last_synthesis_turn" not in state:
+        state["last_synthesis_turn"] = None
+    
+    return state
 
 
 def update_session_state(session_id: str, state: AgentState) -> None:
@@ -732,7 +751,8 @@ async def send_message(
             session_id=session_id,
             processing_stage=updated_state.get("processing_stage", "completed"),
             interactive_elements=interactive_elements,
-            awaiting_user_validation=updated_state.get("awaiting_user_validation", False)
+            awaiting_user_validation=updated_state.get("awaiting_user_validation", False),
+            ready_for_how_prompt=updated_state.get("ready_for_how_prompt")
         )
         
     except HTTPException:

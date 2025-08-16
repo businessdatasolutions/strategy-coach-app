@@ -1,0 +1,317 @@
+{
+  "test_metadata": {
+    "business_case": "AFAS Software",
+    "persona": "Visionary Founder",
+    "timestamp": "20250816_163602",
+    "total_interactions": 20
+  },
+  "business_case_context": {
+    "company_profile": {
+      "name": "AFAS Software",
+      "industry": "Enterprise Software",
+      "revenue": "\u20ac324.6 million",
+      "employees": "720 employees",
+      "founded": "1996",
+      "location": "Leusden, Netherlands",
+      "ownership": "Private, family-owned"
+    },
+    "strategic_context": {
+      "mission": "Inspire better entrepreneurship through integrated business software",
+      "core_values": [
+        "Do",
+        "Trust",
+        "Crazy",
+        "Family"
+      ],
+      "culture": "Trust-based, family values, employee empowerment",
+      "competitive_advantage": "Culture as ultimate competitive moat",
+      "market_position": "Market leader in Benelux SME ERP/HRM space"
+    },
+    "strategic_challenges": [
+      "International expansion beyond Netherlands (82% market concentration)",
+      "Maintaining unique culture while scaling globally",
+      "Competition from global giants (SAP, Microsoft, Oracle)",
+      "Balancing innovation with proven integrated model",
+      "Four-day workweek implementation without productivity loss"
+    ],
+    "core_beliefs": [
+      "Culture is our ultimate competitive advantage",
+      "Trust and autonomy drive superior performance",
+      "Business success should benefit all stakeholders",
+      "Integration and simplicity over complexity",
+      "Social responsibility is core business function"
+    ]
+  },
+  "interactions": [
+    {
+      "user_message": "Thanks for the introduction. I appreciate the structured approach, though I should mention I'm Ton van der Veldt from AFAS Software - we're a \u20ac324 million Dutch enterprise software company.",
+      "ai_response": "Thank you, Ton! It's great to meet you, and I appreciate you sharing that context about AFAS Software. That's quite an impressive scale you've achieved in the enterprise software space.\n\nAs we begin exploring your organization's core purpose, I'd like to start at the very beginning of AFAS Software's story.\n\nWhat originally inspired the founding of AFAS Software - what need or belief drove someone to say \"this company needs to exist\"?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "0%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26088,
+      "interaction_number": 1,
+      "timestamp": "2025-08-16T16:25:29.730631",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You know, it really came down to a simple frustration we saw everywhere - entrepreneurs drowning in administrative complexity when they should be focused on what they do best: building their businesses. Back in '96, when Piet and I did the management buy-out from Getronics, we kept seeing the same pattern.",
+      "ai_response": "That's a powerful origin story, Ton. The image of entrepreneurs being pulled away from their core business by administrative burden really resonates - and it sounds like that frustration became a driving force for you and Piet.\n\nWhen you think about that pattern you kept witnessing back then, what deeper belief about entrepreneurship or business did that spark in you both?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26064,
+      "interaction_number": 2,
+      "timestamp": "2025-08-16T16:26:01.994736",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You know, it crystallized something fundamental for us - that every entrepreneur, regardless of size, deserves the same quality tools that the big corporations have. We kept seeing this two-tier system where large enterprises got sophisticated, integrated solutions while smaller businesses were stuck with fragmented, mediocre software that created more problems than it solved.",
+      "ai_response": "That's a profound realization, Ton - recognizing that entrepreneurial success shouldn't be determined by company size or access to resources. The two-tier system you describe creates real inequality in the business landscape.\n\nWhen you think about leveling that playing field and giving every entrepreneur access to enterprise-quality tools, what change do you ultimately hope to see in the world of business?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26081,
+      "interaction_number": 3,
+      "timestamp": "2025-08-16T16:26:33.845671",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "Look, I want to see a business world where the best ideas win, not just the biggest wallets. Right now, too many brilliant entrepreneurs hit a ceiling because they can't afford the tools that would let them compete with the giants.",
+      "ai_response": "That vision is incredibly compelling, Ton - creating a business world where merit and innovation triumph over financial advantage. You're essentially challenging the entire power structure of how business competition works today.\n\nNow I'd like to explore the core beliefs that fuel this mission. These are the fundamental principles that guide how AFAS operates and makes decisions.\n\nWhat fundamental belief about business or entrepreneurship would you never compromise on, even if it meant losing a deal or facing criticism?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26093,
+      "interaction_number": 4,
+      "timestamp": "2025-08-16T16:27:06.565853",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "Trust. Absolute trust in our people.",
+      "ai_response": "That's a powerful foundation, Ton - absolute trust in your people. That kind of unwavering belief in human potential takes real courage, especially in a business environment where many leaders default to control and micromanagement.\n\nWhen you say \"absolute trust,\" that suggests you've seen what happens when people are truly empowered versus when they're constrained by doubt or oversight.\n\nWhat do you fundamentally believe about people's capabilities when they're given that level of trust - what have you witnessed that others might miss?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26088,
+      "interaction_number": 5,
+      "timestamp": "2025-08-16T16:27:40.132235",
+      "screenshot_taken": true,
+      "screenshot_path": "tests/evaluation/simple_test_screenshots/interaction_05.png"
+    },
+    {
+      "user_message": "Look, I've seen this play out thousands of times at AFAS. When you truly trust people - not just say you do, but actually give them real autonomy - they consistently exceed what anyone thought possible.",
+      "ai_response": "That's a remarkable observation, Ton - you've witnessed firsthand that people consistently rise to meet genuine trust rather than shrink from it. Most leaders talk about trust but still hedge with controls and limitations.\n\nThis belief in human potential when given real autonomy seems to challenge a fundamental assumption that many business leaders operate from - that people need to be managed and constrained to perform.\n\nWhat assumption about human nature in business do most leaders accept that you fundamentally reject?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26081,
+      "interaction_number": 6,
+      "timestamp": "2025-08-16T16:28:14.009443",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "Most leaders assume people are fundamentally lazy or self-serving - that without constant oversight, they'll slack off or make poor decisions. That's complete nonsense.",
+      "ai_response": "That's a fundamental rejection of a deeply ingrained business assumption, Ton - you're essentially saying that the default approach of most leaders is built on a flawed premise about human nature.\n\nIf you believe people are inherently capable and motivated when truly trusted, that must translate into very specific ways of operating at AFAS.\n\n**Let's define the values that bring this WHY to life:**\n\nGiven your core purpose of leveling the playing field and your absolute belief in trusting people, **how should people at AFAS actually behave on a daily basis?**\n\nFor instance, when someone at AFAS faces a difficult decision or challenging situation, what specific behaviors would you want to see that reflect this trust-based philosophy?\n\nAnd on the flip side - what behaviors would be completely unacceptable because they contradict your fundamental beliefs about human potential?\n\nI'm looking for the concrete actions and behaviors that would make someone walking through AFAS say, \"This place operates differently - I can see their values in action.\"",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26105,
+      "interaction_number": 7,
+      "timestamp": "2025-08-16T16:28:46.588624",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "Look, it's simple. When someone hits a problem at AFAS, they don't ask permission - they solve it.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo level the playing field in business by empowering entrepreneurs and organizations to compete on merit and innovation rather than financial advantage - proving that when people are truly trusted with autonomy, they consistently exceed all expectations.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- People are inherently capable and motivated when given genuine trust and autonomy\n- The fundamental assumption that people need constant oversight to perform is completely wrong\n- Merit and innovation should determine business success, not just financial resources\n- True trust means giving people real power to act, not just saying you trust them\n- Human potential is consistently underestimated in traditional business environments\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: When problems arise, take action immediately rather than seeking permission\n- **Trust First**: Default to giving people full autonomy rather than implementing controls\n- **Merit Over Money**: Make decisions based on capability and innovation, not financial advantage\n- **Authentic Empowerment**: Give people real decision-making power, not just the illusion of it\n- **Exceed Expectations**: Consistently deliver beyond what anyone thought possible\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a powerful coherent force: You exist to level the playing field (PURPOSE), driven by an unshakeable belief that people excel when truly trusted (BELIEFS), which manifests in behaviors where people solve problems independently and are empowered with real autonomy (VALUES). This creates a self-reinforcing cycle where trusted people exceed expectations, proving your core beliefs right, which further advances your mission to change how business competition works.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists? Does it inspire you and would it inspire others to join your cause? When you read this WHY statement, does it feel like the authentic driving force behind everything you've built?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - leveling the playing field through absolute trust in human potential - we can explore HOW you'll bring this purpose to life through your strategic approach. What specific strategies and methods will you use to challenge the traditional business paradigm and prove that trust-based organizations outperform control-based ones?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26113,
+      "interaction_number": 8,
+      "timestamp": "2025-08-16T16:29:22.078184",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something important here, but let me be direct - this feels too philosophical for where we are as a business right now. Yes, we believe deeply in trust and autonomy.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo prove that businesses built on absolute trust and merit outperform those built on control and capital - creating practical advantages for organizations that believe in human potential over traditional hierarchies.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- People consistently exceed expectations when given real autonomy and trust\n- Most business leaders operate from fundamentally flawed assumptions about human motivation\n- Merit and capability should determine success, not just financial resources\n- True empowerment means giving people actual decision-making power, not just lip service\n- Trust-based organizations have a competitive advantage that traditional businesses miss\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission\n- **Trust First**: Default to autonomy rather than implementing controls\n- **Merit Over Money**: Make decisions based on capability and innovation\n- **Real Empowerment**: Give people actual power to act, not just the appearance of it\n- **Practical Results**: Focus on what works in reality, not what sounds good in theory\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a competitive business philosophy: You exist to prove trust-based organizations outperform control-based ones (PURPOSE), driven by evidence that people excel when truly empowered (BELIEFS), which manifests in practical behaviors like solving problems independently and making merit-based decisions (VALUES). This creates measurable business advantages that validate your approach and attract others who want similar results.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your experience and would it inspire the right people to work with you? More importantly - does this WHY give you a clear foundation for making strategic decisions?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - proving trust-based business models work better - we can focus on HOW you'll demonstrate this advantage in the market. What specific strategies will you use to show that your approach delivers superior results compared to traditional business models?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26079,
+      "interaction_number": 9,
+      "timestamp": "2025-08-16T16:29:55.258201",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something important, but let me be direct - we're not trying to \"prove\" anything to anyone. We built AFAS this way because it works for us and our customers, not to make a philosophical point.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo create competitive advantages for businesses that choose trust and merit over control and capital - demonstrating through practical results that empowering human potential delivers superior outcomes.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Trust-based organizations consistently outperform control-based ones in real-world results\n- People deliver exceptional work when given genuine autonomy and responsibility\n- Merit and capability create more sustainable success than financial resources alone\n- Most businesses leave massive potential on the table by underestimating their people\n- Practical empowerment (real decision-making power) generates measurable competitive advantages\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission\n- **Trust First**: Default to autonomy rather than implementing controls\n- **Merit Over Money**: Make decisions based on capability and results\n- **Real Empowerment**: Give people actual power to act, not just the appearance of it\n- **Practical Results**: Focus on what works in reality and delivers measurable outcomes\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a results-driven business philosophy: You exist to create competitive advantages for trust-based organizations (PURPOSE), because you've seen that empowered people consistently deliver superior results (BELIEFS), which shows up in daily behaviors like solving problems independently and making merit-based decisions (VALUES). This approach attracts customers and talent who want practical advantages, not philosophical statements.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your experience and would it inspire the right people to work with you? More importantly - does this WHY give you a clear foundation for making strategic decisions without sounding like a mission statement?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - creating competitive advantages through trust and merit - we can focus on HOW you'll deliver these advantages in the market. What specific strategies and approaches will you use to help organizations achieve superior results through empowering their people?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26105,
+      "interaction_number": 10,
+      "timestamp": "2025-08-16T16:30:28.369034",
+      "screenshot_taken": true,
+      "screenshot_path": "tests/evaluation/simple_test_screenshots/interaction_10.png"
+    },
+    {
+      "user_message": "You've captured something important here, but it's not complete. Yes, trust and merit drive results - we've proven that with our four-day workweek and autonomous culture.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo create competitive advantages for businesses that choose trust and merit over control and capital - demonstrating through practical results that empowering human potential delivers superior outcomes while building sustainable, profitable organizations.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Trust-based organizations consistently outperform control-based ones in real-world results\n- People deliver exceptional work when given genuine autonomy and responsibility  \n- Merit and capability create more sustainable success than financial resources alone\n- Most businesses leave massive potential on the table by underestimating their people\n- Practical empowerment (real decision-making power) generates measurable competitive advantages\n- You can build profitable, growing businesses while treating people exceptionally well\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission\n- **Trust First**: Default to autonomy rather than implementing controls\n- **Merit Over Money**: Make decisions based on capability and results\n- **Real Empowerment**: Give people actual power to act, not just the appearance of it\n- **Practical Results**: Focus on what works in reality and delivers measurable outcomes\n- **Sustainable Success**: Build for long-term growth while maintaining quality of life\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a results-driven business philosophy that proves alternatives work: You exist to create competitive advantages for trust-based organizations (PURPOSE), because you've experienced firsthand that empowered people consistently deliver superior results while building sustainable businesses (BELIEFS), which manifests in daily behaviors like solving problems independently, making merit-based decisions, and maintaining high performance with better work-life balance (VALUES). This approach attracts customers and talent who want practical advantages and sustainable success, not just philosophical statements.\n\n**VALIDATION:**\nDoes this capture the complete essence of why AFAS exists as a business? Does it feel authentic to your experience with the four-day workweek and autonomous culture? Would this WHY inspire the right people to work with you and guide your strategic decisions without sounding like empty mission-statement language?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - creating competitive advantages through trust, merit, and sustainable practices - we can focus on HOW you'll deliver these advantages in the market. What specific strategies, services, and approaches will you use to help organizations achieve superior results through empowering their people while building profitable, sustainable businesses?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26098,
+      "interaction_number": 11,
+      "timestamp": "2025-08-16T16:31:01.650686",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something important here, but it feels too theoretical for how we actually operate. At AFAS, we don't set out to \"create competitive advantages for trust-based organizations\" - we solve real administrative headaches for entrepreneurs who are drowning in complexity.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo free entrepreneurs from administrative chaos so they can focus on what they do best - building and growing their businesses - while proving that sustainable, people-first operations create better outcomes for everyone.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Entrepreneurs shouldn't have to choose between business growth and administrative compliance\n- Most business owners are drowning in complexity that pulls them away from their core strengths\n- People perform at their highest level when trusted with real autonomy and responsibility\n- Sustainable business practices (like four-day workweeks) actually improve performance and results\n- Merit and capability matter more than traditional credentials or hierarchy\n- You can solve real problems profitably while treating people exceptionally well\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission\n- **Trust First**: Default to autonomy rather than implementing controls\n- **Merit Over Money**: Make decisions based on capability and results, not financial advantage\n- **Real Empowerment**: Give people actual power to act, not just the appearance of it\n- **Practical Results**: Focus on what works in reality and delivers measurable outcomes\n- **Sustainable Success**: Build for long-term growth while maintaining quality of life\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a powerful business model that solves real problems sustainably: You exist to free entrepreneurs from administrative chaos (PURPOSE), because you believe people perform best when trusted and that business owners should focus on their strengths (BELIEFS), which manifests in behaviors like solving problems independently, trusting people with real autonomy, and maintaining high performance with better work-life balance (VALUES). This creates a self-reinforcing cycle where your operational approach becomes proof that your solutions work.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to how you actually operate day-to-day? Would this WHY inspire the right entrepreneurs to work with you and guide your strategic decisions about which services to offer and how to deliver them?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - freeing entrepreneurs from administrative chaos through sustainable, trust-based operations - we can focus on HOW you'll deliver this freedom in the market. What specific services, processes, and approaches will you use to eliminate administrative headaches while demonstrating that your people-first operational model creates superior results?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26096,
+      "interaction_number": 12,
+      "timestamp": "2025-08-16T16:31:34.641645",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something important here, but let me be direct - this feels too broad. \"Administrative chaos\" could mean anything to anyone.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo free entrepreneurs from the operational burdens that drain their time and energy so they can focus on what they do best - building and growing their businesses - while demonstrating that people-first, sustainable operations deliver superior results.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Entrepreneurs are most valuable when focused on their core strengths, not buried in operational details\n- Most business owners are trapped by systems and processes that should be freeing them instead\n- People deliver their best work when trusted with real autonomy and clear accountability\n- Sustainable practices (like four-day workweeks) actually improve performance rather than hinder it\n- Merit and results matter more than credentials, hierarchy, or traditional business approaches\n- You can solve real problems profitably while creating exceptional working conditions\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission or creating bureaucracy\n- **Trust First**: Default to autonomy and empowerment rather than controls and oversight\n- **Merit Over Money**: Make decisions based on capability and results, not just financial considerations\n- **Real Empowerment**: Give people actual decision-making power, not just the appearance of authority\n- **Practical Results**: Focus relentlessly on what works in reality and delivers measurable outcomes\n- **Sustainable Success**: Build for long-term growth while maintaining quality of life for everyone involved\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a business model where your operational philosophy becomes your competitive advantage: You exist to free entrepreneurs from operational burdens (PURPOSE), because you believe people perform best when trusted and that business owners should focus on their unique strengths (BELIEFS), which shows up in daily behaviors like solving problems independently, trusting people with real authority, and maintaining high performance through sustainable practices (VALUES). This creates a powerful proof point - your own success demonstrates that your approach works, making your solutions more credible and attractive to potential clients.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to how you actually operate day-to-day with your team and clients? Would this WHY inspire the right entrepreneurs to work with you and help you make clear decisions about which services to offer and which opportunities to pursue?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - freeing entrepreneurs from operational burdens through proven, people-first approaches - we can focus on HOW you'll deliver this freedom in the market. What specific services, processes, and delivery methods will you use to eliminate these operational burdens while demonstrating that your sustainable, trust-based model creates superior results for both your clients and your team?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26120,
+      "interaction_number": 13,
+      "timestamp": "2025-08-16T16:32:08.175198",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something important here, but let me be direct - this feels more like consultant language than how we actually think at AFAS. Our WHY is simpler: we exist because every entrepreneur deserves the same integrated tools that big corporations have.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo give every entrepreneur access to the same integrated operational tools that big corporations have, so they can compete on a level playing field without drowning in complexity or sacrificing their vision to administrative burdens.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Every entrepreneur deserves the same operational advantages as Fortune 500 companies\n- Small businesses shouldn't have to choose between growth and getting buried in operational complexity\n- The right tools and systems should amplify an entrepreneur's strengths, not drain their energy\n- People perform best when given real autonomy and trusted to deliver results\n- Sustainable practices create better outcomes for businesses, teams, and clients\n- Merit and results matter more than size, credentials, or traditional hierarchies\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission or creating bureaucracy\n- **Trust First**: Default to autonomy and empowerment rather than controls and oversight\n- **Merit Over Money**: Make decisions based on capability and results, not just financial considerations\n- **Real Empowerment**: Give people actual decision-making power, not just the appearance of authority\n- **Practical Results**: Focus relentlessly on what works in reality and delivers measurable outcomes\n- **Sustainable Success**: Build for long-term growth while maintaining quality of life for everyone involved\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a clear mission of operational equity: You exist to level the playing field by giving entrepreneurs enterprise-grade tools (PURPOSE), because you believe every business owner deserves the same advantages as big corporations and that people perform best when trusted with real responsibility (BELIEFS), which manifests in behaviors like solving problems immediately, trusting people with autonomy, and focusing on sustainable results over quick fixes (VALUES). This creates a business model where your own operational excellence - four-day workweeks, autonomous culture, merit-based decisions - becomes proof that your approach works for any size business.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your daily reality of helping entrepreneurs access enterprise-level capabilities? Would this WHY inspire the right entrepreneurs to work with you and help your team make clear decisions about which tools to build and which clients to serve?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - democratizing enterprise-grade operational tools for entrepreneurs - we can focus on HOW you'll deliver this level playing field. What specific integrated tools, systems, and services will you provide to give small businesses the same operational advantages that big corporations take for granted?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26103,
+      "interaction_number": 14,
+      "timestamp": "2025-08-16T16:32:40.652610",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something important here, but let me be direct - this feels too theoretical for where we are as a business. Yes, leveling the playing field matters.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo give every entrepreneur access to the same integrated operational tools that big corporations have, so they can compete on a level playing field without drowning in complexity or sacrificing their vision to administrative burdens.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Every entrepreneur deserves the same operational advantages as Fortune 500 companies\n- Small businesses shouldn't have to choose between growth and getting buried in operational complexity\n- The right tools and systems should amplify an entrepreneur's strengths, not drain their energy\n- People perform best when given real autonomy and trusted to deliver results\n- Sustainable practices create better outcomes for businesses, teams, and clients\n- Merit and results matter more than size, credentials, or traditional hierarchies\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission or creating bureaucracy\n- **Trust First**: Default to autonomy and empowerment rather than controls and oversight\n- **Merit Over Money**: Make decisions based on capability and results, not just financial considerations\n- **Real Empowerment**: Give people actual decision-making power, not just the appearance of authority\n- **Practical Results**: Focus relentlessly on what works in reality and delivers measurable outcomes\n- **Sustainable Success**: Build for long-term growth while maintaining quality of life for everyone involved\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a clear mission of operational equity: You exist to level the playing field by giving entrepreneurs enterprise-grade tools (PURPOSE), because you believe every business owner deserves the same advantages as big corporations and that people perform best when trusted with real responsibility (BELIEFS), which manifests in behaviors like solving problems immediately, trusting people with autonomy, and focusing on sustainable results over quick fixes (VALUES). This creates a business model where your own operational excellence - four-day workweeks, autonomous culture, merit-based decisions - becomes proof that your approach works for any size business.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your daily reality of helping entrepreneurs access enterprise-level capabilities? Would this WHY inspire the right entrepreneurs to work with you and help your team make clear decisions about which tools to build and which clients to serve?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - democratizing enterprise-grade operational tools for entrepreneurs - we can focus on HOW you'll deliver this level playing field. What specific integrated tools, systems, and services will you provide to give small businesses the same operational advantages that big corporations take for granted?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 27055,
+      "interaction_number": 15,
+      "timestamp": "2025-08-16T16:33:15.081571",
+      "screenshot_taken": true,
+      "screenshot_path": "tests/evaluation/simple_test_screenshots/interaction_15.png"
+    },
+    {
+      "user_message": "Look, you've captured something important here, but you're missing a critical piece. This isn't just about giving entrepreneurs the same tools as big corporations - it's about giving them tools.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo give every entrepreneur access to the same integrated operational tools that big corporations have, so they can compete on a level playing field without drowning in complexity or sacrificing their vision to administrative burdens.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Every entrepreneur deserves the same operational advantages as Fortune 500 companies\n- Small businesses shouldn't have to choose between growth and getting buried in operational complexity\n- The right tools and systems should amplify an entrepreneur's strengths, not drain their energy\n- People perform best when given real autonomy and trusted to deliver results\n- Sustainable practices create better outcomes for businesses, teams, and clients\n- Merit and results matter more than size, credentials, or traditional hierarchies\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission or creating bureaucracy\n- **Trust First**: Default to autonomy and empowerment rather than controls and oversight\n- **Merit Over Money**: Make decisions based on capability and results, not just financial considerations\n- **Real Empowerment**: Give people actual decision-making power, not just the appearance of authority\n- **Practical Results**: Focus relentlessly on what works in reality and delivers measurable outcomes\n- **Sustainable Success**: Build for long-term growth while maintaining quality of life for everyone involved\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a clear mission of operational equity: You exist to level the playing field by giving entrepreneurs enterprise-grade tools (PURPOSE), because you believe every business owner deserves the same advantages as big corporations and that people perform best when trusted with real responsibility (BELIEFS), which manifests in behaviors like solving problems immediately, trusting people with autonomy, and focusing on sustainable results over quick fixes (VALUES). This creates a business model where your own operational excellence - four-day workweeks, autonomous culture, merit-based decisions - becomes proof that your approach works for any size business.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your daily reality of helping entrepreneurs access enterprise-level capabilities? Would this WHY inspire the right entrepreneurs to work with you and help your team make clear decisions about which tools to build and which clients to serve?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - democratizing enterprise-grade operational tools for entrepreneurs - we can focus on HOW you'll deliver this level playing field. What specific integrated tools, systems, and services will you provide to give small businesses the same operational advantages that big corporations take for granted?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26220,
+      "interaction_number": 16,
+      "timestamp": "2025-08-16T16:33:48.976377",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something important here, but you're missing a crucial piece of our story. Yes, we democratize enterprise tools for entrepreneurs - that's core to what we do.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo give every entrepreneur access to the same integrated operational tools that big corporations have, so they can compete on a level playing field and focus on what they do best - building their business instead of drowning in operational complexity.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Every entrepreneur deserves the same operational advantages as Fortune 500 companies\n- Small businesses shouldn't have to choose between growth and getting buried in administrative complexity\n- The right integrated tools should amplify an entrepreneur's strengths, not drain their energy\n- Most entrepreneurs are stuck with fragmented solutions when they need seamless systems\n- People perform best when given real autonomy and trusted to deliver results\n- Sustainable practices create better outcomes for businesses, teams, and clients\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than seeking permission or creating bureaucracy\n- **Trust First**: Default to autonomy and empowerment rather than controls and oversight\n- **Integration Over Fragmentation**: Build connected solutions instead of adding more separate tools\n- **Real Empowerment**: Give people actual decision-making power, not just the appearance of authority\n- **Practical Results**: Focus relentlessly on what works in reality and delivers measurable outcomes\n- **Sustainable Success**: Build for long-term growth while maintaining quality of life for everyone involved\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a mission of operational equity through integration: You exist to democratize enterprise-grade operational tools for entrepreneurs (PURPOSE), because you believe every business owner deserves seamless, integrated systems that amplify rather than complicate their work (BELIEFS), which shows up in behaviors like solving problems immediately, trusting people with real authority, and building connected solutions rather than fragmented tools (VALUES). This creates a business model where your own operational excellence becomes proof that integrated, trust-based systems work for any size business.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your daily reality of giving entrepreneurs access to enterprise-level integrated capabilities? Would this WHY inspire the right entrepreneurs to work with you and help your team make clear decisions about which tools to build and which clients to serve?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - democratizing integrated enterprise-grade operational tools for entrepreneurs - we can explore HOW you'll deliver this operational equity. What specific integrated systems, tools, and approaches will you use to give small businesses the same seamless operational advantages that big corporations take for granted?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26120,
+      "interaction_number": 17,
+      "timestamp": "2025-08-16T16:34:21.619102",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "This captures our essence well, but let me refine it. Our WHY isn't just about access to tools - it's about eliminating the administrative burden that kills entrepreneurial spirit.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo eliminate the administrative burden that kills entrepreneurial spirit, so business owners can focus entirely on what they love - building their vision instead of drowning in operational complexity.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Administrative burden is the silent killer of entrepreneurial dreams and innovation\n- Every entrepreneur deserves to spend their energy on vision and growth, not paperwork and fragmented systems\n- The right integrated tools should make operations invisible, not complicated\n- Small businesses fail not from lack of vision, but from being crushed under operational weight\n- People perform best when freed from bureaucracy and trusted with real autonomy\n- Business success shouldn't require sacrificing the passion that started the journey\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than creating more administrative layers\n- **Trust First**: Default to autonomy and empowerment rather than controls that add burden\n- **Integration Over Fragmentation**: Build seamless solutions that eliminate administrative friction\n- **Real Empowerment**: Give people actual decision-making power without bureaucratic overhead\n- **Practical Results**: Focus relentlessly on what reduces burden and delivers measurable freedom\n- **Sustainable Success**: Build systems that maintain entrepreneurial energy long-term\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a mission of entrepreneurial liberation: You exist to eliminate the administrative burden that suffocates business vision (PURPOSE), because you believe entrepreneurs should spend their energy building their dreams, not managing operational complexity (BELIEFS), which manifests in behaviors like solving problems immediately, trusting people with real authority, and building integrated solutions that make operations invisible (VALUES). This creates a business model where your own operational excellence - streamlined systems, autonomous culture, burden-free processes - becomes living proof that entrepreneurial spirit can thrive when administrative weight is lifted.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your daily reality of liberating entrepreneurs from operational burden? Would this WHY inspire the right entrepreneurs to work with you and help your team make clear decisions about which solutions truly eliminate administrative weight versus just shifting it around?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - eliminating administrative burden to preserve entrepreneurial spirit - we can explore HOW you'll deliver this liberation. What specific integrated systems, streamlined processes, and burden-eliminating approaches will you use to give entrepreneurs back their time and energy to focus on building their vision?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26135,
+      "interaction_number": 18,
+      "timestamp": "2025-08-16T16:34:54.218219",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "You've captured something essential here. That administrative burden - it's exactly what we've been fighting since 1996.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo eliminate the administrative burden that kills entrepreneurial spirit, so business owners can focus entirely on what they love - building their vision instead of drowning in operational complexity.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Administrative burden is the silent killer of entrepreneurial dreams and innovation\n- Every entrepreneur deserves to spend their energy on vision and growth, not paperwork and fragmented systems\n- The right integrated tools should make operations invisible, not complicated\n- Small businesses fail not from lack of vision, but from being crushed under operational weight\n- People perform best when freed from bureaucracy and trusted with real autonomy\n- Business success shouldn't require sacrificing the passion that started the journey\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than creating more administrative layers\n- **Trust First**: Default to autonomy and empowerment rather than controls that add burden\n- **Integration Over Fragmentation**: Build seamless solutions that eliminate administrative friction\n- **Real Empowerment**: Give people actual decision-making power without bureaucratic overhead\n- **Practical Results**: Focus relentlessly on what reduces burden and delivers measurable freedom\n- **Sustainable Success**: Build systems that maintain entrepreneurial energy long-term\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a mission of entrepreneurial liberation that has driven you since 1996: You exist to eliminate the administrative burden that suffocates business vision (PURPOSE), because you believe entrepreneurs should spend their energy building their dreams, not managing operational complexity (BELIEFS), which manifests in behaviors like solving problems immediately, trusting people with real authority, and building integrated solutions that make operations invisible (VALUES). This creates a business model where your own operational excellence - streamlined systems, autonomous culture, burden-free processes - becomes living proof that entrepreneurial spirit can thrive when administrative weight is lifted.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your 28-year journey of liberating entrepreneurs from operational burden? Would this WHY inspire the right entrepreneurs to work with you and help your team make clear decisions about which solutions truly eliminate administrative weight versus just shifting it around?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - eliminating administrative burden to preserve entrepreneurial spirit - we can explore HOW you'll deliver this liberation. What specific integrated systems, streamlined processes, and burden-eliminating approaches will you use to give entrepreneurs back their time and energy to focus on building their vision?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26110,
+      "interaction_number": 19,
+      "timestamp": "2025-08-16T16:35:27.575807",
+      "screenshot_taken": false
+    },
+    {
+      "user_message": "This feels right, but you're missing something critical - it's not just about eliminating burden, it's about democratizing enterprise-level capabilities. When we started AFAS, small businesses were stuck with basic tools while enterprise got the integrated systems.",
+      "ai_response": "**YOUR WHY STATEMENT:**\nTo eliminate the administrative burden that kills entrepreneurial spirit by democratizing enterprise-level integrated systems, so business owners can focus entirely on what they love - building their vision instead of drowning in operational complexity.\n\n**CORE BELIEFS THAT DRIVE YOU:**\n- Administrative burden is the silent killer of entrepreneurial dreams and innovation\n- Every entrepreneur deserves access to the same integrated operational advantages as Fortune 500 companies\n- Small businesses shouldn't be stuck with fragmented tools when they need seamless, enterprise-grade systems\n- The right integrated platforms should make operations invisible, not complicated\n- Small businesses fail not from lack of vision, but from being crushed under operational weight while lacking the tools to lift it\n- People perform best when freed from bureaucracy and trusted with real autonomy\n- Business success shouldn't require sacrificing the passion that started the journey\n\n**VALUES THAT GUIDE BEHAVIOR:**\n- **Solve, Don't Ask**: Take immediate action on problems rather than creating more administrative layers\n- **Trust First**: Default to autonomy and empowerment rather than controls that add burden\n- **Integration Over Fragmentation**: Build seamless, enterprise-grade solutions that eliminate administrative friction\n- **Democratize Excellence**: Make sophisticated tools accessible to businesses of all sizes\n- **Real Empowerment**: Give people actual decision-making power without bureaucratic overhead\n- **Practical Results**: Focus relentlessly on what reduces burden and delivers measurable freedom\n- **Sustainable Success**: Build systems that maintain entrepreneurial energy long-term\n\n**GOLDEN CIRCLE INTEGRATION:**\nYour WHY creates a mission of entrepreneurial liberation through technological equity that has driven you since 1996: You exist to eliminate administrative burden by democratizing enterprise-level integrated systems (PURPOSE), because you believe every entrepreneur deserves the same operational advantages as big corporations and that small businesses are dying under fragmented complexity while lacking access to the integrated tools that could save them (BELIEFS), which manifests in behaviors like solving problems immediately, trusting people with real authority, building enterprise-grade integrated solutions, and making sophisticated capabilities accessible to all business sizes (VALUES). This creates a business model where your own operational excellence - streamlined systems, autonomous culture, burden-free processes using enterprise-grade tools - becomes living proof that entrepreneurial spirit can thrive when both administrative weight is lifted AND the right integrated capabilities are democratized.\n\n**VALIDATION:**\nDoes this capture the essence of why AFAS exists as a business? Does it feel authentic to your 28-year journey of both eliminating burden AND democratizing enterprise capabilities? Would this WHY inspire the right entrepreneurs to work with you and help your team make clear decisions about which integrated solutions truly eliminate administrative weight while providing enterprise-level advantages?\n\n**TRANSITION TO HOW:**\nNow that we've clarified your WHY - eliminating administrative burden through democratizing enterprise-level integrated systems - we can explore HOW you'll deliver this dual liberation. What specific enterprise-grade integrated platforms, streamlined processes, and burden-eliminating approaches will you use to give entrepreneurs both freedom from complexity AND access to the sophisticated operational advantages they need to compete and thrive?",
+      "ui_state": {
+        "current_phase": "WHY",
+        "completeness": "22%",
+        "active_agent": "ACTIVE AGENT"
+      },
+      "response_time_ms": 26157,
+      "interaction_number": 20,
+      "timestamp": "2025-08-16T16:36:01.636239",
+      "screenshot_taken": true,
+      "screenshot_path": "tests/evaluation/simple_test_screenshots/interaction_20.png"
+    }
+  ],
+  "screenshots": [
+    "tests/evaluation/simple_test_screenshots/interaction_05.png",
+    "tests/evaluation/simple_test_screenshots/interaction_10.png",
+    "tests/evaluation/simple_test_screenshots/interaction_15.png",
+    "tests/evaluation/simple_test_screenshots/interaction_20.png"
+  ]
+}

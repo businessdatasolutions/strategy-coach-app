@@ -235,22 +235,31 @@
                     </div>
                 </div>
                 
-                <!-- Phase Progression Controls -->
-                <div x-show="showProgressionControls" x-cloak 
-                     class="bg-green-50 border-2 border-green-200 rounded-xl p-6 mx-4 mb-4">
-                    <h3 class="font-semibold text-gray-800 mb-4">Ready to Move Forward?</h3>
-                    <p class="text-gray-600 mb-4">It looks like we've made good progress on your WHY. How would you like to proceed?</p>
+                <!-- Ready for HOW Radio Buttons -->
+                <div x-show="showReadyForHow" x-cloak 
+                     class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mx-4 mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-4" x-text="readyForHowPrompt">Ready for HOW?</h3>
                     
-                    <div class="flex space-x-3">
-                        <button @click="continueExploring()" 
-                                class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition">
-                            Continue Exploring WHY
-                        </button>
-                        <button @click="moveToHow()" 
-                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                            Move to HOW Phase
-                        </button>
+                    <div class="space-y-3 mb-6">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="readyForHow" value="yes" x-model="readyForHowResponse" 
+                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                            <span class="text-gray-800 font-medium">Yes, I'm ready to explore HOW we'll bring this purpose to life</span>
+                        </label>
+                        
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="readyForHow" value="no" x-model="readyForHowResponse"
+                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                            <span class="text-gray-800 font-medium">No, I'd like to continue clarifying our WHY</span>
+                        </label>
                     </div>
+                    
+                    <button @click="submitReadyForHow()" 
+                            :disabled="!readyForHowResponse"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+                                   disabled:bg-gray-300 disabled:cursor-not-allowed transition">
+                        Continue
+                    </button>
                 </div>
                 
                 <!-- Interactive Selection Panel - DISABLED FOR TESTING COMPATIBILITY -->
@@ -265,10 +274,10 @@
                             type="text" 
                             placeholder="Type your strategic thoughts..."
                             class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            :disabled="isTyping || !sessionId">
+                            :disabled="isTyping || !sessionId || conversationPaused">
                         <button 
                             @click="sendMessage()"
-                            :disabled="isTyping || !userInput.trim() || !sessionId"
+                            :disabled="isTyping || !userInput.trim() || !sessionId || conversationPaused"
                             class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition duration-200 flex items-center shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -367,9 +376,11 @@
                 chartInitializing: false,  // Prevent concurrent chart initialization
                 chartUpdatePending: false,  // Prevent multiple pending updates
                 
-                // Phase progression controls
-                showProgressionControls: false,
-                awaitingValidation: false,
+                // Phase progression controls  
+                showReadyForHow: false,
+                readyForHowPrompt: "",
+                readyForHowResponse: "", // No default - user must choose
+                conversationPaused: false,
                 
                 // Interactive selection state - DISABLED FOR TESTING COMPATIBILITY
                 // Will be re-enabled when working on gamification features
@@ -480,13 +491,14 @@
                         this.completeness = Math.round(data.completeness_percentage || 0);
                         this.nextSteps = data.recommendations || [];
                         
-                        // Check for progression control needs
-                        if (data.awaiting_user_validation) {
-                            this.showProgressionControls = true;
-                            this.awaitingValidation = true;
+                        // Check for "Ready for HOW?" progression prompt
+                        if (data.ready_for_how_prompt) {
+                            this.showReadyForHow = true;
+                            this.readyForHowPrompt = data.ready_for_how_prompt;
+                            this.conversationPaused = true;
                         } else {
-                            this.showProgressionControls = false;
-                            this.awaitingValidation = false;
+                            this.showReadyForHow = false;
+                            this.conversationPaused = false;
                         }
                         
                         // Interactive elements handling DISABLED for testing compatibility
@@ -909,18 +921,95 @@
                     await this.sendMessage();
                 },
                 
-                // Phase progression control functions
-                continueExploring() {
-                    this.showProgressionControls = false;
-                    this.userInput = "I'd like to continue exploring our WHY further before moving forward.";
+                // Ready for HOW progression logic
+                submitReadyForHow() {
+                    this.showReadyForHow = false;
+                    this.conversationPaused = false;
+                    
+                    if (this.readyForHowResponse === "yes") {
+                        this.userInput = "Yes, I'm ready to explore HOW we'll bring this purpose to life.";
+                    } else {
+                        this.userInput = "No, I'd like to continue clarifying our WHY.";
+                    }
+                    
                     this.sendMessage();
                 },
                 
-                moveToHow() {
-                    this.showProgressionControls = false;
-                    this.userInput = "Yes, this captures our WHY perfectly. I'm ready to move forward to explore HOW we'll bring this purpose to life.";
-                    this.sendMessage();
-                }
+                // Disable regular input when conversation is paused
+                sendMessage() {
+                    if (this.conversationPaused) {
+                        // Don't allow regular messages when radio buttons are active
+                        return;
+                    }
+                    
+                    // Normal send message logic
+                    if (!this.userInput.trim() || this.isTyping || !this.sessionId) return;
+                    
+                    const message = this.userInput;
+                    this.userInput = '';
+                    this.addMessage('user', message);
+                    this.isTyping = true;
+                    
+                    // Scroll to show typing indicator
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.scrollToBottom();
+                        }, 100);
+                    });
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/conversation/${this.sessionId}/message`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message })
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to send message');
+                        
+                        const data = await response.json();
+                        this.currentPhase = data.current_phase || this.currentPhase;
+                        this.currentAgent = this.formatAgentName(data.current_agent);
+                        this.completeness = Math.round(data.completeness_percentage || 0);
+                        this.nextSteps = data.recommendations || [];
+                        
+                        // Check for "Ready for HOW?" progression prompt
+                        if (data.ready_for_how_prompt) {
+                            this.showReadyForHow = true;
+                            this.readyForHowPrompt = data.ready_for_how_prompt;
+                            this.conversationPaused = true;
+                        } else {
+                            this.showReadyForHow = false;
+                            this.conversationPaused = false;
+                        }
+                        
+                        // Update completed phases based on completeness
+                        if (this.completeness > 30 && !this.completedPhases.includes('why')) {
+                            this.completedPhases.push('why');
+                        }
+                        if (this.completeness > 60 && !this.completedPhases.includes('how')) {
+                            this.completedPhases.push('how');
+                        }
+                        if (this.completeness > 90 && !this.completedPhases.includes('what')) {
+                            this.completedPhases.push('what');
+                        }
+                        
+                        this.addMessage('assistant', data.response);
+                        this.updateStrategyMapChart();
+                    } catch (error) {
+                        console.error('Failed to send message:', error);
+                        this.addMessage('system', 'Failed to send message. Please check your connection and try again.');
+                    } finally {
+                        this.isTyping = false;
+                        
+                        // Auto-focus input field for better UX
+                        this.$nextTick(() => {
+                            const inputField = document.querySelector('input[type="text"]');
+                            if (inputField && !this.conversationPaused) {
+                                inputField.focus();
+                            }
+                        });
+                    }
+                },
             }
         }
     </script>
