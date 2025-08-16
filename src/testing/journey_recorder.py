@@ -6,7 +6,7 @@ Captures multi-modal documentation of strategic coaching journeys.
 import json
 import time
 import asyncio
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
