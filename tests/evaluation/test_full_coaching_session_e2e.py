@@ -283,7 +283,7 @@ class StrategyCoachUIAutomation:
         self.page.click('button:has-text("New Session")')
         
         # Wait for welcome message
-        self.page.wait_for_selector('.message-content', timeout=10000)
+        self.page.wait_for_selector('.message-fade-in', timeout=10000)
         
         # Extract session ID from UI state (if visible)
         session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -321,7 +321,7 @@ class StrategyCoachUIAutomation:
     def get_conversation_history(self) -> List[Dict[str, str]]:
         """Extract conversation history from UI."""
         messages = []
-        message_elements = self.page.locator('.message-content').all()
+        message_elements = self.page.locator('.message-fade-in').all()
         
         for element in message_elements:
             role = "user" if "user" in element.get_attribute("class") else "assistant"

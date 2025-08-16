@@ -27,8 +27,7 @@ from deepeval.metrics import (
     AnswerRelevancyMetric,
     FaithfulnessMetric,
     ContextualRelevancyMetric,
-    GEval,
-    LatencyMetric
+    GEval
 )
 from deepeval.test_case import LLMTestCase
 from deepeval.dataset import EvaluationDataset
@@ -46,7 +45,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.api.main import app
 from src.models.state import AgentState, StrategyMapState
 from src.agents.orchestrator import StrategyCoachOrchestrator
-from src.utils.llm_client import LLMClient
+from src.utils.llm_client import LLMClientWrapper
 
 # Test configuration
 API_BASE_URL = "http://localhost:8000"

@@ -400,11 +400,15 @@
                 apiUrl: 'http://localhost:8000',
                 strategyChart: null,
                 initialized: false,  // Guard against double initialization
+                lastChartUpdate: 0,  // Throttle chart updates
+                chartInitializing: false,  // Prevent concurrent chart initialization
+                chartUpdatePending: false,  // Prevent multiple pending updates
                 
                 // Interactive selection state
                 interactiveMode: false,
                 selectedOptions: [],
                 currentInteractive: null,
+                activeInteractiveIds: new Set(), // Track active interactive element IDs
                 
                 // Initialize
                 async init() {
@@ -508,9 +512,12 @@
                         this.completeness = Math.round(data.completeness_percentage || 0);
                         this.nextSteps = data.recommendations || [];
                         
-                        // Check for interactive elements
+                        // Check for interactive elements - avoid duplicates
                         if (data.interactive_elements) {
                             this.handleInteractiveElement(data.interactive_elements);
+                        } else {
+                            // Clear interactive mode if no new interactive elements
+                            this.clearInteractiveIfStale();
                         }
                         
                         // Update completed phases based on completeness
@@ -525,7 +532,17 @@
                         }
                         
                         this.addMessage('assistant', data.response);
-                        this.updateStrategyMapChart();
+                        
+                        // Defer chart update to prevent Alpine.js reactivity conflicts
+                        if (!this.chartUpdatePending) {
+                            this.chartUpdatePending = true;
+                            this.$nextTick(() => {
+                                setTimeout(() => {
+                                    this.updateStrategyMapChart();
+                                    this.chartUpdatePending = false;
+                                }, 100);
+                            });
+                        }
                     } catch (error) {
                         console.error('Failed to send message:', error);
                         this.addMessage('system', 'Failed to send message. Please check your connection and try again.');
@@ -619,6 +636,11 @@
                         this.currentAgent = 'Initializing...';
                         this.nextSteps = [];
                         this.sessionId = null;  // Clear session ID
+                        this.interactiveMode = false; // Clear interactive mode
+                        this.currentInteractive = null;
+                        this.selectedOptions = [];
+                        this.activeInteractiveIds.clear(); // Clear interactive tracking
+                        this.chartInitializing = false; // Reset chart initialization flag
                         
                         // Properly reinitialize the chart
                         if (this.strategyChart) {
@@ -682,24 +704,41 @@
                 
                 // Initialize strategy map chart
                 initStrategyMapChart() {
-                    // Destroy existing chart if it exists
-                    if (this.strategyChart) {
-                        try {
-                            this.strategyChart.destroy();
-                        } catch (e) {
-                            console.warn('Error destroying chart:', e);
-                        }
-                        this.strategyChart = null;
+                    // Prevent concurrent initialization
+                    if (this.chartInitializing) {
+                        console.warn('Chart initialization already in progress, skipping');
+                        return;
                     }
+                    this.chartInitializing = true;
                     
-                    const ctx = document.getElementById('strategyMapChart');
-                    if (!ctx) return;
+                    try {
+                        // Destroy existing chart if it exists
+                        if (this.strategyChart) {
+                            try {
+                                this.strategyChart.destroy();
+                            } catch (e) {
+                                console.warn('Error destroying chart:', e);
+                            }
+                            this.strategyChart = null;
+                        }
+                        
+                        const ctx = document.getElementById('strategyMapChart');
+                        if (!ctx) {
+                            console.warn('Chart canvas element not found');
+                            return;
+                        }
+                        
+                        // Destroy any existing Chart.js instance on this canvas
+                        if (Chart.getChart(ctx)) {
+                            Chart.getChart(ctx).destroy();
+                        }
                     
                     // Clear the canvas context
                     const context = ctx.getContext('2d');
                     context.clearRect(0, 0, ctx.width, ctx.height);
                     
-                    this.strategyChart = new Chart(ctx, {
+                    // Store chart in a non-reactive way to prevent Alpine.js conflicts
+                    const chartInstance = new Chart(ctx, {
                         type: 'radar',
                         data: {
                             labels: ['Financial', 'Manufactured', 'Intellectual', 'Human', 'Social', 'Natural'],
@@ -751,10 +790,32 @@
                             }
                         }
                     });
+                    
+                    // Store reference in a way that doesn't trigger Alpine.js reactivity
+                    Object.defineProperty(this, 'strategyChart', {
+                        value: chartInstance,
+                        writable: true,
+                        enumerable: false,
+                        configurable: true
+                    });
+                    
+                    } catch (error) {
+                        console.error('Error initializing chart:', error);
+                        this.strategyChart = null;
+                    } finally {
+                        this.chartInitializing = false;
+                    }
                 },
                 
                 // Update strategy map chart
                 updateStrategyMapChart() {
+                    // Throttle updates to prevent excessive calls
+                    const now = Date.now();
+                    if (now - this.lastChartUpdate < 1000) {
+                        return; // Skip update if less than 1 second since last update
+                    }
+                    this.lastChartUpdate = now;
+                    
                     if (!this.strategyChart) {
                         // Initialize chart if it doesn't exist
                         this.initStrategyMapChart();
@@ -762,6 +823,12 @@
                     }
                     
                     try {
+                        // Verify chart is still valid before updating
+                        if (!this.strategyChart.data || !this.strategyChart.data.datasets) {
+                            console.warn('Chart data structure is invalid, skipping update');
+                            return;
+                        }
+                        
                         // Simulate progressive data based on completeness
                         const progress = this.completeness / 100;
                         const baseValues = [70, 60, 80, 90, 65, 55];
@@ -775,18 +842,62 @@
                         this.strategyChart.update('none');
                     } catch (error) {
                         console.error('Error updating chart:', error);
-                        // Reinitialize chart if update fails
-                        this.initStrategyMapChart();
+                        // DON'T reinitialize to prevent infinite recursion
+                        // Just log the error and continue - chart display is not critical
+                        this.strategyChart = null; // Clear invalid chart reference
                     }
                 },
                 
                 // Handle interactive elements from API response
                 handleInteractiveElement(element) {
+                    // Generate unique ID for this interactive element based on content
+                    const elementId = this.generateInteractiveId(element);
+                    
+                    // Check if this exact interactive element is already active
+                    if (this.activeInteractiveIds.has(elementId)) {
+                        console.log('Interactive element already active, skipping duplicate:', elementId);
+                        return; // Skip if duplicate
+                    }
+                    
+                    // Clear any previous interactive elements
+                    this.activeInteractiveIds.clear();
+                    
+                    // Set new interactive element
                     this.interactiveMode = true;
                     this.currentInteractive = element;
                     this.selectedOptions = [];
+                    this.activeInteractiveIds.add(elementId);
+                    
                     // Hide input area when in interactive mode
                     this.userInput = '';
+                    
+                    console.log('New interactive element activated:', elementId);
+                },
+                
+                // Generate unique ID for interactive element
+                generateInteractiveId(element) {
+                    if (!element || !element.options) return 'interactive-' + Date.now();
+                    
+                    // Create ID based on prompt and option texts to detect duplicates
+                    const prompt = element.prompt || '';
+                    const optionTexts = element.options.map(opt => opt.text || '').join('|');
+                    const content = prompt + optionTexts;
+                    
+                    // Simple hash function for content
+                    let hash = 0;
+                    for (let i = 0; i < content.length; i++) {
+                        const char = content.charCodeAt(i);
+                        hash = ((hash << 5) - hash) + char;
+                        hash = hash & hash; // Convert to 32-bit integer
+                    }
+                    
+                    return 'interactive-' + Math.abs(hash).toString(36);
+                },
+                
+                // Clear interactive mode if element is stale
+                clearInteractiveIfStale() {
+                    // Don't automatically clear - let user complete their selection
+                    // This prevents clearing when AI sends follow-up messages
                 },
                 
                 // Toggle option selection
@@ -819,6 +930,7 @@
                     this.interactiveMode = false;
                     this.currentInteractive = null;
                     this.selectedOptions = [];
+                    this.activeInteractiveIds.clear(); // Clear tracking when selection is submitted
                     
                     // Send as regular message
                     this.userInput = message;

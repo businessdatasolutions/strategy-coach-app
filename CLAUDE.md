@@ -178,12 +178,14 @@ strategy-coach-app-v1/
 │   ├── api/                 # API integration tests
 │   ├── models/              # State model tests
 │   └── utils/               # Utility tests
+├── issues/                  # Known issues and feature specifications
+│   ├── ISSUE_*.md          # Issue documentation
+│   └── FEATURE_*.md        # Feature specifications
 ├── data/sessions/           # Strategy map JSON storage
 ├── logs/                    # Application logs
 ├── requirements.txt         # Python dependencies
 ├── .env.example            # Environment template
-├── CLAUDE.md               # This file
-└── ISSUE_*.md              # Known issues documentation
+└── CLAUDE.md               # This file
 ```
 
 ## Middleware & Features
@@ -232,32 +234,51 @@ RATE_LIMIT_REQUESTS_PER_MINUTE=60
 
 ### 🔴 Open Issues
 
-1. **Duplicate Interactive Selections** (ISSUE_DUPLICATE_INTERACTIVE_SELECTIONS.md)
-   - Interactive dialog boxes are duplicated in AI responses
-   - Creates visual clutter and confusion
-   - Priority: Medium
-
-2. **Logic Agent Cognitive Bias Detection** (ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
+1. **Logic Agent Cognitive Bias Detection** (issues/ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
    - Logic Agent needs Kahneman's framework for bias detection
    - Enhancement to identify cognitive biases in strategic thinking
    - Priority: High
 
-3. **Chart.js Stack Overflow** 
-   - Console errors when updating strategy map visualization
-   - Chart still displays but may have performance issues
-   - Priority: Low
+2. **LangGraph Supervisor Integration** (issues/ISSUE_LANGGRAPH_SUPERVISOR_INTEGRATION.md)
+   - Explore hybrid architecture combining supervisor pattern with our strategic coaching system
+   - Add tool integration and explicit agent handoff capabilities
+   - Priority: Medium-High
+
+### 🚀 Planned Features
+
+1. **Achievement Badges** (issues/FEATURE_ACHIEVEMENT_BADGES.md)
+   - Gamification system with milestone-based badge rewards
+   - Visual recognition for strategic progress achievements
+   - Priority: Medium
+
+2. **Testing Agent User Journey** (issues/FEATURE_TESTING_AGENT_USER_JOURNEY.md)
+   - Intelligent testing agent simulating complete user journey with business case context
+   - Multi-modal recording system with text and visual snapshots
+   - Priority: High (Quality Assurance)
 
 ### ✅ Resolved Issues
 
-1. **Cursor Focus** (ISSUE_CURSOR_FOCUS.md) - RESOLVED
+1. **Cursor Focus** (issues/ISSUE_CURSOR_FOCUS.md) - RESOLVED
    - Input field now auto-focuses after AI response
    - Improves conversation flow UX
 
-2. **Duplicate Messages** (ISSUE_DUPLICATE_MESSAGES.md) - PARTIALLY RESOLVED
+2. **Duplicate Messages** (issues/ISSUE_DUPLICATE_MESSAGES.md) - PARTIALLY RESOLVED
    - Fixed initialization issue preventing duplicates
    - Some edge cases may still occur
 
-4. **Question Quality** (ISSUE_QUESTION_QUALITY.md)
+3. **Duplicate Interactive Selections** (issues/ISSUE_DUPLICATE_INTERACTIVE_SELECTIONS.md) - RESOLVED
+   - Implemented content-based ID generation for interactive elements
+   - Added duplicate detection and prevention logic
+   - Interactive elements now properly managed throughout conversation lifecycle
+   - Fixed visual clutter and user confusion issues
+
+4. **Chart.js Stack Overflow** - RESOLVED
+   - Fixed infinite recursion in chart update logic causing stack overflow errors
+   - Implemented proper canvas cleanup and Alpine.js reactivity isolation
+   - Added throttling and concurrent update prevention
+   - Chart functionality now stable without console errors
+
+5. **Question Quality** (issues/ISSUE_QUESTION_QUALITY.md)
    - Improvements needed for avoiding cognitive biases in questions
 
 ## Current Configuration
