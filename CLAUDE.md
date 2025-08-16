@@ -234,12 +234,24 @@ RATE_LIMIT_REQUESTS_PER_MINUTE=60
 
 ### 🔴 Open Issues
 
-1. **Logic Agent Cognitive Bias Detection** (issues/ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
+1. **AI Coach Synthesis Validation Loop** (issues/ISSUE_AI_COACH_SYNTHESIS_VALIDATION_LOOP.md) - **NEW**
+   - AI coach trapped in endless WHY synthesis validation cycles
+   - Repeats same comprehensive framework without user progression
+   - Discovered by Testing Agent validation - affects all coaching sessions
+   - Priority: **Critical**
+
+2. **AI Coach Assumes User Agreement** (issues/ISSUE_AI_ASSUMES_USER_AGREEMENT.md)
+   - AI asks validation questions but doesn't wait for user confirmation
+   - Confirmed by Testing Agent - systematic problem across conversations
+   - Violates fundamental coaching principles and user agency
+   - Priority: **High**
+
+3. **Logic Agent Cognitive Bias Detection** (issues/ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
    - Logic Agent needs Kahneman's framework for bias detection
    - Enhancement to identify cognitive biases in strategic thinking
    - Priority: High
 
-2. **LangGraph Supervisor Integration** (issues/ISSUE_LANGGRAPH_SUPERVISOR_INTEGRATION.md)
+4. **LangGraph Supervisor Integration** (issues/ISSUE_LANGGRAPH_SUPERVISOR_INTEGRATION.md)
    - Explore hybrid architecture combining supervisor pattern with our strategic coaching system
    - Add tool integration and explicit agent handoff capabilities
    - Priority: Medium-High
@@ -268,8 +280,8 @@ RATE_LIMIT_REQUESTS_PER_MINUTE=60
 
 3. **Duplicate Interactive Selections** (issues/ISSUE_DUPLICATE_INTERACTIVE_SELECTIONS.md) - RESOLVED
    - Implemented content-based ID generation for interactive elements
-   - Added duplicate detection and prevention logic
-   - Interactive elements now properly managed throughout conversation lifecycle
+   - Interactive elements functionality disabled for system stability
+   - Will be re-enabled during gamification feature development
    - Fixed visual clutter and user confusion issues
 
 4. **Chart.js Stack Overflow** - RESOLVED
@@ -277,6 +289,12 @@ RATE_LIMIT_REQUESTS_PER_MINUTE=60
    - Implemented proper canvas cleanup and Alpine.js reactivity isolation
    - Added throttling and concurrent update prevention
    - Chart functionality now stable without console errors
+
+5. **Simple Testing Agent Message Extraction** (issues/ISSUE_SIMPLE_TESTING_AGENT_MESSAGE_EXTRACTION.md) - RESOLVED
+   - Fixed AI message extraction using Alpine.js data access
+   - Implemented reliable browser automation with Playwright
+   - Testing Agent now successfully validates strategic coaching quality
+   - Produces comprehensive reports with screenshots and interaction data
 
 5. **Question Quality** (issues/ISSUE_QUESTION_QUALITY.md)
    - Improvements needed for avoiding cognitive biases in questions
