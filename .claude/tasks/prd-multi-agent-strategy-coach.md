@@ -835,7 +835,123 @@ DEFAULT_MODEL=mistral-large-latest
 * **Multilingual Excellence**: Strong performance in multiple languages
 * **Specialized Capabilities**: Mixture of experts architecture for diverse tasks
 
-## 12. Non-Goals (Out of Scope)
+## 12. Testing Agent for User Journey Simulation
+
+### 12.1. Executive Summary
+
+**Vision Statement**: Create an intelligent testing agent that simulates realistic business leaders experiencing the complete strategic coaching journey, enabling comprehensive quality assurance and user experience validation through automated, authentic user behavior simulation.
+
+**Business Objectives**:
+- **Quality Assurance**: Ensure strategic coaching system reliability and effectiveness
+- **User Experience Validation**: Verify smooth, engaging coaching journeys
+- **Regression Prevention**: Catch issues before they impact real users
+- **Stakeholder Demonstration**: Showcase realistic coaching capabilities
+
+### 12.2. Testing Agent Architecture
+
+#### 12.2.1 Core Components
+
+**Testing Agent System**:
+```python
+class StrategicTestingAgent:
+    - business_case: BusinessCase
+    - persona: PersonaType
+    - context_memory: ContextMemory
+    - response_generator: ResponseGenerator
+    
+class JourneySimulator:
+    - testing_agent: StrategicTestingAgent
+    - recorder: JourneyRecorder
+    - api_client: StrategyCoachAPIClient
+    
+class JourneyRecorder:
+    - conversation_snapshots: List[ConversationSnapshot]
+    - ui_snapshots: List[UISnapshot] 
+    - state_snapshots: List[StateSnapshot]
+    - report_generator: ReportGenerator
+```
+
+#### 12.2.2 Business Case Framework
+
+**Comprehensive Business Context**:
+- **Company Profile**: Name, industry, stage, size, revenue, funding status
+- **Strategic Context**: Mission, challenges, market position, stakeholders
+- **Strategic Goals**: Short-term objectives, long-term vision, success metrics
+- **Background Knowledge**: Founder story, core beliefs, culture, competitive landscape
+
+**Industry-Specific Scenarios**:
+- **Tech Startup**: B2B SaaS scaling, product-market fit, competitive differentiation
+- **Established Company**: Digital transformation, market expansion, innovation pipeline
+- **Consulting**: Anti-consultancy approach, knowledge transfer, tangible value delivery
+
+#### 12.2.3 Persona System
+
+**Business Leader Personas**:
+- **Analytical CEO**: Data-driven, challenging, focuses on measurable outcomes
+- **Visionary Founder**: Passionate, big-picture, emphasizes mission and culture
+- **Pragmatic Director**: Implementation-focused, resource-conscious, risk-aware
+- **Technical CTO**: Technology-oriented, system-thinking, innovation-focused
+- **Operations COO**: Process-driven, efficiency-minded, execution-focused
+
+### 12.3. Journey Recording System
+
+#### 12.3.1 Multi-Modal Documentation
+- **Text Snapshots**: Complete conversation transcripts with timestamps and context
+- **Visual Snapshots**: UI screenshots at key interaction points and phase transitions
+- **State Snapshots**: Strategy map progression and agent routing decisions
+- **Performance Metrics**: Response times, error rates, completion statistics
+
+#### 12.3.2 Recording Triggers
+- **Phase Transitions**: WHY → HOW → WHAT progression points
+- **Agent Switches**: When router changes active agent
+- **Interactive Elements**: Core value selections, strategic choices
+- **Milestone Achievements**: Strategy map completeness thresholds
+- **Error Scenarios**: System failures and recovery patterns
+
+### 12.4. Implementation Phases
+
+#### Phase 1: Foundation (4 weeks)
+**Scope**: Core testing agent and basic business case framework
+
+**Deliverables**:
+- Business case data structure and library
+- Basic testing agent with persona system
+- Simple response generation engine
+- Text-based conversation recording
+
+#### Phase 2: Visual Recording (3 weeks)
+**Scope**: Playwright integration and comprehensive documentation
+
+**Deliverables**:
+- Playwright-based UI automation and screenshot capture
+- Strategy map progression visualization
+- Interactive element documentation system
+- Multi-format journey reporting (HTML, JSON, PDF)
+
+#### Phase 3: Advanced Analytics (3 weeks)
+**Scope**: Quality metrics, comparison, and automation
+
+**Deliverables**:
+- Journey comparison and regression detection
+- Performance benchmarking and quality metrics
+- Automated quality gates and CI/CD integration
+- Executive summary and insights generation
+
+### 12.5. Success Criteria
+
+**Quality Assurance Metrics**:
+- **Journey Completion Rate**: >95% successful completions without critical errors
+- **Issue Detection Rate**: >90% of UX problems identified before user impact
+- **Response Authenticity**: Agent responses feel genuinely business-like
+- **System Stability**: No critical errors during simulated journeys
+
+**Development Efficiency Goals**:
+- **Testing Automation**: 50% reduction in manual testing overhead
+- **Feedback Speed**: <24 hour feedback cycle for major changes
+- **Coverage**: 100% of core user flows validated automatically
+- **Integration**: Seamless CI/CD pipeline integration
+
+## 13. Non-Goals (Out of Scope)
 * The coach will **not** provide its own business advice, opinions, or recommendations.
 * The coach will **not** perform any external data gathering, market analysis, or competitor research.
 * The coach will **not** generate financial models, projections, or forecasts.
