@@ -234,24 +234,19 @@ RATE_LIMIT_REQUESTS_PER_MINUTE=60
 
 ### 🔴 Open Issues
 
-1. **AI Coach Synthesis Validation Loop** (issues/ISSUE_AI_COACH_SYNTHESIS_VALIDATION_LOOP.md) - **NEW**
-   - AI coach trapped in endless WHY synthesis validation cycles
-   - Repeats same comprehensive framework without user progression
-   - Discovered by Testing Agent validation - affects all coaching sessions
-   - Priority: **Critical**
+1. **AI Coach Synthesis Validation Loop** (issues/ISSUE_AI_COACH_SYNTHESIS_VALIDATION_LOOP.md) - **CRITICAL**
+   - AI coach trapped in endless WHY synthesis validation cycles without user progression
+   - Asks validation questions but immediately assumes agreement and attempts transition
+   - Repeats same comprehensive framework 6+ times ignoring user confirmations
+   - Discovered and validated by Testing Agent - affects all coaching sessions
+   - Priority: **Critical** (consolidates Issues #11 and #14)
 
-2. **AI Coach Assumes User Agreement** (issues/ISSUE_AI_ASSUMES_USER_AGREEMENT.md)
-   - AI asks validation questions but doesn't wait for user confirmation
-   - Confirmed by Testing Agent - systematic problem across conversations
-   - Violates fundamental coaching principles and user agency
-   - Priority: **High**
-
-3. **Logic Agent Cognitive Bias Detection** (issues/ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
+2. **Logic Agent Cognitive Bias Detection** (issues/ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
    - Logic Agent needs Kahneman's framework for bias detection
    - Enhancement to identify cognitive biases in strategic thinking
    - Priority: High
 
-4. **LangGraph Supervisor Integration** (issues/ISSUE_LANGGRAPH_SUPERVISOR_INTEGRATION.md)
+3. **LangGraph Supervisor Integration** (issues/ISSUE_LANGGRAPH_SUPERVISOR_INTEGRATION.md)
    - Explore hybrid architecture combining supervisor pattern with our strategic coaching system
    - Add tool integration and explicit agent handoff capabilities
    - Priority: Medium-High
