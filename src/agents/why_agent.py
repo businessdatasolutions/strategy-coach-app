@@ -216,8 +216,22 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
             conversation_context = self._extract_conversation_context(state)
             user_context = state.get("user_context", {})
             
+            # Check if user explicitly wants interactive elements FIRST (regardless of stage)
+            if self._user_explicitly_requests_choices(user_input):
+                # Generate appropriate response and interactive elements
+                if why_stage == "purpose_discovery":
+                    response = self._explore_purpose(conversation_context, user_input, user_context)
+                elif why_stage == "belief_exploration":
+                    discovered_purpose = self._extract_discovered_purpose(state)
+                    response = self._explore_beliefs(conversation_context, user_input, discovered_purpose)
+                else:
+                    response = self._explore_purpose(conversation_context, user_input, user_context)
+                
+                # Always provide interactive when explicitly requested
+                state["interactive_elements"] = self._generate_interactive_beliefs()
+            
             # Generate response based on stage
-            if why_stage == "purpose_discovery":
+            elif why_stage == "purpose_discovery":
                 response = self._explore_purpose(conversation_context, user_input, user_context)
                 
             elif why_stage == "belief_exploration":
@@ -357,6 +371,26 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
             logger.error(f"LLM error in purpose exploration: {str(e)}")
             return self._get_fallback_purpose_response()
     
+    def _user_explicitly_requests_choices(self, user_input: str) -> bool:
+        """Check if user explicitly requests interactive choices/options."""
+        user_input_lower = user_input.lower()
+        
+        explicit_choice_requests = [
+            "provide me with a list",
+            "give me choices", 
+            "show me options",
+            "list of choices",
+            "can i choose from",
+            "selection",
+            "what are my options",
+            "can i select",
+            "checkboxes",
+            "multiple choice",
+            "choose from a list"
+        ]
+        
+        return any(request in user_input_lower for request in explicit_choice_requests)
+    
     def _should_generate_interactive_beliefs(self, state: AgentState, user_input: str, ai_response: str) -> bool:
         """Determine if interactive belief selection is appropriate for current context."""
         
@@ -365,68 +399,47 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
         if "selected_beliefs" in user_context:
             return False  # User already made selections
         
-        # Check if AI response is asking specific questions that need text answers
-        response_lower = ai_response.lower()
-        specific_question_indicators = [
-            "what fundamental belief",
-            "what do you believe",
-            "what principle",
-            "what assumption",
-            "how would you describe",
-            "what drives your",
-            "tell me about",
-            "explain your"
-        ]
-        
-        if any(indicator in response_lower for indicator in specific_question_indicators):
-            return False  # Specific question needs text response, not selection
-        
-        # Check if user input indicates they want to provide specific beliefs
         user_input_lower = user_input.lower()
-        specific_input_indicators = [
-            "we believe",
-            "our belief",
-            "our principle",
-            "we think",
-            "our philosophy",
-            "our conviction"
-        ]
+        response_lower = ai_response.lower()
         
-        if any(indicator in user_input_lower for indicator in specific_input_indicators):
-            return False  # User is already providing specific beliefs
-        
-        # Check if this is early in belief exploration where open-ended questions are better
-        conversation_turns = len(state["conversation_history"]) // 2
-        if conversation_turns < 4:  # Early in conversation
-            return False  # Use open-ended questions first
-        
-        # Check if AI response is asking for validation or confirmation
-        validation_indicators = [
-            "does this capture",
-            "does it inspire",
-            "would it inspire others",
-            "can you see how",
-            "validation",
-            "confirm"
-        ]
-        
-        if any(indicator in response_lower for indicator in validation_indicators):
-            return False  # Validation needs user response, not selection
-        
-        # Interactive selection is appropriate if:
-        # 1. User hasn't provided specific beliefs yet
-        # 2. AI is not asking specific questions
-        # 3. We're in belief exploration stage
-        # 4. Conversation has progressed enough for general exploration
-        belief_exploration_indicators = [
-            "which of these",
-            "select beliefs",
+        # ALWAYS provide interactive if user explicitly requests choices/options
+        user_requests_choices = [
+            "provide me with a list",
+            "give me choices",
+            "show me options",
+            "list of choices",
             "choose from",
-            "resonate with your organization"
+            "selection",
+            "what are my options",
+            "can i choose",
+            "checkboxes"
         ]
         
-        # Only generate interactive if AI explicitly suggests selection from options
-        return any(indicator in response_lower for indicator in belief_exploration_indicators)
+        if any(request in user_input_lower for request in user_requests_choices):
+            return True  # User explicitly wants interactive selection
+        
+        # Provide interactive if conversation has progressed and we're in belief exploration
+        conversation_turns = len(state["conversation_history"]) // 2
+        
+        # After sufficient exploration, offer interactive selection for efficiency
+        if conversation_turns >= 5:  # After some back-and-forth
+            # Don't provide interactive during validation phases
+            validation_indicators = [
+                "does this capture",
+                "does it inspire", 
+                "validation",
+                "confirm",
+                "is this accurate"
+            ]
+            
+            if any(indicator in response_lower for indicator in validation_indicators):
+                return False  # Still block during validation
+            
+            # Provide interactive to help move conversation forward
+            return True
+        
+        # Early in conversation, use open-ended questions unless user requests selection
+        return False
     
     def _generate_interactive_beliefs(self) -> Dict[str, Any]:
         """Generate interactive belief selection element."""

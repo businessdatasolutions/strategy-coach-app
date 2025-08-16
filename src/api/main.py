@@ -1310,51 +1310,20 @@ def _validate_interactive_element_appropriateness(ai_response: str, interactive_
     
     response_lower = ai_response.lower()
     
-    # Don't show interactive elements if AI is asking for validation/confirmation
-    validation_indicators = [
-        "does this capture",
-        "does it inspire", 
-        "would it inspire others",
-        "can you see how",
-        "validation",
-        "confirm",
-        "does this feel",
-        "is this accurate",
-        "transition to how",
-        "now that we've clarified"
+    # Block interactive elements ONLY during explicit validation/confirmation requests
+    strict_validation_indicators = [
+        "does this capture the essence",
+        "does it inspire you and would it inspire others",
+        "validation:",
+        "transition to how:",
+        "now that we've clarified your why"
     ]
     
-    if any(indicator in response_lower for indicator in validation_indicators):
+    if any(indicator in response_lower for indicator in strict_validation_indicators):
         return False
     
-    # Don't show interactive elements if AI is asking specific open-ended questions
-    specific_question_indicators = [
-        "what fundamental belief",
-        "what do you believe",
-        "what principle", 
-        "what assumption",
-        "how would you describe",
-        "what drives your",
-        "tell me about",
-        "explain your",
-        "what inspired",
-        "how do you"
-    ]
-    
-    if any(indicator in response_lower for indicator in specific_question_indicators):
-        return False
-    
-    # Interactive elements are appropriate if AI explicitly suggests selection
-    selection_indicators = [
-        "which of these",
-        "select from",
-        "choose from", 
-        "resonate with your organization",
-        "pick the ones",
-        "identify which"
-    ]
-    
-    return any(indicator in response_lower for indicator in selection_indicators)
+    # Allow interactive elements in most other cases - let WHY Agent logic decide
+    return True
 
 
 # Exception handlers
