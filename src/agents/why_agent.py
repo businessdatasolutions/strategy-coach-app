@@ -224,8 +224,8 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
                 discovered_purpose = self._extract_discovered_purpose(state)
                 response = self._explore_beliefs(conversation_context, user_input, discovered_purpose)
                 
-                # Add interactive belief selection if user hasn't selected beliefs yet
-                if "selected_beliefs" not in state.get("user_context", {}):
+                # Only add interactive belief selection if contextually appropriate
+                if self._should_generate_interactive_beliefs(state, user_input, response):
                     state["interactive_elements"] = self._generate_interactive_beliefs()
                 
             elif why_stage == "values_integration":
@@ -356,6 +356,77 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
         except Exception as e:
             logger.error(f"LLM error in purpose exploration: {str(e)}")
             return self._get_fallback_purpose_response()
+    
+    def _should_generate_interactive_beliefs(self, state: AgentState, user_input: str, ai_response: str) -> bool:
+        """Determine if interactive belief selection is appropriate for current context."""
+        
+        # Check if user has already provided beliefs through selections
+        user_context = state.get("user_context", {})
+        if "selected_beliefs" in user_context:
+            return False  # User already made selections
+        
+        # Check if AI response is asking specific questions that need text answers
+        response_lower = ai_response.lower()
+        specific_question_indicators = [
+            "what fundamental belief",
+            "what do you believe",
+            "what principle",
+            "what assumption",
+            "how would you describe",
+            "what drives your",
+            "tell me about",
+            "explain your"
+        ]
+        
+        if any(indicator in response_lower for indicator in specific_question_indicators):
+            return False  # Specific question needs text response, not selection
+        
+        # Check if user input indicates they want to provide specific beliefs
+        user_input_lower = user_input.lower()
+        specific_input_indicators = [
+            "we believe",
+            "our belief",
+            "our principle",
+            "we think",
+            "our philosophy",
+            "our conviction"
+        ]
+        
+        if any(indicator in user_input_lower for indicator in specific_input_indicators):
+            return False  # User is already providing specific beliefs
+        
+        # Check if this is early in belief exploration where open-ended questions are better
+        conversation_turns = len(state["conversation_history"]) // 2
+        if conversation_turns < 4:  # Early in conversation
+            return False  # Use open-ended questions first
+        
+        # Check if AI response is asking for validation or confirmation
+        validation_indicators = [
+            "does this capture",
+            "does it inspire",
+            "would it inspire others",
+            "can you see how",
+            "validation",
+            "confirm"
+        ]
+        
+        if any(indicator in response_lower for indicator in validation_indicators):
+            return False  # Validation needs user response, not selection
+        
+        # Interactive selection is appropriate if:
+        # 1. User hasn't provided specific beliefs yet
+        # 2. AI is not asking specific questions
+        # 3. We're in belief exploration stage
+        # 4. Conversation has progressed enough for general exploration
+        belief_exploration_indicators = [
+            "which of these",
+            "select beliefs",
+            "choose from",
+            "resonate with your organization"
+        ]
+        
+        # Only generate interactive if AI explicitly suggests selection from options
+        return any(indicator in response_lower for indicator in belief_exploration_indicators)
     
     def _generate_interactive_beliefs(self) -> Dict[str, Any]:
         """Generate interactive belief selection element."""

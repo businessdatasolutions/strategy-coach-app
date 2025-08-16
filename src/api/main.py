@@ -709,8 +709,14 @@ async def send_message(
         
         logger.info(f"Processed message for session {session_id} - Phase: {updated_state['current_phase']}")
         
-        # Check for interactive elements from agent
+        # Check for interactive elements from agent and validate appropriateness
         interactive_elements = updated_state.get("interactive_elements")
+        
+        # Additional validation to prevent inappropriate interactive elements
+        if interactive_elements and ai_response:
+            if not self._validate_interactive_element_appropriateness(ai_response, interactive_elements):
+                logger.warning("Removing inappropriate interactive element from response")
+                interactive_elements = None
         
         return ConversationMessageResponse(
             response=ai_response,
@@ -1294,6 +1300,61 @@ def _generate_strategy_summary(strategy_map: dict, validation_result: dict) -> d
     summary["next_steps"] = next_steps[:3]  # Top 3 next steps
     
     return summary
+
+
+def _validate_interactive_element_appropriateness(ai_response: str, interactive_elements: Dict[str, Any]) -> bool:
+    """Validate if interactive elements are appropriate for the current AI response context."""
+    
+    if not ai_response or not interactive_elements:
+        return False
+    
+    response_lower = ai_response.lower()
+    
+    # Don't show interactive elements if AI is asking for validation/confirmation
+    validation_indicators = [
+        "does this capture",
+        "does it inspire", 
+        "would it inspire others",
+        "can you see how",
+        "validation",
+        "confirm",
+        "does this feel",
+        "is this accurate",
+        "transition to how",
+        "now that we've clarified"
+    ]
+    
+    if any(indicator in response_lower for indicator in validation_indicators):
+        return False
+    
+    # Don't show interactive elements if AI is asking specific open-ended questions
+    specific_question_indicators = [
+        "what fundamental belief",
+        "what do you believe",
+        "what principle", 
+        "what assumption",
+        "how would you describe",
+        "what drives your",
+        "tell me about",
+        "explain your",
+        "what inspired",
+        "how do you"
+    ]
+    
+    if any(indicator in response_lower for indicator in specific_question_indicators):
+        return False
+    
+    # Interactive elements are appropriate if AI explicitly suggests selection
+    selection_indicators = [
+        "which of these",
+        "select from",
+        "choose from", 
+        "resonate with your organization",
+        "pick the ones",
+        "identify which"
+    ]
+    
+    return any(indicator in response_lower for indicator in selection_indicators)
 
 
 # Exception handlers
