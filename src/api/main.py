@@ -714,7 +714,7 @@ async def send_message(
         
         # Additional validation to prevent inappropriate interactive elements
         if interactive_elements and ai_response:
-            if not self._validate_interactive_element_appropriateness(ai_response, interactive_elements):
+            if not _validate_interactive_element_appropriateness(ai_response, interactive_elements):
                 logger.warning("Removing inappropriate interactive element from response")
                 interactive_elements = None
         

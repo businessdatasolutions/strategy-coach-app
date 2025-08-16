@@ -8,20 +8,20 @@
 - ✅ Conversation API (5.0)
 - ✅ Web UI Implementation (6.0)
 
-**Completed**: Tasks 1.0-6.0, 9.0 (Core + Testing System)
+**Completed**: Tasks 1.0-6.0 (100% complete)
 - ✅ Project Infrastructure (1.0)
-- ✅ Core State Management (2.0) 
+- ✅ Core State Management (2.0)
 - ✅ Specialist Agents (3.0)
 - ✅ Strategy Map Agent (4.0)
 - ✅ Conversation API (5.0)
 - ✅ Web UI Implementation (6.0)
-- ✅ Testing Agent User Journey Simulation (9.0)
 
-**Planned**: Tasks 7.0-8.0
+**Planned**: Tasks 7.0-9.0
 - 🚧 Progress Feedback System (7.0) - 12 subtasks
 - 🚧 Mistral AI Integration (8.0) - 15 subtasks
+- 🚧 Simple Testing Agent with Direct Browser Control (9.0) - 5 subtasks
 
-**Total Progress**: 7/9 major tasks complete (78%)
+**Total Progress**: 6/9 major tasks complete (67%)
 
 ## Relevant Files
 
@@ -61,7 +61,7 @@
 - `src/agents/open_strategy_agent.py` - Open strategy agent for implementation planning
 - `src/api/main.py` - FastAPI application and conversation endpoints
 - `src/utils/llm_client.py` - LLM client wrapper and utilities
-- `src/testing/` - Testing agent framework and business case library
+- `docs/` - Documentation and tutorials
 - `tests/` - Test files corresponding to each component
 - `tests/evaluation/` - End-to-end evaluation framework and test scenarios
 
@@ -162,62 +162,29 @@
   - [ ] 8.14 Implement dynamic model switching based on conversation phase
   - [ ] 8.15 Test end-to-end conversations with all Mistral model tiers
 
-- [ ] 9.0 Implement Testing Agent for Complete User Journey Simulation
-  - [ ] 9.1 Design business case framework and data structures
-    - [x] 9.1.1 Create BusinessCase dataclass with company profile, strategic context, goals, background
-    - [x] 9.1.2 Define PersonaType enum and PersonaCharacteristics for different business leaders
-    - [x] 9.1.3 Implement BusinessCaseLibrary class for managing test scenarios
-    - [x] 9.1.4 Create serialization methods for JSON storage and loading
-  - [ ] 9.2 Build core testing agent architecture
-    - [x] 9.2.1 Implement StrategicTestingAgent class with persona and business case integration
-    - [x] 9.2.2 Create ResponseGenerator for authentic, context-aware response generation
-    - [x] 9.2.3 Add ContextMemory system for progressive information disclosure
-    - [x] 9.2.4 Implement persona-specific communication patterns and decision-making styles
-  - [ ] 9.3 Develop response generation engine
-    - [x] 9.3.1 Create LLM-based response generation using business case context
-    - [x] 9.3.2 Implement persona filtering and communication style adaptation
-    - [x] 9.3.3 Add realistic hesitations, uncertainties, and business concerns
-    - [x] 9.3.4 Build progressive disclosure logic based on coaching relationship depth
-  - [ ] 9.4 Create journey orchestration system
-    - [x] 9.4.1 Implement JourneySimulator class for complete journey execution
-    - [x] 9.4.2 Add API client integration for realistic conversation interaction
-    - [x] 9.4.3 Build phase progression logic (WHY → HOW → WHAT)
-    - [x] 9.4.4 Create agent engagement patterns for natural specialist agent utilization
-  - [ ] 9.5 Build journey recording infrastructure
-    - [x] 9.5.1 Implement JourneyRecorder class for multi-modal documentation
-    - [x] 9.5.2 Add conversation snapshot capture with timestamps and context
-    - [x] 9.5.3 Create UI screenshot capture using Playwright integration
-    - [x] 9.5.4 Implement state snapshot recording for strategy map progression
-  - [ ] 9.6 Develop business case library with realistic scenarios
-    - [x] 9.6.1 Create comprehensive AFAS Software business case using tests/business-case-for-testing.md as foundation
-      - Use the detailed AFAS case study to create a coherent testing narrative for enterprise software strategy
-      - Extract key strategic elements: culture-driven competitive advantage, integrated product philosophy, Benelux market focus
-      - Develop persona characteristics based on AFAS leadership style (trust-based, family values, employee empowerment)
-      - Create strategic challenges relevant to mature, successful software companies (international expansion, talent retention, innovation)
-    - [x] 9.6.2 Create anti-consultancy AI innovation scenario (based on real user conversation)
-    - [x] 9.6.3 Add B2B SaaS scaling scenario with growth challenges
-    - [x] 9.6.4 Build healthcare compliance and growth scenario
-    - [ ] 9.6.5 Create manufacturing efficiency optimization scenario
-    - [ ] 9.6.6 Add retail omnichannel strategy scenario
-  - [ ] 9.7 Implement persona-specific behavior patterns
-    - [x] 9.7.1 Create Analytical CEO persona with data-driven response patterns
-    - [x] 9.7.2 Build Visionary Founder persona with passion and big-picture focus
-    - [x] 9.7.3 Develop Pragmatic Director persona with implementation and resource focus
-    - [x] 9.7.4 Add Technical CTO persona with technology and system thinking
-    - [x] 9.7.5 Create Operations COO persona with process and efficiency focus
-  - [ ] 9.8 Build automated testing and quality validation
-    - [x] 9.8.1 Create journey success/failure determination logic
-    - [x] 9.8.2 Implement coaching effectiveness scoring system
-    - [x] 9.8.3 Add regression detection comparing journey outcomes across versions
-    - [x] 9.8.4 Build automated quality gates for CI/CD integration
-  - [ ] 9.9 Develop comprehensive reporting system
-    - [x] 9.9.1 Create HTML report generation with embedded screenshots and metrics
-    - [x] 9.9.2 Implement JSON data export for programmatic analysis
-    - [ ] 9.9.3 Add PDF executive summary generation for stakeholders
-    - [x] 9.9.4 Build interactive timeline visualization of journey progression
-  - [ ] 9.10 Test and validate testing agent system
-    - [x] 9.10.1 Run testing agent against anti-consultancy scenario (real user conversation)
-    - [x] 9.10.2 Validate persona differences produce meaningfully different behaviors
-    - [x] 9.10.3 Test journey recording captures all critical interaction points
-    - [x] 9.10.4 Verify coaching effectiveness metrics accurately reflect journey quality
+- [ ] 9.0 Implement Simple Testing Agent with Direct Browser Control
+  - [ ] 9.1 Create AFAS Software business case with authentic response generation
+    - Load AFAS business case from tests/business-case-for-testing.md
+    - Implement LLM-based response generator using AFAS context (€324.6M enterprise, culture-driven, visionary founder persona)
+    - Generate authentic business leader responses referencing AFAS culture, values, and strategic challenges
+  - [ ] 9.2 Build Playwright browser automation system
+    - Start API server programmatically (uvicorn)
+    - Launch Playwright browser and navigate to localhost:8081
+    - Wait for application session initialization
+    - Implement reliable browser interaction (type, submit, wait for response)
+  - [ ] 9.3 Implement 20-interaction test loop with recording
+    - Run exactly 20 user-AI interaction cycles
+    - Record each interaction in structured JSON format (timestamp, messages, UI state, response time)
+    - Take screenshot every 5th interaction (interactions 5, 10, 15, 20)
+    - Extract UI state data (phase, completeness, active agent) for each interaction
+  - [ ] 9.4 Create comprehensive test documentation system
+    - Generate beautiful Markdown test report with embedded screenshots
+    - Include test summary, journey progression analysis, and full interaction log
+    - Embed screenshots inline in Markdown for visual documentation
+    - Save all artifacts (JSON data, screenshots, Markdown report) in organized directory structure
+  - [ ] 9.5 Test and validate the simple testing system
+    - Run complete 20-interaction test with AFAS Software business case
+    - Verify authentic business responses using AFAS context
+    - Validate screenshot capture at correct intervals
+    - Confirm Markdown report generation with embedded visuals
 

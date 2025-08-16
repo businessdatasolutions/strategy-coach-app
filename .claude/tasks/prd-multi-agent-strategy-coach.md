@@ -835,121 +835,113 @@ DEFAULT_MODEL=mistral-large-latest
 * **Multilingual Excellence**: Strong performance in multiple languages
 * **Specialized Capabilities**: Mixture of experts architecture for diverse tasks
 
-## 12. Testing Agent for User Journey Simulation
+## 12. Simple Testing Agent with Direct Browser Control
 
 ### 12.1. Executive Summary
 
-**Vision Statement**: Create an intelligent testing agent that simulates realistic business leaders experiencing the complete strategic coaching journey, enabling comprehensive quality assurance and user experience validation through automated, authentic user behavior simulation.
+**Vision**: Create a simple, reliable testing agent that uses Playwright to directly control the browser and simulate realistic user interactions with the strategic coaching system.
 
-**Business Objectives**:
-- **Quality Assurance**: Ensure strategic coaching system reliability and effectiveness
-- **User Experience Validation**: Verify smooth, engaging coaching journeys
-- **Regression Prevention**: Catch issues before they impact real users
-- **Stakeholder Demonstration**: Showcase realistic coaching capabilities
+**Approach**: 
+- Start API server programmatically
+- Open browser and navigate to application
+- Testing agent writes responses directly via browser interface
+- Record each interaction in JSON file
+- Take screenshots every 5th interaction
+- Generate beautiful Markdown test report with embedded screenshots
 
-### 12.2. Testing Agent Architecture
+### 12.2. Simple Architecture
 
-#### 12.2.1 Core Components
-
-**Testing Agent System**:
+**Direct Browser Control System**:
 ```python
-class StrategicTestingAgent:
-    - business_case: BusinessCase
-    - persona: PersonaType
-    - context_memory: ContextMemory
+class SimpleTestingAgent:
+    - business_case: BusinessCase (AFAS Software)
     - response_generator: ResponseGenerator
+    - interaction_count: int (target: 20 interactions)
     
-class JourneySimulator:
-    - testing_agent: StrategicTestingAgent
-    - recorder: JourneyRecorder
-    - api_client: StrategyCoachAPIClient
+class PlaywrightController:
+    - browser: Browser
+    - page: Page
+    - screenshot_interval: 5
     
-class JourneyRecorder:
-    - conversation_snapshots: List[ConversationSnapshot]
-    - ui_snapshots: List[UISnapshot] 
-    - state_snapshots: List[StateSnapshot]
-    - report_generator: ReportGenerator
+class TestRecorder:
+    - interactions: List[Interaction]
+    - screenshots: List[Screenshot]
+    - markdown_generator: MarkdownReportGenerator
 ```
 
-#### 12.2.2 Business Case Framework
+### 12.3. Implementation Requirements
 
-**Comprehensive Business Context**:
-- **Company Profile**: Name, industry, stage, size, revenue, funding status
-- **Strategic Context**: Mission, challenges, market position, stakeholders
-- **Strategic Goals**: Short-term objectives, long-term vision, success metrics
-- **Background Knowledge**: Founder story, core beliefs, culture, competitive landscape
+#### 12.3.1 Core Workflow
+1. **Start API Server**: Programmatically launch uvicorn server
+2. **Launch Browser**: Open Playwright browser and navigate to localhost:8081
+3. **Initialize Session**: Wait for application to load and session to start
+4. **Run 20 Interactions**:
+   - Testing agent generates response based on coach message
+   - Types response directly into browser input field
+   - Submits message and waits for AI response
+   - Records interaction data in JSON
+   - Takes screenshot every 5th interaction
+5. **Generate Report**: Create Markdown report with embedded screenshots
 
-**Industry-Specific Scenarios**:
-- **Tech Startup**: B2B SaaS scaling, product-market fit, competitive differentiation
-- **Established Company**: Digital transformation, market expansion, innovation pipeline
-- **Consulting**: Anti-consultancy approach, knowledge transfer, tangible value delivery
+#### 12.3.2 Interaction Recording
+```json
+{
+  "interaction_number": 1,
+  "timestamp": "2025-08-16T13:30:00Z",
+  "user_message": "Thank you for this framework - AFAS believes in empowering entrepreneurs",
+  "ai_response": "That commitment to empowerment is fascinating...",
+  "ui_state": {
+    "current_phase": "why",
+    "completeness": "15%",
+    "active_agent": "WHY Agent"
+  },
+  "screenshot_taken": false,
+  "response_time_ms": 2300
+}
+```
 
-#### 12.2.3 Persona System
+#### 12.3.3 Screenshot Schedule
+- **Screenshot 1**: After interaction 5
+- **Screenshot 2**: After interaction 10  
+- **Screenshot 3**: After interaction 15
+- **Screenshot 4**: After interaction 20 (final)
 
-**Business Leader Personas**:
-- **Analytical CEO**: Data-driven, challenging, focuses on measurable outcomes
-- **Visionary Founder**: Passionate, big-picture, emphasizes mission and culture
-- **Pragmatic Director**: Implementation-focused, resource-conscious, risk-aware
-- **Technical CTO**: Technology-oriented, system-thinking, innovation-focused
-- **Operations COO**: Process-driven, efficiency-minded, execution-focused
+#### 12.3.4 Markdown Report Format
+```markdown
+# AFAS Software Strategic Coaching Journey Test Report
 
-### 12.3. Journey Recording System
+## Test Summary
+- **Business Case**: AFAS Software (€324.6M enterprise)
+- **Persona**: Visionary Founder
+- **Total Interactions**: 20
+- **Duration**: 8.5 minutes
+- **Success**: ✅ Completed successfully
 
-#### 12.3.1 Multi-Modal Documentation
-- **Text Snapshots**: Complete conversation transcripts with timestamps and context
-- **Visual Snapshots**: UI screenshots at key interaction points and phase transitions
-- **State Snapshots**: Strategy map progression and agent routing decisions
-- **Performance Metrics**: Response times, error rates, completion statistics
+## Journey Progression
+### Interactions 1-5: Purpose Discovery
+![Screenshot 1](screenshots/interaction_5.png)
 
-#### 12.3.2 Recording Triggers
-- **Phase Transitions**: WHY → HOW → WHAT progression points
-- **Agent Switches**: When router changes active agent
-- **Interactive Elements**: Core value selections, strategic choices
-- **Milestone Achievements**: Strategy map completeness thresholds
-- **Error Scenarios**: System failures and recovery patterns
+### Interactions 6-10: Belief Exploration  
+![Screenshot 2](screenshots/interaction_10.png)
 
-### 12.4. Implementation Phases
+### Interactions 11-15: Values Integration
+![Screenshot 3](screenshots/interaction_15.png)
 
-#### Phase 1: Foundation (4 weeks)
-**Scope**: Core testing agent and basic business case framework
+### Interactions 16-20: WHY Synthesis
+![Screenshot 4](screenshots/interaction_20.png)
 
-**Deliverables**:
-- Business case data structure and library
-- Basic testing agent with persona system
-- Simple response generation engine
-- Text-based conversation recording
+## Detailed Interaction Log
+[Full conversation transcript with timestamps]
+```
 
-#### Phase 2: Visual Recording (3 weeks)
-**Scope**: Playwright integration and comprehensive documentation
+### 12.4. Success Criteria
 
-**Deliverables**:
-- Playwright-based UI automation and screenshot capture
-- Strategy map progression visualization
-- Interactive element documentation system
-- Multi-format journey reporting (HTML, JSON, PDF)
-
-#### Phase 3: Advanced Analytics (3 weeks)
-**Scope**: Quality metrics, comparison, and automation
-
-**Deliverables**:
-- Journey comparison and regression detection
-- Performance benchmarking and quality metrics
-- Automated quality gates and CI/CD integration
-- Executive summary and insights generation
-
-### 12.5. Success Criteria
-
-**Quality Assurance Metrics**:
-- **Journey Completion Rate**: >95% successful completions without critical errors
-- **Issue Detection Rate**: >90% of UX problems identified before user impact
-- **Response Authenticity**: Agent responses feel genuinely business-like
-- **System Stability**: No critical errors during simulated journeys
-
-**Development Efficiency Goals**:
-- **Testing Automation**: 50% reduction in manual testing overhead
-- **Feedback Speed**: <24 hour feedback cycle for major changes
-- **Coverage**: 100% of core user flows validated automatically
-- **Integration**: Seamless CI/CD pipeline integration
+**Simple and Reliable**:
+- ✅ **Complete 20 interactions** without critical failures
+- ✅ **Generate 4 screenshots** at specified intervals
+- ✅ **Record all interactions** in structured JSON
+- ✅ **Produce beautiful Markdown report** with embedded visuals
+- ✅ **Authentic business responses** using AFAS Software context
 
 ## 13. Non-Goals (Out of Scope)
 * The coach will **not** provide its own business advice, opinions, or recommendations.
