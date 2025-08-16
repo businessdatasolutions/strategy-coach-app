@@ -153,10 +153,10 @@ Help create values that are:
 The goal is values that people can use to make decisions and guide behavior, creating a culture that naturally supports the WHY."""
         )
         
-        # Synthesis and Validation Prompt
+        # Synthesis and Validation Prompt - FIXED to remove transition assumption
         self.synthesis_prompt = PromptTemplate(
             input_variables=["purpose", "beliefs", "values", "conversation_context"],
-            template="""You are completing the Golden Circle WHY discovery process with a comprehensive synthesis.
+            template="""You are providing a Golden Circle WHY synthesis based on the conversation so far.
 
 DISCOVERED WHY COMPONENTS:
 Core Purpose: {purpose}
@@ -166,17 +166,12 @@ Organizational Values: {values}
 Conversation history:
 {conversation_context}
 
-Provide a comprehensive synthesis that:
-
-1. **WHY Statement**: Craft a clear, compelling WHY statement that captures the essence of their purpose
-2. **Golden Circle Summary**: Show how purpose, beliefs, and values work together
-3. **Validation Questions**: Ask if this feels authentic and inspiring
-4. **Next Steps**: Suggest how this WHY can guide the HOW (strategic approach)
+CRITICAL: Provide ONLY synthesis and validation questions. DO NOT assume user agreement or suggest transitions.
 
 Format your response as:
 
 **YOUR WHY STATEMENT:**
-[Clear, inspiring statement of purpose]
+[Clear, compelling statement that captures their purpose]
 
 **CORE BELIEFS THAT DRIVE YOU:**
 [Key beliefs that support the purpose]
@@ -185,13 +180,12 @@ Format your response as:
 [Specific, actionable values]
 
 **GOLDEN CIRCLE INTEGRATION:**
-Explain how these elements create a coherent WHY that can guide strategy development.
+[Brief explanation of how these elements work together]
 
 **VALIDATION:**
-Ask: "Does this capture the essence of why your organization exists? Does it inspire you and would it inspire others to join your cause?"
+Does this capture the essence of why your organization exists? Does it inspire you and feel authentic to your core motivation? 
 
-**TRANSITION TO HOW:**
-"Now that we've clarified your WHY, we can explore HOW you'll bring this purpose to life through strategy and approach."""
+Please let me know if this feels right, needs adjustment, or if you'd like to refine any part of it before we move forward."""
         )
     
     def process_user_input(self, state: AgentState, user_input: str) -> AgentState:
@@ -216,15 +210,18 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
             conversation_context = self._extract_conversation_context(state)
             user_context = state.get("user_context", {})
             
-            # Generate response based on stage - NO INTERACTIVE ELEMENTS FOR NOW
-            if why_stage == "purpose_discovery":
+            # Check if we're awaiting user validation
+            if state.get("awaiting_user_validation", False):
+                # Process user validation response instead of generating new content
+                response = self._process_user_validation(state, user_input)
+                
+            # Generate response based on stage - with validation pause logic
+            elif why_stage == "purpose_discovery":
                 response = self._explore_purpose(conversation_context, user_input, user_context)
                 
             elif why_stage == "belief_exploration":
                 discovered_purpose = self._extract_discovered_purpose(state)
                 response = self._explore_beliefs(conversation_context, user_input, discovered_purpose)
-                
-                # REMOVED: Interactive elements functionality disabled for testing agent compatibility
                 
             elif why_stage == "values_integration":
                 purpose = self._extract_discovered_purpose(state)
@@ -232,10 +229,21 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
                 response = self._integrate_values(conversation_context, user_input, purpose, beliefs)
                 
             elif why_stage == "synthesis":
-                purpose = self._extract_discovered_purpose(state)
-                beliefs = self._extract_discovered_beliefs(state)
-                values = self._extract_discovered_values(state)
-                response = self._synthesize_why_framework(purpose, beliefs, values, conversation_context)
+                # Check if synthesis already provided and not yet validated
+                if state.get("synthesis_provided", False) and not state.get("user_validation_confirmed", False):
+                    # Don't regenerate synthesis, ask for validation
+                    response = "I've shared a comprehensive WHY synthesis with you. Does this capture the essence of why your organization exists? Please let me know if it feels authentic or if you'd like to refine any part of it."
+                else:
+                    # Generate synthesis for the first time
+                    purpose = self._extract_discovered_purpose(state)
+                    beliefs = self._extract_discovered_beliefs(state)
+                    values = self._extract_discovered_values(state)
+                    response = self._synthesize_why_framework(purpose, beliefs, values, conversation_context)
+                    
+                    # Mark that synthesis has been provided and we're awaiting validation
+                    state["synthesis_provided"] = True
+                    state["awaiting_user_validation"] = True
+                    state["last_synthesis_turn"] = len(state["conversation_history"])
                 
             else:
                 # Default to purpose discovery
@@ -355,6 +363,62 @@ Ask: "Does this capture the essence of why your organization exists? Does it ins
             logger.error(f"LLM error in purpose exploration: {str(e)}")
             return self._get_fallback_purpose_response()
     
+    def _process_user_validation(self, state: AgentState, user_input: str) -> str:
+        """Process user validation response and determine next steps."""
+        
+        user_input_lower = user_input.lower()
+        
+        # Check for positive validation signals
+        positive_signals = [
+            "yes", "this captures", "exactly", "correct", "right", "accurate",
+            "authentic", "inspiring", "resonates", "perfect", "spot on",
+            "that's it", "captures it", "feels right", "true", "agreed"
+        ]
+        
+        # Check for modification/refinement signals
+        modification_signals = [
+            "but", "however", "need to adjust", "not quite", "close but", 
+            "modify", "change", "refine", "different", "actually"
+        ]
+        
+        # Check for progression signals
+        progression_signals = [
+            "ready", "move forward", "next phase", "how", "let's continue",
+            "proceed", "move on", "ready to explore"
+        ]
+        
+        if any(signal in user_input_lower for signal in positive_signals):
+            if any(signal in user_input_lower for signal in progression_signals):
+                # User validates AND wants to move forward
+                state["user_validation_confirmed"] = True
+                state["awaiting_user_validation"] = False
+                state["validation_response"] = user_input
+                state["strategy_completeness"]["why"] = True  # Mark WHY phase complete
+                
+                return """Excellent! I'm glad the WHY synthesis feels authentic to your organization's core purpose.
+                
+Now that we've established your foundational WHY, we can explore HOW you'll bring this purpose to life through your strategic approach and methodology.
+
+What would you say is your most distinctive approach to making this WHY tangible in your day-to-day operations?"""
+                
+            else:
+                # User validates but may want to explore more
+                state["user_validation_confirmed"] = True
+                state["awaiting_user_validation"] = False
+                state["validation_response"] = user_input
+                
+                return "Thank you for confirming this captures your WHY! Would you like to explore this further, or are you ready to move on to HOW you'll bring this purpose to life strategically?"
+        
+        elif any(signal in user_input_lower for signal in modification_signals):
+            # User wants modifications
+            state["awaiting_user_validation"] = False
+            state["synthesis_provided"] = False  # Allow new synthesis generation
+            
+            return "I understand you'd like to refine the WHY synthesis. What specifically would you like to adjust or explore differently? Let's make sure we capture your authentic purpose before moving forward."
+        
+        else:
+            # Unclear response, ask for clarification
+            return "I want to make sure I understand your response to the WHY synthesis. Does it feel authentic to your organization's purpose, or would you like to refine it? Please let me know so we can either move forward or adjust accordingly."
     
     def _explore_beliefs(self, conversation_context: str, user_input: str, discovered_purpose: str) -> str:
         """Generate response for belief exploration stage."""

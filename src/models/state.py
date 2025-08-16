@@ -35,6 +35,13 @@ class AgentState(TypedDict):
     user_context: Dict[str, Any]
     conversation_summary: Optional[str]
     
+    # Validation and progression tracking
+    synthesis_provided: bool
+    awaiting_user_validation: bool
+    user_validation_confirmed: bool
+    validation_response: Optional[str]
+    last_synthesis_turn: Optional[int]
+    
     # Processing metadata
     processing_stage: Optional[str]
     error_state: Optional[Dict[str, Any]]
@@ -216,6 +223,13 @@ def initialize_agent_state(
         # User preferences and context
         user_context=user_context or {},
         conversation_summary=None,
+        
+        # Validation and progression tracking
+        synthesis_provided=False,
+        awaiting_user_validation=False,
+        user_validation_confirmed=False,
+        validation_response=None,
+        last_synthesis_turn=None,
         
         # Processing metadata
         processing_stage="initialization",

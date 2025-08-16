@@ -191,6 +191,10 @@ class ConversationMessageResponse(BaseModel):
         default=None,
         description="Interactive UI elements for user selection"
     )
+    awaiting_user_validation: Optional[bool] = Field(
+        default=False,
+        description="Whether the AI is waiting for user validation before proceeding"
+    )
 
 
 class ConversationExportResponse(BaseModel):
@@ -727,7 +731,8 @@ async def send_message(
             recommendations=recommendations[:3],  # Limit to top 3 recommendations
             session_id=session_id,
             processing_stage=updated_state.get("processing_stage", "completed"),
-            interactive_elements=interactive_elements
+            interactive_elements=interactive_elements,
+            awaiting_user_validation=updated_state.get("awaiting_user_validation", False)
         )
         
     except HTTPException:
