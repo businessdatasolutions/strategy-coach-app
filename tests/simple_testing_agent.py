@@ -138,42 +138,59 @@ CONVERSATION CONTEXT:
 - Coach Message: "{coach_message}"
 
 RESPONSE GUIDELINES:
-1. Respond as AFAS CEO/Founder with passion for the mission
+1. Respond as AFAS CEO/Founder - direct and business-focused
 2. Reference specific AFAS context when relevant (culture, values, challenges)
-3. Show appropriate trust level - be more open as conversation progresses
-4. Include realistic business concerns and strategic thinking
-5. Keep response length 100-250 words
-6. Occasionally include emotional reactions or physical gestures (for authenticity)
+3. Be concise and to the point - avoid verbose explanations
+4. NO physical gestures, non-verbal descriptions, or dramatic language
+5. Keep response length 50-150 words maximum
+6. Answer directly and naturally, like a real business conversation
 
-Generate an authentic response that the AFAS founder would realistically give."""
+Generate a concise, direct response that gets straight to the point."""
 
     def _apply_afas_style(self, response: str) -> str:
-        """Apply AFAS-specific style and personality traits."""
+        """Apply AFAS-specific style - keep it concise and direct."""
         
-        # Add occasional emotional indicators for visionary founder
-        if self.conversation_count > 3 and "*" not in response:
-            # Add occasional physical gestures for authenticity
-            gestures = [
-                "*leans forward with visible energy*",
-                "*eyes lighting up*", 
-                "*pauses thoughtfully*",
-                "*gestures expansively*"
-            ]
-            
-            if self.conversation_count % 4 == 0:  # Occasionally add gesture
-                gesture = gestures[self.conversation_count % len(gestures)]
-                response = f"{gesture}\n\n{response}"
+        # Remove any physical gestures or non-verbal descriptions
+        response = self._remove_nonverbal_content(response)
         
-        return response
+        # Ensure response is concise
+        if len(response) > 200:
+            sentences = response.split('. ')
+            if len(sentences) > 2:
+                response = '. '.join(sentences[:2]) + '.'
+        
+        return response.strip()
+    
+    def _remove_nonverbal_content(self, text: str) -> str:
+        """Remove physical gestures and non-verbal descriptions."""
+        
+        # Remove content between asterisks (gestures)
+        import re
+        text = re.sub(r'\*[^*]+\*', '', text)
+        
+        # Remove common non-verbal phrases
+        nonverbal_phrases = [
+            "*leans", "*gestures", "*pauses", "*eyes", "*stands",
+            "*sits", "*walks", "*looks", "*smiles", "*nods",
+            "with visible energy", "with genuine", "clearly moved"
+        ]
+        
+        for phrase in nonverbal_phrases:
+            text = text.replace(phrase, '')
+        
+        # Clean up extra whitespace and line breaks
+        text = ' '.join(text.split())
+        
+        return text
     
     def _get_fallback_response(self, coach_message: str) -> str:
         """Fallback response when LLM fails."""
         
         fallbacks = [
-            "That's a profound question about AFAS's direction. Let me think about how our culture and values guide us here.",
-            "You know, at AFAS we've always believed that trust and empowerment are the foundation of everything we do.",
-            "This connects to something fundamental about why we exist - to inspire better entrepreneurship.",
-            "I appreciate that question. It gets to the heart of what makes AFAS different from other software companies."
+            "That's a good question about AFAS's direction. Our culture and values definitely guide our decisions.",
+            "At AFAS we believe trust and empowerment are fundamental to everything we do.",
+            "This connects to why we exist - to inspire better entrepreneurship through our software.",
+            "Good question. What makes AFAS different is our focus on eliminating administrative burdens for entrepreneurs."
         ]
         
         return fallbacks[self.conversation_count % len(fallbacks)]
@@ -229,27 +246,73 @@ class PlaywrightTestController:
         """Extract the last AI message from the chat interface."""
         
         try:
-            # Find all message elements
-            messages = await self.page.query_selector_all('.message-fade-in')
+            # Wait for messages to be fully rendered
+            await asyncio.sleep(2)
             
-            if not messages:
+            # Use JavaScript to get messages directly from Alpine.js data
+            # This is the most reliable method
+            js_result = await self.page.evaluate("""
+                () => {
+                    // Access Alpine.js data directly
+                    const app = document.querySelector('[x-data]');
+                    if (app && app._x_dataStack && app._x_dataStack[0]) {
+                        const data = app._x_dataStack[0];
+                        if (data.messages && data.messages.length > 0) {
+                            // Find the last assistant message
+                            for (let i = data.messages.length - 1; i >= 0; i--) {
+                                const message = data.messages[i];
+                                if (message.role === 'assistant') {
+                                    return message.content;
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                }
+            """)
+            
+            if js_result:
+                return js_result.strip()
+            
+            # Fallback: DOM-based extraction
+            print("  🔄 Fallback to DOM extraction...")
+            
+            # Find all message divs (both AI and user)
+            all_messages = await self.page.query_selector_all('#messages > div')
+            
+            if not all_messages:
                 return "Welcome to your AI Strategic Co-pilot! What strategic challenge would you like to start with today?"
             
-            # Get the last AI message (not user message)
-            for message in reversed(messages):
-                # Check if this is not a user message (user messages are right-aligned)
-                classes = await message.get_attribute('class')
-                if 'justify-end' not in classes:  # AI messages are left-aligned
-                    text = await message.inner_text()
-                    # Remove timestamp
-                    lines = text.split('\n')
-                    return '\n'.join(lines[:-1]) if len(lines) > 1 else text
+            # Iterate through messages in reverse to find last AI message
+            for message_div in reversed(all_messages):
+                # Check if this is an AI message (left-aligned, not justify-end)
+                classes = await message_div.get_attribute('class')
+                
+                if classes and 'justify-start' in classes:
+                    # This is an AI message, extract its content
+                    full_text = await message_div.inner_text()
+                    
+                    if full_text:
+                        # Remove timestamp (last line)
+                        lines = full_text.strip().split('\n')
+                        if len(lines) > 1:
+                            # Check if last line is timestamp
+                            last_line = lines[-1].strip()
+                            if (':' in last_line and ('AM' in last_line or 'PM' in last_line)):
+                                message_content = '\n'.join(lines[:-1])
+                            else:
+                                message_content = full_text
+                        else:
+                            message_content = full_text
+                        
+                        if len(message_content.strip()) > 10:
+                            return message_content.strip()
             
-            return "No AI message found"
+            return "No AI message found in DOM"
             
         except Exception as e:
             print(f"Error getting AI message: {e}")
-            return "Error retrieving message"
+            return f"Error retrieving message: {e}"
     
     async def send_user_message(self, message: str) -> Dict[str, Any]:
         """Send user message via browser and capture response data."""
@@ -262,14 +325,24 @@ class PlaywrightTestController:
         # Submit message
         await self.page.press('input[type="text"]', 'Enter')
         
-        # Wait for AI response (wait for typing indicator to disappear)
+        # Enhanced waiting strategy for AI response
         try:
-            await self.page.wait_for_selector('.typing-indicator', state='detached', timeout=2000)
-        except:
-            pass  # Typing indicator might not appear
+            # First wait for typing indicator to appear (AI is thinking)
+            await self.page.wait_for_selector('.typing-indicator', timeout=3000)
+            print("  🤔 AI is thinking...")
+            
+            # Then wait for typing indicator to disappear (response ready)
+            await self.page.wait_for_selector('.typing-indicator', state='detached', timeout=20000)
+            print("  ✅ AI response received")
+            
+        except Exception as e:
+            print(f"  ⚠️ Typing indicator not detected: {e}")
         
-        # Wait for new message to appear
+        # Wait for message rendering to complete
         await asyncio.sleep(3)
+        
+        # Additional wait for Alpine.js reactivity to complete
+        await self.page.wait_for_timeout(1000)
         
         # Get AI response
         ai_response = await self.get_last_ai_message()
