@@ -57,31 +57,29 @@ class WHYAgentNode:
 
         # WHY methodology prompts based on Simon Sinek framework
         self.prompts = {
-            "welcome": """Welcome to your strategic journey! I'm your WHY coach, here to help you discover your organization's authentic core purpose using Simon Sinek's 'Start with Why' methodology.
+            "welcome": """Welcome! I'm your WHY coach, and I'll help you discover your organization's authentic core purpose using Simon Sinek's methodology.
 
-The WHY is not what you do or how you do it - it's WHY you exist. It's your core belief, your purpose, your cause. It's what inspires you and should inspire others to join your cause.
+Your WHY isn't what you do—it's why you exist. It's your core belief that inspires others to join your cause.
 
-Let's begin with your origin story. Tell me about how your organization started. What problem were you originally trying to solve? What drove the founders to take action?""",
-            "discovery": """Thank you for sharing that. Now let's dig deeper into your authentic WHY.
+Let's start with your origin story. How did your organization begin? What problem drove the founders to take action?""",
+            "discovery": """Now let's explore your proudest moments—times when you felt most fulfilled by the impact you were making.
 
-Think about the moments when your organization felt most proud, most successful, or most fulfilled. These weren't necessarily your biggest revenue days, but the times when you felt you were truly making the difference you set out to make.
+What were you doing in those moments? Who were you helping? What specific difference were you creating that felt most meaningful?""",
+            "mining_beliefs": """I can sense the passion in your work. Let's explore the core beliefs driving this.
 
-What were you doing in those moments? Who were you helping? What specific impact were you creating that felt most meaningful to you?""",
-            "mining_beliefs": """I can sense the passion in what you're sharing. Let's explore the core beliefs that drive this passion.
+What do you believe about {primary_beneficiary} that others might not see? What keeps you motivated to do this work?
 
-What do you believe about {primary_beneficiary} that others might not see or understand? What injustice or missed opportunity in the world keeps you motivated to do this work?
-
-Complete this sentence: "Every {primary_beneficiary} deserves..." What comes after that for you?""",
+Complete this: "Every {primary_beneficiary} deserves..." What comes next for you?""",
             "distilling_why": """Based on everything you've shared, I can see a powerful WHY emerging. Let me help you distill this into Simon Sinek's WHY format.
 
 Your WHY seems to be: "To {core_action} every {primary_beneficiary} access to {key_resource}, so they can {achieve_goal} without {common_obstacle}."
 
 Does this capture the essence of why your organization exists? What feels authentic here, and what might need refinement?""",
-            "values_definition": """Perfect! Now that we have your WHY, let's define the HOWs - these are your core values, but expressed as actionable verbs, not just words on a wall.
+            "values_definition": """Perfect! Now let's define your values as actionable verbs, not just words on a wall.
 
-Instead of saying 'integrity' (a noun), we say 'act with integrity' (a verb). Instead of 'innovation', we say 'challenge conventional thinking.'
+Instead of 'integrity' (noun), think 'act with integrity' (verb). Instead of 'innovation', think 'challenge conventional thinking.'
 
-Based on your WHY and what you've shared, what are 3-5 actionable behaviors that guide how you operate? What verbs describe how you live your WHY daily?""",
+What are 3-5 actionable behaviors that guide how you operate? What verbs describe how you live your WHY daily?""",
             "golden_circle_integration": """Excellent! Let's integrate everything into your complete Golden Circle.
 
 Your WHY creates a clear mission: You exist to {why_statement} because you believe {core_beliefs}. This manifests in behaviors like {key_values}. This creates a business model where your own {proof_point} becomes proof that your approach works.
@@ -204,15 +202,14 @@ Are you satisfied with this WHY foundation, or would you like to refine it furth
             if hasattr(msg, 'type') and msg.type == "human"
         ])
         
-        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user just shared their origin story. 
+        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user shared their origin story.
 
-Create a response that:
-1. Acknowledges specific details they mentioned (company name, founding story, problems they saw)
-2. Reflects back what you heard to show you're listening
-3. Asks them about their proudest moments and meaningful impact
-4. Stays true to Simon Sinek's discovery approach
+Create a concise response (2-3 sentences) that:
+1. Acknowledges specific details they mentioned
+2. Asks about their proudest moments
+3. Be conversational and reference their story
 
-Be conversational and reference specific details they shared."""
+Keep it brief and focused."""
 
         # Get the last 200 words for context (more natural than split array)
         recent_context = " ".join(user_messages_text.split()[-100:])
@@ -243,16 +240,14 @@ Create a natural, contextual response that acknowledges their specific origin st
             if hasattr(msg, 'type') and msg.type == "human"
         ])
         
-        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user just shared their proudest moments and achievements.
+        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user shared their proudest moments.
 
-Create a response that:
-1. Acknowledges the specific achievements they mentioned
-2. Shows you understand the passion behind their work
-3. Explores the core beliefs that drive this passion
-4. Asks about what they believe their beneficiaries deserve
-5. References specific details from their story
+Create a concise response (2-3 sentences) that:
+1. Acknowledges their specific achievements
+2. Explores their core beliefs about the people they serve
+3. References their actual story
 
-Be deeply empathetic and reference their actual words."""
+Keep it brief and focused."""
 
         # Get recent context in clean format
         recent_context = " ".join(user_messages_text.split()[-150:])
@@ -308,16 +303,14 @@ Does this capture the essence of why {company_name} exists? What feels authentic
             if hasattr(msg, 'type') and msg.type == "human"
         ])
         
-        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user has shared their origin story, proudest moments, and core beliefs.
+        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user shared their beliefs.
 
-Create a response that:
-1. Acknowledges their specific beliefs and values they've mentioned
-2. Explains how Simon Sinek defines values as actionable verbs, not nouns
-3. Asks them to define their values as actionable behaviors
-4. References their actual story and beliefs
-5. Makes it feel personal and authentic
+Create a concise response (2-3 sentences) that:
+1. Acknowledges their beliefs
+2. Explains values as actionable verbs (not nouns)
+3. Asks for their actionable behaviors
 
-Be encouraging and reference their specific context."""
+Keep it brief and encouraging."""
 
         # Get recent context in clean format
         recent_context = " ".join(user_messages_text.split()[-200:])
