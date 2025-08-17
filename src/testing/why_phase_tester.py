@@ -13,6 +13,7 @@ from typing import Dict, List
 
 from .business_case_parser import AFASResponseGenerator
 from .testing_agent import StrategyTestingAgent
+from .html_report_generator import HTMLTestReportGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -94,10 +95,13 @@ class WHYPhaseTester:
             }
             
             # Save interaction log
-            await self.agent.save_interaction_log()
+            log_path = await self.agent.save_interaction_log()
             
             # Take final screenshot
             await self.agent.take_screenshot("why_phase_complete")
+            
+            # Generate HTML report automatically
+            await self._generate_html_report(log_path)
             
             logger.info("✅ WHY Phase Test Completed Successfully")
             
@@ -270,6 +274,29 @@ class WHYPhaseTester:
         await self.agent.take_screenshot("why_phase_final")
         
         logger.info("✅ WHY Phase Completion Stage Complete")
+    
+    async def _generate_html_report(self, log_path: str) -> None:
+        """Generate comprehensive HTML report automatically."""
+        logger.info("📝 Generating HTML Test Report...")
+        
+        try:
+            # Use why_phase specific report generator to save in why_phase folder
+            generator = HTMLTestReportGenerator(reports_dir="testing/reports/why_phase")
+            report_path = generator.generate_why_phase_html_report(
+                interaction_log_path=log_path,
+                screenshots_dir=str(self.agent.screenshots_dir),
+                report_name=f"test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            )
+            
+            logger.info(f"✅ HTML Report Generated: {report_path}")
+            logger.info(f"🌐 Open in browser: file://{Path(report_path).absolute()}")
+            
+            # Add report path to test results
+            self.test_results["html_report"] = report_path
+            
+        except Exception as e:
+            logger.error(f"❌ HTML Report generation failed: {e}")
+            self.test_results["report_error"] = str(e)
 
 
 async def run_why_phase_isolated_test(headless: bool = False) -> Dict:
@@ -299,6 +326,9 @@ if __name__ == "__main__":
         
         if results.get('test_status') == 'PASSED':
             print("✅ WHY Phase Test Successful!")
+            if 'html_report' in results:
+                print(f"📊 HTML Report: {results['html_report']}")
+                print(f"🌐 Open: file://{Path(results['html_report']).absolute()}")
         else:
             print(f"❌ Test Failed: {results.get('error', 'Unknown error')}")
     
