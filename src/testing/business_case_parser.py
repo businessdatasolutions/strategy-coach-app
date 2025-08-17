@@ -74,7 +74,7 @@ class AFASResponseGenerator:
     def generate_origin_story_response(self, agent_question: str) -> str:
         """Generate response about AFAS origin story."""
         responses = [
-            f"AFAS started in 1996 when my father Ton van der Veldt and Piet Mars did a management buyout from Getronics. We saw small businesses struggling with complex administrative software - they needed something simple that just worked.",
+            f"AFAS started in 1996 when our fathers Ton van der Veldt and Piet Mars did a management buyout from Getronics. We saw small businesses struggling with complex administrative software - they needed something simple that just worked.",
             
             f"We founded AFAS because we believed small businesses deserved enterprise-level software without the complexity. From day one, it was about eliminating the administrative burden so entrepreneurs could focus on what they do best.",
             
