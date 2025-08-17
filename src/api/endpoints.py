@@ -91,6 +91,7 @@ async def chat(message: ChatMessage) -> ChatResponse:
             "messages": [HumanMessage(content=message.content)],
             "current_phase": "WHY",  # Always start with WHY
             "interaction_count": 0,
+            "methodology_stage": "welcome",  # Start with welcome stage
             "phase_complete": False,
             "why_output": None,
             "how_output": None,

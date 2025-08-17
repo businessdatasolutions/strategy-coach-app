@@ -28,6 +28,7 @@ class StrategyCoachState(TypedDict):
     current_phase: str  # "WHY", "HOW", or "WHAT"
     phase_complete: bool  # Whether current phase is ready for transition
     interaction_count: int  # Number of user interactions in current phase
+    methodology_stage: str  # Current stage within methodology (e.g., "welcome", "discovery", "completion_check")
 
     # Structured outputs from each phase
     why_output: Optional[WHYStatement]  # Output from WHY phase

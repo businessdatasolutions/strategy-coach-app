@@ -105,11 +105,13 @@ Are you satisfied with this WHY foundation, or would you like to refine it furth
         Simon Sinek's WHY discovery methodology.
         """
         messages = state.get("messages", [])
+        current_stage = state.get("methodology_stage", "welcome")
         interaction_count = state.get("interaction_count", 0)
         why_output = state.get("why_output")
 
-        # Determine current stage in WHY methodology
-        stage = self._determine_why_stage(messages, interaction_count, why_output)
+        # Determine next stage based on current state and user input
+        stage = self._determine_next_stage(current_stage, interaction_count, why_output)
+        print(f"🔍 WHY Agent: current_stage='{current_stage}' → next_stage='{stage}', interaction={interaction_count}")
 
         # Generate response based on methodology stage
         if stage == "welcome":
@@ -143,30 +145,47 @@ Are you satisfied with this WHY foundation, or would you like to refine it furth
             "messages": [response],
             "current_phase": "WHY",
             "interaction_count": interaction_count + 1,
+            "methodology_stage": stage,
             "phase_complete": phase_complete,
             "why_output": new_why_output,
         }
 
-    def _determine_why_stage(
-        self, messages: list, interaction_count: int, why_output
+    def _determine_next_stage(
+        self, current_stage: str, interaction_count: int, why_output
     ) -> str:
-        """Determine the current stage in the WHY discovery process."""
-        if interaction_count == 0:
-            return "welcome"
-        elif interaction_count <= 2:
-            return "discovery"
-        elif interaction_count <= 4:
-            return "mining_beliefs"
-        elif interaction_count <= 6:
-            return "distilling_why"
-        elif interaction_count == 7 and why_output is None:
-            return "completion_check"  # Trigger structured output generation
-        elif interaction_count <= 8:
-            return "values_definition"
-        elif interaction_count <= 10:
-            return "integration"
-        else:
-            return "transition_readiness"
+        """Determine the next stage using LangGraph state management."""
+        
+        # Stage progression logic using state instead of counting
+        stage_progression = [
+            "welcome",           # 0
+            "discovery",         # 1
+            "mining_beliefs",    # 2
+            "values_definition", # 3
+            "distilling_why",    # 4
+            "completion_check",  # 5 - Generate template
+            "integration",       # 6
+            "transition_readiness" # 7+
+        ]
+        
+        # If no current stage, start at welcome
+        if not current_stage or current_stage == "welcome":
+            return "welcome" if interaction_count == 0 else "discovery"
+        
+        # Find current stage index
+        try:
+            current_index = stage_progression.index(current_stage)
+        except ValueError:
+            current_index = 0
+        
+        # Progress to next stage after user input
+        next_index = min(current_index + 1, len(stage_progression) - 1)
+        next_stage = stage_progression[next_index]
+        
+        # Special case: trigger completion when ready
+        if interaction_count >= 4 and why_output is None and next_stage not in ["completion_check", "integration", "transition_readiness"]:
+            return "completion_check"
+        
+        return next_stage
 
     def _handle_welcome_stage(self, state: StrategyCoachState) -> AIMessage:
         """Handle the welcome stage with origin story prompting."""
@@ -359,12 +378,12 @@ What aspect of your organization's purpose would you like to dive deeper into? I
         self, state: StrategyCoachState, response: AIMessage
     ) -> bool:
         """Check if the WHY phase is complete and ready for transition."""
-        interaction_count = state.get("interaction_count", 0)
         has_structured_output = hasattr(response, "structured_output")
         existing_why_output = state.get("why_output") is not None
+        current_stage = state.get("methodology_stage", "")
 
-        # Phase is complete if we have structured output and sufficient interactions
-        return interaction_count >= 7 and (has_structured_output or existing_why_output)
+        # Phase is complete if we have structured output or reached transition readiness
+        return has_structured_output or existing_why_output or current_stage == "transition_readiness"
 
     def _extract_beneficiary(self, messages: list) -> str:
         """Extract primary beneficiary from conversation messages."""

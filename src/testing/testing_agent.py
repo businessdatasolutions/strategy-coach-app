@@ -245,43 +245,8 @@ class StrategyTestingAgent:
             logger.debug(f"✅ API Response: {response.status} {response.url}")
 
 
-async def run_basic_test() -> None:
-    """Run a basic test of the testing agent framework."""
-    agent = StrategyTestingAgent(headless=False)
-    
-    try:
-        await agent.setup_browser()
-        await agent.navigate_to_app()
-        
-        # Take initial screenshot
-        await agent.take_screenshot("initial_load")
-        
-        # Send a test message
-        response = await agent.send_message(
-            "Hello! I run AFAS Software, a Dutch ERP company. I want to develop our strategy.",
-            take_screenshot=True
-        )
-        
-        print(f"Agent Response: {response[:100]}...")
-        
-        # Check phase status
-        status = await agent.check_phase_status()
-        print(f"Phase Status: {status}")
-        
-        # Send follow-up message
-        await agent.send_message(
-            "We started in 1996 to help small businesses with administrative software. Our mission is to inspire better entrepreneurship.",
-            take_screenshot=True
-        )
-        
-        # Save interaction log
-        log_path = await agent.save_interaction_log()
-        print(f"Interaction log saved: {log_path}")
-        
-    finally:
-        await agent.cleanup()
-
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    asyncio.run(run_basic_test())
+    print("⚠️ This is the base testing agent framework.")
+    print("📋 For WHY phase testing, use: python -m src.testing.why_phase_tester")
+    print("🎯 For full testing suite, use dedicated phase testers.")
