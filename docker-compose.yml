@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # Main application service
+  app:
+    build:
+      context: .
+      target: development
+    container_name: strategy-coach-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/__pycache__
+      - /app/.pytest_cache
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - API_RELOAD=true
+      - PYTHONPATH=/app/src
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - strategy-coach-network
+
+  # Redis for session storage (production-ready setup)
+  redis:
+    image: redis:7-alpine
+    container_name: strategy-coach-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - strategy-coach-network
+
+  # Testing service for running automated tests
+  test:
+    build:
+      context: .
+      target: development
+    container_name: strategy-coach-test
+    volumes:
+      - .:/app
+      - /app/__pycache__
+      - /app/.pytest_cache
+      - /app/test-results
+    environment:
+      - PYTHONPATH=/app/src
+      - PLAYWRIGHT_HEADLESS=true
+    env_file:
+      - .env
+    command: pytest
+    depends_on:
+      - app
+    profiles:
+      - testing
+    networks:
+      - strategy-coach-network
+
+  # Development database (optional - for future session persistence)
+  postgres:
+    image: postgres:15-alpine
+    container_name: strategy-coach-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: strategy_coach
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    profiles:
+      - database
+    networks:
+      - strategy-coach-network
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  strategy-coach-network:
+    driver: bridge
