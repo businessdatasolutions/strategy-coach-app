@@ -98,7 +98,6 @@ This authentic purpose will be the foundation for everything we build next.
 Are you satisfied with this WHY foundation, or would you like to refine it further before we explore HOW you'll bring this purpose to life in the world?""",
         }
 
-    @traceable(name="why_agent_node")
     def __call__(self, state: StrategyCoachState) -> dict:
         """
         Main node function following LangGraph pattern.

@@ -121,11 +121,21 @@ async def chat(message: ChatMessage) -> ChatResponse:
             pass
         
         # Execute single step of the graph
+        logger.info(f"🔍 Invoking graph with input keys: {list(graph_input.keys())}")
         result = graph.invoke(graph_input, config)
         
         # Calculate performance metrics
         end_time = time.time()
         response_time_ms = int((end_time - start_time) * 1000)
+        
+        # Debug result
+        logger.info(f"🔍 Graph result type: {type(result)}")
+        if result:
+            logger.info(f"🔍 Result keys: {list(result.keys())}")
+        
+        # Validate result
+        if result is None:
+            raise Exception("Graph returned None result")
         
         # Extract response information
         messages = result.get("messages", [])
@@ -134,7 +144,7 @@ async def chat(message: ChatMessage) -> ChatResponse:
         
         # Extract token usage if available
         token_usage = {}
-        if latest_message and hasattr(latest_message, 'usage_metadata'):
+        if latest_message and hasattr(latest_message, 'usage_metadata') and latest_message.usage_metadata:
             token_usage = {
                 "input_tokens": latest_message.usage_metadata.get("input_tokens", 0),
                 "output_tokens": latest_message.usage_metadata.get("output_tokens", 0),

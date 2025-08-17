@@ -16,7 +16,6 @@ from .state import StrategyCoachState
 logger = logging.getLogger(__name__)
 
 
-@traceable(name="route_phase_transition")
 def route_phase_transition(
     state: StrategyCoachState,
 ) -> Literal["why_agent", "how_agent", "what_agent", "__end__"]:
@@ -74,7 +73,6 @@ def route_phase_transition(
     return target
 
 
-@traceable(name="route_from_why")
 def route_from_why(state: StrategyCoachState) -> Literal["how_agent", "__end__"]:
     """Conditional edge specifically for WHY agent transitions."""
     phase_complete = state.get("phase_complete", False)
