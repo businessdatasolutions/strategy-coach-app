@@ -5,7 +5,7 @@
 **Strategy Coach App v2.0** is an AI-powered strategic co-pilot that guides business leaders through a rigorous, sequential process of developing, refining, and testing their organizational strategy. The system leverages specialist AI agents focused on distinct phases of strategy development: WHY → HOW → WHAT.
 
 ### Vision
-To create an AI-powered strategic co-pilot that guides business leaders through a Socratic, sequential process of strategy development, moving from core purpose to actionable planning in a logical sequence.
+To create an AI-powered strategic co-pilot that guides business leaders through a Socratic, sequential process of strategy development, moving from core purpose to actionable planning in a logical sequence using research-backed methodologies.
 
 ### Target User
 Business Unit Managers at large corporations who need to create clear, defensible strategies to gain alignment and resources within their organization.
@@ -15,9 +15,9 @@ Business Unit Managers at large corporations who need to create clear, defensibl
 ### LangGraph-Native StateGraph Model
 The system is built using **LangGraph's StateGraph** architecture, leveraging native LangGraph patterns for state management, agent coordination, and phase transitions.
 
-1. **WHY Phase** - Discovery of organizational purpose using Simon Sinek methodology
-2. **HOW Phase** - Strategic logic development using Analogy and Logic agents  
-3. **WHAT Phase** - Strategy mapping and implementation planning
+1. **WHY Phase** - Discovery of organizational purpose using Simon Sinek "Start with Why" methodology ✅ **COMPLETE**
+2. **HOW Phase** - Strategic logic development using Carroll & Sørensen analogical reasoning + deductive logic ⏳ **READY FOR IMPLEMENTATION**
+3. **WHAT Phase** - Strategy mapping using Kaplan & Norton + Open Strategy frameworks ⏳ **READY FOR IMPLEMENTATION**
 
 ### Core LangGraph Components
 
@@ -38,9 +38,11 @@ The system is built using **LangGraph's StateGraph** architecture, leveraging na
 
 ##### HOW Agent Node (Phase 2)  
 - **Implementation**: `how_agent_node(state: StrategyCoachState)` function
-- **Methodology**: Combined Carroll & Sørensen analogical reasoning + logic validation
+- **Methodology**: Carroll & Sørensen analogical reasoning with 9-step coaching workflow
+- **Process**: Target/Source analysis → Horizontal relations → Vertical causal theory → Strategic argument
+- **Key Principles**: Generative analogies, vertical over horizontal focus, avoid confirmation bias
 - **Integration**: Uses `HOWStrategy` schema accessing `why_output` from state
-- **Output**: Strategic logic with analogical analysis and logical validation
+- **Output**: Firm-specific theory of success with deductive strategic argument
 
 ##### WHAT Agent Node (Phase 3)
 - **Implementation**: `what_agent_node(state: StrategyCoachState)` function  
@@ -334,9 +336,13 @@ pytest tests/core/ tests/agents/ -v
 - **Organization**: Proper folder structure and testing organization
 
 ### **🚀 Ready for Development**
-- **HOW Agent (Task 4.0)**: Infrastructure ready for Carroll & Sørensen analogical reasoning + logic validation
+- **HOW Agent (Task 4.0)**: Infrastructure ready for Carroll & Sørensen analogical reasoning methodology
+  - Comprehensive 9-step coaching workflow defined in PRD
+  - Rigorous analogical reasoning process: horizontal → vertical relations
+  - Deductive logic integration for strategic argument formalization
+  - Structured output for causal theory and strategic logic
 - **WHAT Agent (Task 5.0)**: Infrastructure ready for Kaplan & Norton strategy map + open strategy
-- **Session Persistence**: Ready for user save/load functionality implementation
+- **Session Persistence**: Ready for user save/load functionality implementation (GitHub Issue #23)
 
 ## Non-Goals (Out of Scope)
 
