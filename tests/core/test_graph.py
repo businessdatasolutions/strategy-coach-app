@@ -241,18 +241,20 @@ class TestStrategyCoachGraph:
 
         config = {"configurable": {"thread_id": "test-session-1"}}
 
-        # This should run without errors
+        # This should run without errors - now executes only WHY phase
         result = graph.invoke(initial_input, config)
 
         assert result is not None
         assert "messages" in result
-        assert (
-            len(result["messages"]) >= 3
-        )  # Should have messages from all three phases
-        assert result["current_phase"] == "WHAT"  # Should end at final phase
-        assert result.get("why_output") is not None
-        assert result.get("how_output") is not None
-        assert result.get("what_output") is not None
+        assert len(result["messages"]) >= 1  # Should have user message + WHY agent response
+        assert result["current_phase"] == "WHY"  # Should stay in WHY phase
+        
+        # Check that WHY agent responded appropriately
+        messages = result["messages"]
+        if len(messages) >= 2:
+            agent_response = messages[-1].content
+            assert "WHY coach" in agent_response or "strategic journey" in agent_response
+            assert "origin story" in agent_response
 
     @patch("src.core.graph.init_chat_model")
     def test_graph_streaming(self, mock_init_chat_model, mock_settings, mock_llm):

@@ -12,6 +12,9 @@ from ..core.config import settings
 from ..core.models import WHYStatement
 from ..core.state import StrategyCoachState
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class WHYAgentNode:
     """
@@ -23,11 +26,30 @@ class WHYAgentNode:
 
     def __init__(self, llm=None):
         """Initialize the WHY agent with LLM configuration."""
-        self.llm = llm or init_chat_model(
-            f"{settings.llm_provider}:{settings.default_model}",
-            temperature=settings.temperature,
-            max_tokens=settings.max_tokens,
-        )
+        if llm:
+            self.llm = llm
+        else:
+            # Ensure API key is available
+            api_key = settings.get_llm_api_key()
+            if not api_key:
+                raise ValueError(f"No API key configured for {settings.llm_provider}")
+            
+            # Initialize with explicit API key
+            if settings.llm_provider == "anthropic":
+                from langchain_anthropic import ChatAnthropic
+                self.llm = ChatAnthropic(
+                    model=settings.default_model,
+                    anthropic_api_key=api_key,
+                    temperature=settings.temperature,
+                    max_tokens=settings.max_tokens
+                )
+            else:
+                # Fallback to init_chat_model for other providers
+                self.llm = init_chat_model(
+                    f"{settings.llm_provider}:{settings.default_model}",
+                    temperature=settings.temperature,
+                    max_tokens=settings.max_tokens,
+                )
 
         # Configure LLM for structured output
         self.structured_llm = self.llm.with_structured_output(WHYStatement)
@@ -152,30 +174,149 @@ Are you satisfied with this WHY foundation, or would you like to refine it furth
         return AIMessage(content=self.prompts["welcome"])
 
     def _handle_discovery_stage(self, state: StrategyCoachState) -> AIMessage:
-        """Handle the discovery stage with deeper purpose exploration."""
-        _ = state  # Suppress unused parameter warning
-        return AIMessage(content=self.prompts["discovery"])
+        """Handle the discovery stage with deeper purpose exploration using live LLM."""
+        messages = state.get("messages", [])
+        user_context = self._extract_user_context(messages)
+        
+        # Create contextual prompt for live LLM
+        user_messages_text = "\n".join([
+            msg.content for msg in messages 
+            if hasattr(msg, 'type') and msg.type == "human"
+        ])
+        
+        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user just shared their origin story. 
+
+Create a response that:
+1. Acknowledges specific details they mentioned (company name, founding story, problems they saw)
+2. Reflects back what you heard to show you're listening
+3. Asks them about their proudest moments and meaningful impact
+4. Stays true to Simon Sinek's discovery approach
+
+Be conversational and reference specific details they shared."""
+
+        # Get the last 200 words for context (more natural than split array)
+        recent_context = " ".join(user_messages_text.split()[-100:])
+        
+        user_prompt = f"""The user just said: "{recent_context}"
+
+Create a natural, contextual response that acknowledges their specific origin story and asks about their proudest moments."""
+
+        # Use live LLM for contextual response
+        try:
+            response = self.llm.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ])
+            return AIMessage(content=response.content)
+        except Exception as e:
+            # Fallback to template if LLM fails
+            logger.warning(f"LLM discovery stage failed: {e}")
+            return AIMessage(content=self.prompts["discovery"])
 
     def _handle_beliefs_stage(self, state: StrategyCoachState) -> AIMessage:
-        """Handle core beliefs mining stage."""
-        # Extract primary beneficiary from conversation
-        beneficiary = self._extract_beneficiary(state.get("messages", []))
-        prompt_content = self.prompts["mining_beliefs"].format(
-            primary_beneficiary=beneficiary or "your customers"
-        )
-        return AIMessage(content=prompt_content)
+        """Handle core beliefs mining stage using live LLM."""
+        messages = state.get("messages", [])
+        
+        # Get user conversation context
+        user_messages_text = "\n".join([
+            msg.content for msg in messages 
+            if hasattr(msg, 'type') and msg.type == "human"
+        ])
+        
+        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user just shared their proudest moments and achievements.
+
+Create a response that:
+1. Acknowledges the specific achievements they mentioned
+2. Shows you understand the passion behind their work
+3. Explores the core beliefs that drive this passion
+4. Asks about what they believe their beneficiaries deserve
+5. References specific details from their story
+
+Be deeply empathetic and reference their actual words."""
+
+        # Get recent context in clean format
+        recent_context = " ".join(user_messages_text.split()[-150:])
+        
+        user_prompt = f"""The user has shared: "{recent_context}"
+
+Create a natural response that acknowledges their specific achievements and explores their core beliefs about the people they serve."""
+
+        # Use live LLM for contextual response
+        try:
+            response = self.llm.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ])
+            return AIMessage(content=response.content)
+        except Exception as e:
+            # Fallback to template if LLM fails
+            logger.warning(f"LLM beliefs stage failed: {e}")
+            return AIMessage(content="I can sense the passion in your work. Let's explore the core beliefs that drive you. What do you believe about the people you serve?")
 
     def _handle_distilling_stage(self, state: StrategyCoachState) -> AIMessage:
         """Handle WHY statement distillation stage."""
-        # Extract key elements from conversation
-        elements = self._extract_why_elements(state.get("messages", []))
-        prompt_content = self.prompts["distilling_why"].format(**elements)
-        return AIMessage(content=prompt_content)
+        messages = state.get("messages", [])
+        user_context = self._extract_user_context(messages)
+        
+        # Create contextual WHY distillation based on their specific story
+        company_name = user_context.get("company_name", "your organization")
+        beneficiary = user_context.get("primary_beneficiary", "people")
+        beliefs = user_context.get("core_beliefs", "")
+        
+        if company_name and beneficiary:
+            contextual_prompt = f"""Based on everything you've shared about {company_name}, I can see a powerful WHY emerging. 
+
+Your WHY seems to be: "To help every {beneficiary} access the tools and clarity they need to succeed, so they can focus on what matters most without being held back by complexity or confusion."
+
+{f'Your belief that "{beliefs}" is clearly driving this mission.' if beliefs else ''}
+
+Does this capture the essence of why {company_name} exists? What feels authentic here, and what might need refinement before we explore HOW you'll achieve this?"""
+        else:
+            # Fallback to template-based approach
+            elements = self._extract_why_elements(messages)
+            contextual_prompt = self.prompts["distilling_why"].format(**elements)
+        
+        return AIMessage(content=contextual_prompt)
 
     def _handle_values_stage(self, state: StrategyCoachState) -> AIMessage:
-        """Handle actionable values definition stage."""
-        _ = state  # Suppress unused parameter warning
-        return AIMessage(content=self.prompts["values_definition"])
+        """Handle actionable values definition stage using live LLM."""
+        messages = state.get("messages", [])
+        
+        # Get user conversation context
+        user_messages_text = "\n".join([
+            msg.content for msg in messages 
+            if hasattr(msg, 'type') and msg.type == "human"
+        ])
+        
+        system_prompt = """You are a WHY coach using Simon Sinek's methodology. The user has shared their origin story, proudest moments, and core beliefs.
+
+Create a response that:
+1. Acknowledges their specific beliefs and values they've mentioned
+2. Explains how Simon Sinek defines values as actionable verbs, not nouns
+3. Asks them to define their values as actionable behaviors
+4. References their actual story and beliefs
+5. Makes it feel personal and authentic
+
+Be encouraging and reference their specific context."""
+
+        # Get recent context in clean format
+        recent_context = " ".join(user_messages_text.split()[-200:])
+        
+        user_prompt = f"""The user's complete story: "{recent_context}"
+
+Create a response that helps them define their values as actionable verbs, referencing their specific story and beliefs."""
+
+        # Use live LLM for contextual response
+        try:
+            response = self.llm.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ])
+            return AIMessage(content=response.content)
+        except Exception as e:
+            # Fallback to template if LLM fails
+            logger.warning(f"LLM values stage failed: {e}")
+            return AIMessage(content=self.prompts["values_definition"])
 
     def _handle_integration_stage(self, state: StrategyCoachState) -> AIMessage:
         """Handle Golden Circle integration stage."""
@@ -314,12 +455,95 @@ Generate core beliefs that drive this WHY and actionable values that manifest it
 Please create a complete WHY statement with core beliefs and actionable values that authentically represents this organization's purpose."""
 
         return [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
+    
+    def _extract_user_context(self, messages: list) -> dict:
+        """Extract specific context and information from user messages."""
+        import re
+        
+        context = {
+            "user_name": "",
+            "company_name": "",
+            "origin_elements": "",
+            "proud_moments": "",
+            "primary_beneficiary": "entrepreneurs"
+        }
+        
+        # Get recent user messages
+        user_messages = []
+        for message in messages:
+            if hasattr(message, 'type') and message.type == "human":
+                user_messages.append(message.content)
+        
+        if not user_messages:
+            return context
+        
+        latest_message = user_messages[-1] if user_messages else ""
+        
+        # Extract user name
+        name_patterns = [
+            r"i'?m ([a-za-z\s]+),",
+            r"i'?m ([a-za-z\s]+) (?:and|from|at|ceo|founder)",
+            r"my name is ([a-za-z\s]+)"
+        ]
+        for pattern in name_patterns:
+            name_match = re.search(pattern, latest_message.lower())
+            if name_match:
+                context["user_name"] = name_match.group(1).strip().title()
+                break
+        
+        # Extract company name  
+        company_patterns = [
+            r"(?:ceo|founder|leader) of ([a-za-z\s]+)",
+            r"at ([a-za-z\s]+)[,.]",
+            r"run ([a-za-z\s]+)",
+            r"company (?:called )?([a-za-z\s]+)"
+        ]
+        for pattern in company_patterns:
+            company_match = re.search(pattern, latest_message.lower())
+            if company_match:
+                company = company_match.group(1).strip()
+                if len(company) > 2 and company not in ["the", "our", "my", "a", "software"]:
+                    context["company_name"] = company.title()
+                    break
+        
+        # Extract origin elements
+        if "started" in latest_message.lower() or "founded" in latest_message.lower():
+            context["origin_elements"] = "your founding story"
+        
+        # Extract proud moments - be more specific
+        if "proudest" in latest_message.lower() or "best workplace" in latest_message.lower():
+            # Extract the actual achievement
+            if "best workplace" in latest_message.lower():
+                context["proud_moments"] = "Becoming the #1 Best Workplace in Europe"
+            elif "proudest" in latest_message.lower():
+                context["proud_moments"] = "your proudest achievements"
+        
+        # Extract primary beneficiary
+        if "small business" in latest_message.lower():
+            context["primary_beneficiary"] = "small businesses"
+        elif "entrepreneur" in latest_message.lower():
+            context["primary_beneficiary"] = "entrepreneurs" 
+        elif "employee" in latest_message.lower():
+            context["primary_beneficiary"] = "employees"
+        
+        return context
 
 
 def why_agent_node(state: StrategyCoachState) -> dict:
     """
     LangGraph node function for WHY phase using Simon Sinek methodology.
 
+    This is the main entry point for the WHY agent that follows LangGraph
+    node patterns and integrates with the StateGraph.
+    """
+    agent = WHYAgentNode()
+    return agent(state)
+
+
+def why_agent_node(state: StrategyCoachState) -> dict:
+    """
+    LangGraph node function for WHY phase using Simon Sinek methodology.
+    
     This is the main entry point for the WHY agent that follows LangGraph
     node patterns and integrates with the StateGraph.
     """

@@ -63,17 +63,33 @@ class StrategyCoachGraph:
         # Import and add agent nodes
         from ..agents.why_node import why_agent_node
         graph_builder.add_node("why_agent", why_agent_node)
-        graph_builder.add_node("how_agent", self._how_agent_node)
-        graph_builder.add_node("what_agent", self._what_agent_node)
+        graph_builder.add_node("how_agent", self._placeholder_how_agent)
+        graph_builder.add_node("what_agent", self._placeholder_what_agent)
 
         # Add edges and routing logic
         graph_builder.add_edge(START, "why_agent")
 
-        # Set up simple linear progression for now
-        # This can be enhanced later with proper conversational loops
-        graph_builder.add_edge("why_agent", "how_agent")
-        graph_builder.add_edge("how_agent", "what_agent")
-        graph_builder.add_edge("what_agent", END)
+        # Use human-in-the-loop pattern with interrupts
+        # Each agent processes one message then stops for user input
+        graph_builder.add_conditional_edges(
+            "why_agent",
+            self._route_after_why,
+            {
+                "how_agent": "how_agent",    # Transition to HOW when ready
+                "__end__": END               # End conversation
+            }
+        )
+        
+        graph_builder.add_conditional_edges(
+            "how_agent",
+            self._route_after_how,
+            {
+                "what_agent": "what_agent",  # Transition to WHAT when ready
+                "__end__": END
+            }
+        )
+        
+        graph_builder.add_edge("what_agent", END)  # WHAT always ends
 
         # Configure checkpointer for session persistence
         if (
@@ -160,116 +176,101 @@ Does this resonate with you? Are you ready to refine this into your final WHY st
 
         return state_updates
 
-    def _how_agent_node(self, state: StrategyCoachState) -> dict:
+    def _placeholder_how_agent(self, state: StrategyCoachState) -> dict:
         """
         HOW Agent Node - Strategic logic development using analogical reasoning.
 
         Placeholder implementation combining Analogy and Logic methodologies.
         """
-        from .models import AnalogicalComparison, HOWStrategy, LogicalArgument
-
-        messages = state.get("messages", [])
-        interaction_count = state.get("interaction_count", 0)
         why_output = state.get("why_output")
+        
+        response_content = f"""🚧 HOW Phase Not Yet Implemented
 
-        # Reset interaction count when entering new phase
-        if state.get("current_phase") != "HOW":
-            interaction_count = 0
+Excellent work completing your WHY phase! Your purpose: "{why_output.why_statement if why_output else 'Your core purpose'}" provides a strong foundation.
 
-        if interaction_count == 0:
-            response_content = f"""Excellent! Now that we've clarified your WHY - "{why_output.why_statement if why_output else 'your core purpose'}" - let's explore HOW you'll deliver on this purpose.
+The HOW agent (Carroll & Sørensen analogical reasoning + logic validation) will be implemented in the next development phase.
 
-I'd like to use analogical reasoning to develop your strategic approach. Can you think of another organization that has successfully achieved something similar to what you're trying to accomplish? Who would you consider a great example of success in your space or a related area?"""
+For now, this validates your WHY phase completion. You can continue testing the WHY methodology or start a new session."""
 
-        else:
-            response_content = """Let's dive deeper into this analogy. What specifically about their approach led to their success? I want to understand not just what they did (the horizontal similarities), but WHY their approach worked (the vertical causal theory).
-
-What's the underlying logic that made them successful? How can we apply that same causal theory to your unique situation?"""
-
-        ai_message = AIMessage(content=response_content)
-
-        state_updates = {
-            "messages": [ai_message],
+        return {
+            "messages": [AIMessage(content=response_content)],
             "current_phase": "HOW",
-            "interaction_count": interaction_count + 1,
-            "phase_complete": interaction_count >= 3,
+            "interaction_count": 1,
+            "phase_complete": True
         }
 
-        # Always add structured output for HOW phase (simplified for now)
-        how_strategy = HOWStrategy(
-            analogical_analysis=AnalogicalComparison(
-                source_company="Example Company",
-                target_company="User's Company",
-                causal_theory="Innovation and customer focus drive market leadership",
-                applied_theory="We can achieve leadership through customer-centric innovation",
-            ),
-            logical_validation=LogicalArgument(
-                logical_connection="Customer focus connects our WHY to market success",
-                deductive_reasoning="If we serve customers better than competitors, we win",
-            ),
-            core_strategic_theory="Customer-centric innovation strategy",
-            strategic_approach="Differentiate through superior customer experience",
-        )
-        state_updates["how_output"] = how_strategy
-
-        return state_updates
-
-    def _what_agent_node(self, state: StrategyCoachState) -> dict:
-        """
-        WHAT Agent Node - Strategy mapping and implementation planning.
-
-        Placeholder implementation combining Strategy Map and Open Strategy.
-        """
-        from .models import OpenStrategyPlan, WHATStrategy
-
-        messages = state.get("messages", [])
-        interaction_count = state.get("interaction_count", 0)
+    def _placeholder_what_agent(self, state: StrategyCoachState) -> dict:
+        """Placeholder WHAT Agent - Not implemented yet."""
         why_output = state.get("why_output")
-        how_output = state.get("how_output")
+        
+        response_content = f"""🚧 WHAT Phase Not Yet Implemented
 
-        # Reset interaction count when entering new phase
-        if state.get("current_phase") != "WHAT":
-            interaction_count = 0
+Congratulations on completing your strategic foundation! 
 
-        if interaction_count == 0:
-            response_content = f"""Perfect! We've established your WHY ({why_output.why_statement if why_output else 'your purpose'}) and your HOW ({how_output.strategic_approach if how_output else 'your approach'}).
+Your WHY: "{why_output.why_statement if why_output else 'Your core purpose'}" is now clearly defined.
 
-Now let's create your strategy map - the WHAT that brings everything together. We'll build this using four key perspectives:
+The WHAT agent (Kaplan & Norton Strategy Map + Open Strategy) will be implemented to create your complete strategy map.
 
-1. **Value Creation**: What value will you create for stakeholders?
-2. **Stakeholder**: Who are your key stakeholders and what do they need?
-3. **Internal Processes**: What must you excel at internally?
-4. **Learning & Growth**: What capabilities must you develop?
+This completes the current testing scope for WHY phase validation."""
 
-Let's start with your stakeholders. Who are the most important people or groups that your strategy must serve?"""
-
-        else:
-            response_content = """Excellent insights! Let's continue building your strategy map. 
-
-Now let's think about implementation. Based on the Open Strategy approach, who should be involved in validating and implementing this strategy? Should we engage frontline employees, external experts, customers, or other stakeholders in the planning process?"""
-
-        ai_message = AIMessage(content=response_content)
-
-        state_updates = {
-            "messages": [ai_message],
+        return {
+            "messages": [AIMessage(content=response_content)],
             "current_phase": "WHAT",
-            "interaction_count": interaction_count + 1,
-            "phase_complete": interaction_count >= 3,
+            "interaction_count": 1,
+            "phase_complete": True
         }
-
-        # Always add structured output for WHAT phase (simplified for now)
-        what_strategy = WHATStrategy(
-            open_strategy_plan=OpenStrategyPlan(
-                strategic_challenge="Implement customer-centric innovation strategy",
-                strategy_phase="Strategy_Formulation",
-                synthesis_plan="Synthesize stakeholder input into refined strategy",
-                feedback_mechanism="Regular updates and collaborative reviews",
-            ),
-            strategy_summary="Complete strategy from WHY through implementation planning",
-        )
-        state_updates["what_output"] = what_strategy
-
-        return state_updates
+    
+    def _route_after_why(self, state: StrategyCoachState) -> str:
+        """Route after WHY agent - check if ready to transition to HOW."""
+        why_output = state.get("why_output")
+        messages = state.get("messages", [])
+        
+        # Check for explicit transition request
+        if messages:
+            latest_message = None
+            for msg in reversed(messages):
+                if hasattr(msg, 'type') and msg.type == "human":
+                    latest_message = msg
+                    break
+            
+            if latest_message:
+                content = latest_message.content.lower()
+                transition_keywords = [
+                    "ready to move", "next phase", "move on", "proceed to",
+                    "ready for how", "explore how", "transition to", "yes, i'm ready"
+                ]
+                
+                if any(keyword in content for keyword in transition_keywords) and why_output:
+                    return "how_agent"
+        
+        # Default: end conversation (no infinite loops)
+        return "__end__"
+    
+    def _route_after_how(self, state: StrategyCoachState) -> str:
+        """Route after HOW agent - check if ready to transition to WHAT."""
+        how_output = state.get("how_output")
+        messages = state.get("messages", [])
+        
+        # Check for explicit transition request
+        if messages:
+            latest_message = None
+            for msg in reversed(messages):
+                if hasattr(msg, 'type') and msg.type == "human":
+                    latest_message = msg
+                    break
+            
+            if latest_message and how_output:
+                content = latest_message.content.lower()
+                transition_keywords = [
+                    "ready for what", "strategy map", "implementation", 
+                    "move to what", "final phase"
+                ]
+                
+                if any(keyword in content for keyword in transition_keywords):
+                    return "what_agent"
+        
+        # Default: end conversation
+        return "__end__"
 
     def invoke(self, input_data: dict, config: dict = None) -> dict:
         """Invoke the graph with input data and configuration."""
