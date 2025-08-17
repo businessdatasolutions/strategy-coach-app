@@ -325,30 +325,22 @@ Create a response that helps them define their values as actionable verbs, refer
         return AIMessage(content=prompt_content)
 
     def _handle_completion_stage(self, state: StrategyCoachState) -> AIMessage:
-        """Handle phase completion and structured output generation."""
+        """Handle phase completion and structured output generation with PRD template."""
         # Use structured LLM to generate final WHYStatement
         try:
             # Create synthesis prompt for structured output
             synthesis_prompt = self._create_synthesis_prompt(state)
             structured_output = self.structured_llm.invoke(synthesis_prompt)
 
-            # Create completion message with structured output
-            elements = {
-                "why_statement": structured_output.why_statement,
-                "beliefs_summary": ", ".join(
-                    [b.statement for b in structured_output.core_beliefs]
-                ),
-                "values_summary": ", ".join(
-                    [v.action_phrase for v in structured_output.actionable_values]
-                ),
-            }
-
-            completion_message = self.prompts["transition_readiness"].format(**elements)
-            response = AIMessage(content=completion_message)
+            # Create the full WHY template output as specified in PRD
+            template_output = self._format_why_template(structured_output)
+            
+            response = AIMessage(content=template_output)
             response.structured_output = structured_output
             return response
 
-        except Exception:
+        except Exception as e:
+            logger.error(f"Structured output generation failed: {e}")
             # Fallback to manual completion if structured output fails
             return AIMessage(
                 content="Let's continue refining your WHY. Tell me more about your core purpose."
@@ -437,16 +429,22 @@ What aspect of your organization's purpose would you like to dive deeper into? I
 
         system_prompt = """You are a strategic coach expert in Simon Sinek's 'Start with Why' methodology. 
 
-Based on the user's responses about their organization, create a structured WHY statement that captures their authentic purpose.
+Based on the user's responses about their organization, create a comprehensive structured WHY statement that captures their authentic purpose.
 
-The WHY should:
+The WHY statement should:
 1. Be action-oriented (start with "To...")
 2. Focus on the beneficiary they serve
 3. Capture their unique contribution
 4. Feel authentic to their origin story
 5. Inspire both internal teams and external stakeholders
 
-Generate core beliefs that drive this WHY and actionable values that manifest it."""
+Generate:
+- WHY statement in format: "To [action] every [beneficiary] access to [resource], so they can [goal] without [obstacle]"
+- 3-6 core beliefs that drive this WHY (what they believe about their beneficiaries and the world)
+- 4-6 actionable values as verb phrases (not nouns) with explanations
+- Golden circle integration paragraph showing how WHY, beliefs, and values work together
+- 2-3 validation questions to test authenticity
+- Identify the primary beneficiary and key outcome they help achieve"""
 
         user_prompt = f"""Based on this conversation about the organization:
 
@@ -455,6 +453,55 @@ Generate core beliefs that drive this WHY and actionable values that manifest it
 Please create a complete WHY statement with core beliefs and actionable values that authentically represents this organization's purpose."""
 
         return [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
+    
+    def _format_why_template(self, structured_output) -> str:
+        """Format the structured output according to the PRD template."""
+        
+        # Format core beliefs
+        beliefs_formatted = "\n".join([
+            f"- {belief.statement}" 
+            for belief in structured_output.core_beliefs
+        ])
+        
+        # Format actionable values
+        values_formatted = "\n".join([
+            f"- **{value.action_phrase}**: {value.explanation}"
+            for value in structured_output.actionable_values
+        ])
+        
+        # Format validation questions
+        validation_formatted = " ".join(structured_output.validation_questions)
+        
+        # Create the complete template
+        template = f"""### **YOUR WHY STATEMENT:**
+{structured_output.why_statement}
+
+---
+
+### **CORE BELIEFS THAT DRIVE YOU:**
+{beliefs_formatted}
+
+---
+
+### **VALUES THAT GUIDE BEHAVIOR:**
+{values_formatted}
+
+---
+
+### **GOLDEN CIRCLE INTEGRATION:**
+{structured_output.golden_circle_integration}
+
+---
+
+### **VALIDATION:**
+{validation_formatted}
+
+---
+
+### **TRANSITION TO HOW:**
+Now that we've clarified your WHY - **{structured_output.why_statement}** - we can focus on HOW you'll deliver this. Are you ready to explore the strategic logic and methods that will bring your purpose to life?"""
+
+        return template
     
     def _extract_user_context(self, messages: list) -> dict:
         """Extract specific context and information from user messages."""
