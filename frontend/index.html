@@ -302,7 +302,14 @@
             addMessage(content, sender) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${sender}`;
-                messageDiv.textContent = content;
+                
+                // Use innerHTML for agent messages to render HTML formatting
+                if (sender === 'agent' && content.includes('<div class="why-statement-template">')) {
+                    messageDiv.innerHTML = content;
+                } else {
+                    messageDiv.textContent = content;
+                }
+                
                 this.chatContainer.appendChild(messageDiv);
                 this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
             }

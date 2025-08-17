@@ -345,7 +345,7 @@ Create a response that helps them define their values as actionable verbs, refer
             synthesis_prompt = self._create_synthesis_prompt(state)
             structured_output = self.structured_llm.invoke(synthesis_prompt)
 
-            # Create the full WHY template output as specified in PRD
+            # Create the full WHY template output as beautiful HTML
             template_output = self._format_why_template(structured_output)
             
             response = AIMessage(content=template_output)
@@ -468,51 +468,135 @@ Please create a complete WHY statement with core beliefs and actionable values t
         return [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
     
     def _format_why_template(self, structured_output) -> str:
-        """Format the structured output according to the PRD template."""
+        """Format the structured output as beautiful HTML."""
         
-        # Format core beliefs
+        # Format core beliefs as HTML list
         beliefs_formatted = "\n".join([
-            f"- {belief.statement}" 
+            f"<li><strong>{belief.statement}</strong></li>" 
             for belief in structured_output.core_beliefs
         ])
         
-        # Format actionable values
+        # Format actionable values as HTML list
         values_formatted = "\n".join([
-            f"- **{value.action_phrase}**: {value.explanation}"
+            f"<li><strong>{value.action_phrase}</strong>: {value.explanation}</li>"
             for value in structured_output.actionable_values
         ])
         
         # Format validation questions
-        validation_formatted = " ".join(structured_output.validation_questions)
+        validation_formatted = "<br>".join(structured_output.validation_questions)
         
-        # Create the complete template
-        template = f"""### **YOUR WHY STATEMENT:**
-{structured_output.why_statement}
+        # Create beautiful HTML template
+        template = f"""<div class="why-statement-template">
+<div class="why-section">
+<h3>🎯 <strong>YOUR WHY STATEMENT</strong></h3>
+<div class="why-statement-box">
+<p class="why-statement-text">{structured_output.why_statement}</p>
+</div>
+</div>
 
----
-
-### **CORE BELIEFS THAT DRIVE YOU:**
+<div class="why-section">
+<h4>💭 <strong>CORE BELIEFS THAT DRIVE YOU</strong></h4>
+<ul class="beliefs-list">
 {beliefs_formatted}
+</ul>
+</div>
 
----
-
-### **VALUES THAT GUIDE BEHAVIOR:**
+<div class="why-section">
+<h4>⚡ <strong>VALUES THAT GUIDE BEHAVIOR</strong></h4>
+<ul class="values-list">
 {values_formatted}
+</ul>
+</div>
 
----
+<div class="why-section">
+<h4>🔄 <strong>GOLDEN CIRCLE INTEGRATION</strong></h4>
+<div class="integration-box">
+<p>{structured_output.golden_circle_integration}</p>
+</div>
+</div>
 
-### **GOLDEN CIRCLE INTEGRATION:**
-{structured_output.golden_circle_integration}
+<div class="why-section">
+<h4>✅ <strong>VALIDATION</strong></h4>
+<div class="validation-box">
+<p>{validation_formatted}</p>
+</div>
+</div>
 
----
+<div class="why-section transition-section">
+<h4>🚀 <strong>READY FOR HOW PHASE?</strong></h4>
+<p>Now that we've clarified your WHY - <strong>{structured_output.why_statement}</strong> - we can focus on HOW you'll deliver this.</p>
+<p><em>Are you ready to explore the strategic logic and methods that will bring your purpose to life?</em></p>
+</div>
+</div>
 
-### **VALIDATION:**
-{validation_formatted}
+<style>
+.why-statement-template {{
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    max-width: 100%;
+    margin: 20px 0;
+}}
 
----
+.why-section {{
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}}
 
-### **TRANSITION TO HOW:**
-Now that we've clarified your WHY - **{structured_output.why_statement}** - we can focus on HOW you'll deliver this. Are you ready to explore the strategic logic and methods that will bring your purpose to life?"""
+.why-section h3 {{
+    color: #007bff;
+    margin: 0 0 12px 0;
+    font-size: 18px;
+}}
+
+.why-section h4 {{
+    color: #495057;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}}
+
+.why-statement-box {{
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #2196f3;
+}}
+
+.why-statement-text {{
+    font-size: 18px;
+    font-weight: 600;
+    color: #1565c0;
+    margin: 0;
+    line-height: 1.4;
+}}
+
+.beliefs-list, .values-list {{
+    padding-left: 20px;
+    margin: 0;
+}}
+
+.beliefs-list li, .values-list li {{
+    margin-bottom: 8px;
+    line-height: 1.4;
+}}
+
+.integration-box, .validation-box {{
+    background: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}}
+
+.transition-section {{
+    background: #d4edda;
+    border-left-color: #28a745;
+}}
+
+.transition-section h4 {{
+    color: #155724;
+}}
+</style>"""
 
         return template
     
