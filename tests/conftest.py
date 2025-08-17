@@ -3,13 +3,15 @@ Global pytest configuration and fixtures for the AI Strategic Co-pilot tests.
 """
 
 import asyncio
-import pytest
-from typing import AsyncGenerator, Generator
-from unittest.mock import Mock
-from pathlib import Path
 
 # Import core modules that will be needed across tests
 import sys
+from pathlib import Path
+from typing import AsyncGenerator, Generator
+from unittest.mock import Mock
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from src.core.config import Settings
@@ -52,8 +54,8 @@ def mock_llm():
 @pytest.fixture
 def sample_session_state():
     """Create a sample session state for testing."""
-    from src.core.models import SessionState, Phase
-    
+    from src.core.models import Phase, SessionState
+
     return SessionState(
         session_id="test-session-123",
         current_phase=Phase.WHY,
@@ -62,7 +64,7 @@ def sample_session_state():
         how_output=None,
         what_output=None,
         created_at="2024-01-01T00:00:00Z",
-        updated_at="2024-01-01T00:00:00Z"
+        updated_at="2024-01-01T00:00:00Z",
     )
 
 
@@ -72,7 +74,7 @@ def sample_user_message():
     return {
         "content": "I want to develop a strategy for my software company",
         "timestamp": "2024-01-01T00:00:00Z",
-        "type": "user"
+        "type": "user",
     }
 
 
@@ -84,7 +86,7 @@ def sample_agent_response():
         "timestamp": "2024-01-01T00:00:00Z",
         "type": "agent",
         "phase": "WHY",
-        "agent_type": "why_agent"
+        "agent_type": "why_agent",
     }
 
 
@@ -113,11 +115,11 @@ def business_case_content():
 async def async_mock_llm():
     """Create an async mock LLM for testing async operations."""
     mock = Mock()
-    
+
     async def mock_ainvoke(prompt):
         await asyncio.sleep(0.01)  # Simulate async delay
         return Mock(content=f"Async response to: {prompt[:50]}...")
-    
+
     mock.ainvoke = mock_ainvoke
     return mock
 

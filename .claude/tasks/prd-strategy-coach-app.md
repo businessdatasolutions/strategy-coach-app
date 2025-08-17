@@ -29,65 +29,91 @@ The user's interaction with the coach is designed as a clear, sequential journey
 2. **The "HOW" Phase:** Once the "Why" is established, the system transitions the user to the **HOW Agent(s)**. This phase leverages the **Analogy Agent** to find a causal model for success and the **Logic Agent** to structure the argument. The goal is to define the core methods and logic of the strategy.  
 3. **The "WHAT" Phase:** After defining the "How," the user proceeds to the final phase with the **WHAT Agent(s)**. Here, the **Strategy Map Agent** helps formalize the specific details, and the **Open Strategy Agent** helps consider implementation and stakeholder engagement. This phase synthesizes all previous work into a complete, actionable plan.
 
-## **4\. System Architecture & Agentic Workflow**
+## **4\. System Architecture & LangGraph-Native Workflow**
 
-The revised system is built on a **Sequential State Machine** model. Instead of a central orchestrator, a simpler **Phase Manager** controls the user's progression through the predefined phases.
+The system is built using **LangGraph's StateGraph** architecture, leveraging native LangGraph patterns for state management, agent coordination, and phase transitions.
 
-### **4.1. High-Level Workflow**
+### **4.1. LangGraph-Native Architecture**
 
-1. A user starts a new session, which is initialized to the **"WHY" phase**.  
-2. All user messages are routed to the agent associated with the current phase (e.g., the **WHY Agent**).  
-3. The agent processes the input and generates a response. It also performs a **Phase Completion Check** to determine if the objectives for the current phase have been met and if the user is ready to proceed.  
-4. If the phase is not complete, the conversation continues with the current agent.  
-5. If the phase is complete and the user confirms, the **Phase Manager** updates the session state to the next phase (e.g., from "WHY" to "HOW").  
-6. The next user message is now routed to the agent for the new phase.  
-7. Throughout the process, the conversation history and key strategic elements are saved, culminating in a final strategy\_map.json object.
+1. **StateGraph**: The central state machine managing the WHY → HOW → WHAT progression
+2. **Nodes**: Each specialist agent (WHY, HOW, WHAT) implemented as LangGraph nodes
+3. **Conditional Edges**: Phase transitions handled via LangGraph conditional routing
+4. **Built-in Checkpointing**: Session persistence using LangGraph's InMemorySaver/SqliteSaver
+5. **Structured State**: TypedDict with reducers for proper state management
 
-### **4.2. System Diagram**
+### **4.2. High-Level Workflow**
 
-\+-----------------+      \+-----------------------+      \+------------------+  
-|                 |      |                       |      |                  |  
-|    WHY Agent    |-----\>|      HOW Agent(s)     |-----\>|   WHAT Agent(s)  |  
-|   (Phase 1\)     |      |      (Phase 2\)        |      |    (Phase 3\)     |  
-|                 |      | (Analogy, Logic)      |      | (Strategy Map,   |  
-|                 |      |                       |      |  Open Strategy)  |  
-\+-------+---------+      \+-----------+-----------+      \+--------+---------+  
-        ^                          ^                          ^  
-        | User Interaction         | User Interaction         | User Interaction  
-        | (Loop until complete)    | (Loop until complete)    | (Loop until complete)  
-\+-------+--------------------------+--------------------------+---------+  
-|                                                                        |  
-|                      User Interface & Phase Manager                      |  
-|            (Tracks current phase: WHY, HOW, or WHAT)                   |  
-|                                                                        |  
-\+------------------------------------------------------------------------+
+1. A user starts a new session with **thread_id** for LangGraph checkpointing
+2. **StateGraph** routes messages to appropriate agent nodes based on `current_phase` state
+3. Each **agent node** processes input and updates state with responses and completion status
+4. **Conditional edges** check phase completion and route to next phase or continue current
+5. **Built-in persistence** automatically saves state after each step via checkpointer
+6. **Streaming support** enables real-time conversation updates
+7. Final **strategy_map.json** generated when all phases complete
 
-### **4.3. State Transition Logic**
+### **4.3. LangGraph System Diagram**
 
-Transitioning between phases is a critical control point.
+```mermaid
+graph TD
+    START --> why_agent[WHY Agent Node<br/>Simon Sinek Methodology]
+    why_agent --> phase_router{Phase Complete?}
+    phase_router -->|No| why_agent
+    phase_router -->|Yes| how_agent[HOW Agent Node<br/>Analogy + Logic]
+    how_agent --> phase_router2{Phase Complete?}
+    phase_router2 -->|No| how_agent  
+    phase_router2 -->|Yes| what_agent[WHAT Agent Node<br/>Strategy Map + Open Strategy]
+    what_agent --> phase_router3{Phase Complete?}
+    phase_router3 -->|No| what_agent
+    phase_router3 -->|Yes| END
+    
+    subgraph "LangGraph Infrastructure"
+        StateGraph[StateGraph State Machine]
+        Checkpointer[InMemorySaver/SqliteSaver]
+        Streaming[Real-time Streaming]
+    end
+```
 
-* **Agent-led Check:** After several meaningful interactions, the active agent will synthesize the current progress (e.g., "It sounds like we've defined a powerful WHY statement: 'To empower entrepreneurs.'").  
-* **User Confirmation:** The agent will then explicitly ask the user for confirmation: "Are you satisfied with this direction, or would you like to refine it further before we discuss HOW you'll achieve this?".  
-* **State Update:** If the user gives a positive confirmation ("Yes," "I'm ready," "Let's move on"), the Phase Manager updates the session's state to the next phase. Another way the user can instruct to go to the next phase is to click the "Go next phase" button that will be activated after three question - response interactions.
+### **4.4. LangGraph State Management**
 
-## **5\. Core Components & Agent Profiles**
+**State Schema:**
+```python
+class StrategyCoachState(TypedDict):
+    messages: Annotated[list, add_messages]  # LangGraph message handling
+    current_phase: str  # "WHY", "HOW", or "WHAT"
+    why_output: Optional[WHYStatement]  # Structured output from WHY phase
+    how_output: Optional[HOWStrategy]   # Structured output from HOW phase  
+    what_output: Optional[WHATStrategy] # Structured output from WHAT phase
+    phase_complete: bool  # Current phase completion status
+    interaction_count: int  # Number of interactions in current phase
+```
 
-### **5.1. Phase Manager**
+**Phase Transition Logic:**
+* **Conditional Edge Functions:** LangGraph conditional edges check phase completion and route appropriately
+* **Built-in State Updates:** Each node updates state using LangGraph's reducer pattern
+* **Automatic Persistence:** LangGraph checkpointer handles all session persistence
+* **Thread-based Sessions:** Each conversation uses unique `thread_id` for isolation
 
-* **Role**: The central controller that manages the session's current phase.  
-* **Function**: It holds the state (current\_phase) for each user session and routes incoming messages to the appropriate specialist agent based on that state. It is also responsible for updating the phase upon receiving a transition trigger.
+## **5\. Core Components & LangGraph Implementation**
 
----
+### **5.1. StateGraph Architecture**
 
-### **5.2. Specialist Agents**
+* **Role**: LangGraph StateGraph serves as the central state machine managing phase progression
+* **Function**: Routes messages to agent nodes, manages state transitions via conditional edges, handles persistence via checkpointing
+* **Benefits**: Built-in streaming, debugging, time-travel, human-in-the-loop capabilities
 
-The specialist agents operate exclusively within their designated phase, ensuring a focused and logical progression.
+### **5.2. Agent Node Implementation**
 
-#### **Phase 1: The WHY Agent**
+Each specialist agent is implemented as a **LangGraph node function** that processes state and returns state updates. Agents leverage LangChain LLMs with structured output for methodology-specific coaching.
 
-* **Core Function**: To act as an expert facilitator inspired by Simon Sinek's "Start with Why" methodology. Its purpose is to guide the user in discovering and articulating their organization's core purpose—its WHY. This agent ensures the entire strategy is built on an authentic, inspiring, and human-centric foundation.
-* **Inputs**: Session state containing the current conversation history.
-* **Outputs**: A clear, structured, and concise "WHY Statement" (using the template below) and the user's confirmation to proceed to the next phase.
+#### **Phase 1: WHY Agent Node**
+
+* **Implementation**: LangGraph node function `why_agent_node(state: StrategyCoachState)`
+* **Core Function**: Simon Sinek's "Start with Why" methodology implementation using structured LLM output
+* **LangGraph Integration**: 
+  - Receives `StrategyCoachState` with messages and phase context
+  - Uses LangChain LLM with structured output schema (`WHYStatement`)
+  - Returns state updates including new messages and completion status
+* **Phase Completion**: Conditional edge function checks if WHY Statement is complete and user confirms readiness
 * **Methodology**: The agent uses a Socratic, introspective process focused on uncovering the user's foundational beliefs. It does not invent a WHY; it helps the user discover the one that already exists by looking to the past.
     * **The Golden Circle**: The core framework used to structure the conversation, moving from the inside out: WHY, HOW, WHAT.
     * **Discovery, Not Invention**: The agent operates on the principle that an organization's WHY comes from its origin story, its moments of greatest pride, and the deeply held beliefs of its founders and leaders.
@@ -142,15 +168,15 @@ The specialist agents operate exclusively within their designated phase, ensurin
 
 ---
 
-#### **Phase 2: The HOW Agents**
+#### **Phase 2: HOW Agent Node**
 
-This phase leverages two distinct methodologies to define the core logic of the strategy.
-
-##### **Analogy Agent**
-
-* **Core Function**: To act as an expert strategic coach using the Carroll & Sørensen method of analogical reasoning. Its purpose is to guide the user in developing a robust, theory-based strategy by moving beyond superficial comparisons to uncover deep causal logic.  
-* **Inputs**: Session state and the "WHY Statement" from the previous phase.  
-* **Outputs**: A defined causal theory for success that will inform the strategic argument.  
+* **Implementation**: LangGraph node function `how_agent_node(state: StrategyCoachState)` 
+* **Core Function**: Combines Carroll & Sørensen analogical reasoning with logical validation
+* **LangGraph Integration**:
+  - Accesses `why_output` from state for context continuity
+  - Uses structured LLM output for `AnalogicalComparison` and `LogicalArgument`
+  - Updates state with `how_output` containing strategic logic
+* **Dual Methodology**: Integrates both Analogy and Logic agents as a unified node  
 * **Methodology**: The agent facilitates a structured process to build and test a strategic analogy.  
   * **Source vs. Target**: The user's company is the target; the company it is compared to is the source.  
   * **Horizontal vs. Vertical Relations**: This is the critical distinction. The agent constantly pushes the user from **horizontal relations** (e.g., "Company A has feature X, and we have feature X") to **vertical relations** (the causal theory of *why* the source succeeded).  
@@ -171,15 +197,15 @@ This phase leverages two distinct methodologies to define the core logic of the 
 
 ---
 
-#### **Phase 3: The WHAT Agents**
+#### **Phase 3: WHAT Agent Node**
 
-This final phase synthesizes all previous work into a concrete, actionable plan.
-
-##### **Strategy Map Agent**
-
-* **Core Function**: To build and maintain a visual, holistic representation of the user's strategy. It uses the Kaplan & Norton Strategy Map framework as its base but replaces the traditional top-level "Financial Perspective" with the modern, more comprehensive **Six Value Components** from the Integrated Reporting framework. This ensures the strategy is oriented towards holistic value creation, not just financial returns.  
-* **Inputs**: Session state and the outputs from the WHY and HOW phases.  
-* **Outputs**: A structured strategy\_map.json object representing the completed strategy.  
+* **Implementation**: LangGraph node function `what_agent_node(state: StrategyCoachState)`
+* **Core Function**: Synthesizes WHY and HOW outputs into actionable strategy using Kaplan & Norton + Open Strategy frameworks
+* **LangGraph Integration**:
+  - Accesses `why_output` and `how_output` from state for complete context
+  - Uses structured LLM output for `StrategyMapPerspective` and `OpenStrategyPlan`
+  - Generates final `strategy_map.json` as structured output
+* **Unified Methodology**: Combines Strategy Map and Open Strategy approaches in single node  
 * **Methodology**: The agent guides the user through the four perspectives of the strategy map, building a cause-and-effect story based on an "outside-in" logic:  
   1. **Stakeholder & Customer Perspective**: Clarifies the value proposition for key stakeholders, starting with the fundamental problem the organization solves for them.  
   2. **Internal Process Perspective**: Defines the critical processes the organization must excel at to deliver on its value proposition.  
@@ -212,12 +238,98 @@ This final phase synthesizes all previous work into a concrete, actionable plan.
 
 The primary deliverable remains a structured **JSON object** (strategy\_map.json) that is built incrementally and finalized during the "WHAT" phase, representing the complete strategy.
 
-## **7\. Technical Implementation Plan**
+## **7\. LangGraph-Native Technical Implementation**
 
-See files in folder `technical-documentation`:
+### **7.1. Core LangGraph Components**
 
-* `Tracing Projects - LangSmith.pdf`: all the interactions of between the user and the agents should be traceble in LangSmith.
-* `Workflow And Agents.md`: We will be using the Langchain as the standard ecosystem for building agents and running an agentic system.
+**StateGraph Structure:**
+```python
+from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph.message import add_messages
+
+# Build the strategy coaching graph
+graph_builder = StateGraph(StrategyCoachState)
+
+# Add agent nodes
+graph_builder.add_node("why_agent", why_agent_node)
+graph_builder.add_node("how_agent", how_agent_node) 
+graph_builder.add_node("what_agent", what_agent_node)
+
+# Add conditional routing edges
+graph_builder.add_edge(START, "why_agent")
+graph_builder.add_conditional_edges("why_agent", route_phase_transition)
+graph_builder.add_conditional_edges("how_agent", route_phase_transition)
+graph_builder.add_conditional_edges("what_agent", route_phase_transition)
+
+# Compile with checkpointer for persistence
+memory = InMemorySaver()  # Use SqliteSaver for production
+graph = graph_builder.compile(checkpointer=memory)
+```
+
+**Agent Node Pattern:**
+```python
+def why_agent_node(state: StrategyCoachState):
+    """WHY phase agent node using Simon Sinek methodology."""
+    # Use LangChain LLM with structured output
+    why_llm = llm.with_structured_output(WHYStatement)
+    
+    # Process conversation with methodology-specific prompts
+    response = why_llm.invoke(state["messages"])
+    
+    # Update state with new message and phase data
+    return {
+        "messages": [AIMessage(content=response.content)],
+        "why_output": response if response.is_complete else state.get("why_output"),
+        "phase_complete": check_why_completion(state, response),
+        "interaction_count": state["interaction_count"] + 1
+    }
+```
+
+### **7.2. LangSmith Tracing Integration**
+
+All LangGraph interactions must be traced with LangSmith for observability, debugging, and monitoring:
+
+**Environment Configuration:**
+```bash
+LANGSMITH_TRACING="true"
+LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
+LANGSMITH_API_KEY="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"
+LANGSMITH_PROJECT="strategy-coach"
+```
+
+**Setup Steps:**
+1. Install dependencies: `pip install -U langsmith`
+2. Configure environment variables in `.env` file
+3. Run LangGraph application - traces automatically sent to LangSmith project
+4. Monitor interactions at https://smith.langchain.com
+
+**Tracing Requirements:**
+* **All Agent Interactions**: Every WHY/HOW/WHAT agent node execution traced
+* **State Transitions**: Phase transitions and conditional edge routing logged
+* **LLM Calls**: All structured output generation and conversation processing traced
+* **User Sessions**: Complete user journeys from WHY through WHAT tracked
+* **Error Monitoring**: Failed API calls and exceptions captured for debugging
+* **Performance Metrics**: Response times and token usage monitored
+
+### **7.3. LangGraph Benefits Utilized**
+
+* **Built-in Checkpointing**: Session persistence with thread_id isolation
+* **Streaming**: Real-time conversation updates via `graph.stream()`
+* **State Management**: Proper TypedDict with reducers for message handling
+* **Conditional Routing**: Native phase transition logic via conditional edges
+* **LangSmith Integration**: Automatic tracing of all LLM calls and state transitions
+* **Human-in-the-Loop**: Built-in support for interrupts and manual interventions
+* **Time Travel**: Ability to replay and branch from any checkpoint
+
+### **7.3. Key Implementation Files**
+
+* `src/core/graph.py`: Main StateGraph implementation and compilation
+* `src/agents/why_agent.py`: WHY phase node function and completion logic
+* `src/agents/how_agent.py`: HOW phase node function (analogy + logic)
+* `src/agents/what_agent.py`: WHAT phase node function (strategy map + open strategy)
+* `src/core/state.py`: StrategyCoachState TypedDict and reducer functions
+* `src/api/endpoints.py`: FastAPI endpoints wrapping graph.stream() and graph.invoke()
 
 
 
@@ -246,25 +358,44 @@ This concept is now central to the user experience.
 
 The system can be configured to use various LLM providers (like Mistral, OpenAI, Anthropic, Google) for the agent functions, allowing for flexibility and cost optimization. This is independent of the state machine architecture.
 
-## **12\. Simple Testing Agent with Direct Browser Control (Revised)**
+## **12\. LangGraph-Native Testing Strategy**
 
-The testing agent's purpose remains the same, but its script must now account for the sequential nature of the application.
+Testing leverages LangGraph's built-in testing capabilities and checkpointing system for comprehensive validation.
 
-### **12.1. Vision**
+### **12.1. LangGraph Testing Approach**
 
-Create a simple, reliable testing agent using Playwright that simulates a user completing the entire strategic journey from WHY to WHAT, including providing the necessary confirmations to transition between phases.
+* **Direct Graph Testing**: Test StateGraph directly using `graph.invoke()` with test states
+* **Checkpoint Testing**: Verify state persistence and resumption using checkpointer
+* **Node Testing**: Unit test individual agent node functions in isolation
+* **Edge Testing**: Test conditional edge routing logic and phase transitions
+* **End-to-End Testing**: Playwright browser testing with LangGraph streaming integration
 
-### **12.2. Revised Workflow**
+### **12.1. Executive Summary**
 
-1. **Start API & Web Server.**  
-2. **Launch Browser** and navigate to the application.  
-3. **Run \~30 Interactions (e.g., 10 per phase):**  
-   * The agent generates a response based on the AI's question.  
-   * After several interactions in a phase, the test script will look for the AI's phase completion query (e.g., "Are you ready to move on?").  
-   * The testing agent will then respond with a confirmation (e.g., "Yes, I am").  
-   * The test will verify that the UI and backend state have transitioned to the next phase.  
-   * It continues to record interactions in JSON and take screenshots at key moments (like right after a phase transition).  
-4. **Generate Report:** The final Markdown report should highlight the successful phase transitions.
+**Vision**: Create a simple, reliable testing agent that uses Playwright to directly control the browser and simulate realistic user interactions with the strategic coaching system.
+
+**Approach**: 
+- Use a business case described in a markdown file as the input and inspiration for generating test user responses (eg see: `testing/business-cases/business-case-for-testing.md` - AFAS Software case study)
+- Start API server programmatically
+- Open browser and navigate to application
+- Testing agent writes responses directly via browser interface
+- Record each interaction in JSON file
+- Take screenshots every 5th interaction
+- Generate beautiful Markdown test report with embedded screenshots
+
+**Business Case Context**: The testing agent will simulate a **Visionary Founder persona** based on the AFAS Software case study (€324.6M enterprise, family-owned Dutch software company with exceptional culture-first approach). This provides realistic context for testing all three strategy phases:
+- **WHY**: Mission to "inspire better entrepreneurship" through culture and trust
+- **HOW**: Integrated product philosophy + hyper-focused market strategy + culture-first approach
+- **WHAT**: Strategy map with four-day workweek initiative, AFAS Focus platform, and social responsibility integration
+
+### **12.2. LangGraph-Native Test Workflow**
+
+1. **Unit Tests**: Test individual node functions with mock StrategyCoachState
+2. **Graph Tests**: Test complete graph execution with `graph.invoke(test_state)`
+3. **Checkpoint Tests**: Verify state persistence using `graph.get_state()` and `graph.get_state_history()`
+4. **Streaming Tests**: Test real-time updates via `graph.stream()` 
+5. **Browser E2E**: Playwright tests interacting with FastAPI endpoints that wrap LangGraph
+6. **LangSmith Validation**: Verify all interactions are properly traced
 
 ### **12.3. Revised Markdown Report Format**
 

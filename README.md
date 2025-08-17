@@ -46,13 +46,19 @@ LangChain/LangGraph + LangSmith Tracing
    git checkout v2-major-rewrite
    ```
 
-2. **Set up environment variables**
+2. **Create and activate virtual environment**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Set up environment variables**
    ```bash
    cp .env.example .env
    # Edit .env with your API keys and configuration
    ```
 
-3. **Choose your setup method:**
+4. **Choose your setup method:**
 
 #### Option A: Docker (Recommended)
 ```bash
@@ -65,11 +71,7 @@ docker-compose --profile testing run test
 
 #### Option B: Local Development
 ```bash
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
+# Install dependencies (make sure virtual environment is activated)
 pip install -e ".[dev]"
 
 # Install Playwright browsers (for testing)
@@ -78,8 +80,11 @@ playwright install chromium
 # Run the application
 uvicorn src.api.main:app --reload --port 8000
 
-# Run tests
+# Run tests (in virtual environment)
 pytest
+
+# Test WHY agent directly
+python -m pytest tests/agents/test_why_node.py -v
 ```
 
 ### Configuration
@@ -101,7 +106,28 @@ LANGCHAIN_API_KEY=your_langsmith_key_here
 LANGCHAIN_PROJECT=strategy-coach-app-v2
 ```
 
-## 🧪 Testing
+## 🧪 Testing & Live Environment
+
+### Live Testing Environment
+
+**🚀 Start the Server:**
+```bash
+source venv/bin/activate
+uvicorn src.api.main:app --reload --port 8000
+```
+
+**🌐 Access the Application:**
+- **Frontend UI**: http://localhost:8000 (Interactive chat with WHY agent)
+- **Health Check**: http://localhost:8000/health
+- **API Docs**: http://localhost:8000/docs (Swagger UI)
+
+**🎯 Test the WHY Agent:**
+1. Open http://localhost:8000 in your browser
+2. Start a conversation about your organization
+3. Experience Simon Sinek's "Start with Why" methodology
+4. Real-time responses powered by Claude API + LangGraph
+
+### Automated Testing
 
 The application includes comprehensive testing capabilities:
 
