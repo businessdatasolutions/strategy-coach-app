@@ -234,6 +234,8 @@
                 this.loadingIndicator = document.getElementById('loadingIndicator');
                 this.setupEventListeners();
                 this.updateSessionInfo();
+                // Auto-focus input field when page loads
+                this.messageInput.focus();
             }
 
             generateThreadId() {
@@ -292,6 +294,8 @@
                     this.addMessage(`❌ Error: ${error.message}`, 'agent');
                 } finally {
                     this.setLoading(false);
+                    // Focus input field after response for immediate typing
+                    this.messageInput.focus();
                 }
             }
 
