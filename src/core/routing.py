@@ -5,13 +5,18 @@ These functions determine routing between agent nodes based on phase completion
 and user confirmation signals.
 """
 
+import logging
 from typing import List, Literal
 
 from langchain_core.messages import BaseMessage
+from langsmith import traceable
 
 from .state import StrategyCoachState
 
+logger = logging.getLogger(__name__)
 
+
+@traceable(name="route_phase_transition")
 def route_phase_transition(
     state: StrategyCoachState,
 ) -> Literal["why_agent", "how_agent", "what_agent", "__end__"]:
@@ -25,41 +30,64 @@ def route_phase_transition(
     """
     current_phase = state.get("current_phase", "WHY")
     phase_complete = state.get("phase_complete", False)
+    methodology_stage = state.get("methodology_stage", "unknown")
 
     # Check if user requested transition in last message
     transition_requested = _check_user_transition_request(state.get("messages", []))
 
+    logger.info(f"🔀 Phase Routing: {current_phase} (stage: {methodology_stage}, complete: {phase_complete}, transition_req: {transition_requested})")
+
     # Route based on current phase and completion status
     if current_phase == "WHY":
         if phase_complete and transition_requested:
-            return "how_agent"
+            target = "how_agent"
+            logger.info(f"🔀 Routing: WHY → HOW (phase complete & transition requested)")
+            return target
         else:
-            return "why_agent"
+            target = "why_agent"
+            logger.info(f"🔀 Routing: Continue WHY (complete: {phase_complete}, req: {transition_requested})")
+            return target
 
     elif current_phase == "HOW":
         if phase_complete and transition_requested:
-            return "what_agent"
+            target = "what_agent"
+            logger.info(f"🔀 Routing: HOW → WHAT (phase complete & transition requested)")
+            return target
         else:
-            return "how_agent"
+            target = "how_agent"
+            logger.info(f"🔀 Routing: Continue HOW (complete: {phase_complete}, req: {transition_requested})")
+            return target
 
     elif current_phase == "WHAT":
         if phase_complete:
-            return "__end__"
+            target = "__end__"
+            logger.info(f"🔀 Routing: WHAT → END (session complete)")
+            return target
         else:
-            return "what_agent"
+            target = "what_agent"
+            logger.info(f"🔀 Routing: Continue WHAT (complete: {phase_complete})")
+            return target
 
     # Default: stay in current phase
-    return f"{current_phase.lower()}_agent"
+    target = f"{current_phase.lower()}_agent"
+    logger.info(f"🔀 Routing: Default to {target}")
+    return target
 
 
+@traceable(name="route_from_why")
 def route_from_why(state: StrategyCoachState) -> Literal["how_agent", "__end__"]:
     """Conditional edge specifically for WHY agent transitions."""
     phase_complete = state.get("phase_complete", False)
     transition_requested = _check_user_transition_request(state.get("messages", []))
+    methodology_stage = state.get("methodology_stage", "unknown")
+
+    logger.info(f"🔀 WHY Route: stage={methodology_stage}, complete={phase_complete}, transition_req={transition_requested}")
 
     if phase_complete and transition_requested:
+        logger.info("🔀 WHY → HOW: Phase complete with user confirmation")
         return "how_agent"
     # In LangGraph, we should end instead of looping infinitely
+    logger.info("🔀 WHY → END: Continuing in WHY or ending session")
     return "__end__"
 
 

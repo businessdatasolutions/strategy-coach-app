@@ -80,6 +80,11 @@ async def chat(message: ChatMessage) -> ChatResponse:
     
     This endpoint wraps graph.invoke() for single-turn interactions.
     """
+    import time
+    from langsmith import traceable
+    
+    start_time = time.time()
+    
     try:
         graph = get_graph()
         
@@ -118,10 +123,26 @@ async def chat(message: ChatMessage) -> ChatResponse:
         # Execute single step of the graph
         result = graph.invoke(graph_input, config)
         
+        # Calculate performance metrics
+        end_time = time.time()
+        response_time_ms = int((end_time - start_time) * 1000)
+        
         # Extract response information
         messages = result.get("messages", [])
         latest_message = messages[-1] if messages else None
         response_content = latest_message.content if latest_message else "No response generated"
+        
+        # Extract token usage if available
+        token_usage = {}
+        if latest_message and hasattr(latest_message, 'usage_metadata'):
+            token_usage = {
+                "input_tokens": latest_message.usage_metadata.get("input_tokens", 0),
+                "output_tokens": latest_message.usage_metadata.get("output_tokens", 0),
+                "total_tokens": latest_message.usage_metadata.get("total_tokens", 0)
+            }
+        
+        # Log performance metrics for LangSmith monitoring
+        logger.info(f"📊 API Performance: {response_time_ms}ms, tokens: {token_usage.get('total_tokens', 0)}, phase: {result.get('current_phase', 'WHY')}")
         
         return ChatResponse(
             response=response_content,
@@ -132,6 +153,9 @@ async def chat(message: ChatMessage) -> ChatResponse:
             interaction_count=result.get("interaction_count", 0),
             metadata={
                 "total_messages": len(messages),
+                "response_time_ms": response_time_ms,
+                "token_usage": token_usage,
+                "methodology_stage": result.get("methodology_stage", "unknown"),
                 "phase_outputs": {
                     "why": result.get("why_output") is not None,
                     "how": result.get("how_output") is not None,

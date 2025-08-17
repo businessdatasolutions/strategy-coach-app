@@ -36,11 +36,11 @@ class Settings(BaseSettings):
     openai_api_key: Optional[str] = Field(default=None)
     google_api_key: Optional[str] = Field(default=None)
 
-    # LangSmith Tracing
-    langchain_tracing_v2: bool = Field(default=True)
-    langchain_endpoint: str = Field(default="https://api.smith.langchain.com")
-    langchain_api_key: Optional[str] = Field(default=None)
-    langchain_project: str = Field(default="strategy-coach-app-v2")
+    # LangSmith Tracing (matching .env file variables)
+    langsmith_tracing: bool = Field(default=False, alias="LANGSMITH_TRACING")
+    langsmith_endpoint: str = Field(default="https://api.smith.langchain.com", alias="LANGSMITH_ENDPOINT")
+    langsmith_api_key: Optional[str] = Field(default=None, alias="LANGSMITH_API_KEY")
+    langsmith_project: str = Field(default="strategy-coach", alias="LANGSMITH_PROJECT")
 
     # Agent Configuration
     default_model: str = Field(default="claude-3-sonnet-20240229")
@@ -75,11 +75,16 @@ class Settings(BaseSettings):
 
     def setup_langsmith_tracing(self) -> None:
         """Configure LangSmith tracing environment variables."""
-        if self.langchain_tracing_v2 and self.langchain_api_key:
-            os.environ["LANGCHAIN_TRACING_V2"] = str(self.langchain_tracing_v2).lower()
-            os.environ["LANGCHAIN_ENDPOINT"] = self.langchain_endpoint
-            os.environ["LANGCHAIN_API_KEY"] = self.langchain_api_key
-            os.environ["LANGCHAIN_PROJECT"] = self.langchain_project
+        if self.langsmith_tracing and self.langsmith_api_key:
+            os.environ["LANGCHAIN_TRACING_V2"] = "true"
+            os.environ["LANGCHAIN_ENDPOINT"] = self.langsmith_endpoint
+            os.environ["LANGCHAIN_API_KEY"] = self.langsmith_api_key
+            os.environ["LANGCHAIN_PROJECT"] = self.langsmith_project
+            print(f"✅ LangSmith tracing configured for project: {self.langsmith_project}")
+            return True
+        else:
+            print(f"⚠️ LangSmith tracing not configured: tracing={self.langsmith_tracing}, api_key={'set' if self.langsmith_api_key else 'missing'}")
+            return False
 
     def validate_configuration(self) -> list[str]:
         """Validate the configuration and return any errors."""
@@ -92,7 +97,7 @@ class Settings(BaseSettings):
             )
 
         # Check LangSmith configuration if tracing is enabled
-        if self.langchain_tracing_v2 and not self.langchain_api_key:
+        if self.langsmith_tracing and not self.langsmith_api_key:
             errors.append("LangSmith tracing enabled but no API key provided")
 
         return errors

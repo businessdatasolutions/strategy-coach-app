@@ -8,6 +8,7 @@ the Golden Circle framework.
 
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langsmith import traceable
 from ..core.config import settings
 from ..core.models import WHYStatement
 from ..core.state import StrategyCoachState
@@ -97,6 +98,7 @@ This authentic purpose will be the foundation for everything we build next.
 Are you satisfied with this WHY foundation, or would you like to refine it further before we explore HOW you'll bring this purpose to life in the world?""",
         }
 
+    @traceable(name="why_agent_node")
     def __call__(self, state: StrategyCoachState) -> dict:
         """
         Main node function following LangGraph pattern.
