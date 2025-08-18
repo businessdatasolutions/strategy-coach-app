@@ -1,58 +1,176 @@
-[tool.poetry]
-name = "strategy-coach-app"
-version = "0.1.0"
-description = "AI Strategic Co-pilot: A multi-agent workflow system for strategy development"
-authors = ["Your Name <your.email@example.com>"]
-readme = "README.md"
-packages = [{include = "src"}]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-langchain = "^0.3.27"
-langgraph = "^0.6.4"
-langchain-openai = "^0.3.29"
-langchain-anthropic = "^0.3.18"
-fastapi = "^0.116.1"
-uvicorn = "^0.35.0"
-pydantic = "^2.11.7"
-pydantic-settings = "^2.10.1"
-python-dotenv = "^1.1.1"
-httpx = "^0.28.1"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.0"
-pytest-asyncio = "^0.24.0"
-pytest-cov = "^5.0.0"
-black = "^24.10.0"
-ruff = "^0.7.0"
-mypy = "^1.13.0"
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "strategy-coach-app"
+version = "2.0.0"
+description = "AI Strategic Co-pilot using sequential phase-based agents (WHY → HOW → WHAT)"
+authors = [
+    {name = "Business Data Solutions", email = "info@businessdatasolutions.nl"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    # Core LangChain ecosystem
+    "langchain>=0.1.0",
+    "langchain-core>=0.1.0", 
+    "langchain-anthropic>=0.1.0",
+    "langchain-openai>=0.1.0",
+    "langchain-google-genai>=0.1.0",
+    "langgraph>=0.1.0",
+    "langsmith>=0.1.0",
+    
+    # API and web framework
+    "fastapi>=0.108.0",
+    "uvicorn[standard]>=0.25.0",
+    "websockets>=12.0",
+    "python-multipart>=0.0.6",
+    
+    # Data validation and serialization
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    
+    # Environment and configuration
+    "python-dotenv>=1.0.0",
+    
+    # Utilities
+    "httpx>=0.26.0",
+    "jinja2>=3.1.0",
+    "typing-extensions>=4.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    
+    # Browser automation for testing
+    "playwright>=1.40.0",
+    
+    # Code quality
+    "black>=23.12.0",
+    "isort>=5.13.0",
+    "flake8>=7.0.0",
+    "mypy>=1.8.0",
+    
+    # Development utilities
+    "ipython>=8.18.0",
+    "jupyter>=1.0.0",
+]
+
+test = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "playwright>=1.40.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/businessdatasolutions/strategy-coach-app"
+Repository = "https://github.com/businessdatasolutions/strategy-coach-app.git"
+Issues = "https://github.com/businessdatasolutions/strategy-coach-app/issues"
+
+[project.scripts]
+strategy-coach = "src.api.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 
 [tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
 testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+pythonpath = ["src"]
 asyncio_mode = "auto"
-addopts = "-v --cov=src --cov-report=term-missing"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests", 
+    "e2e: End-to-end tests",
+    "slow: Slow-running tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
 
 [tool.black]
 line-length = 88
-target-version = ['py310']
+target-version = ['py311']
 include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
 
-[tool.ruff]
-line-length = 88
-target-version = "py310"
-select = ["E", "F", "I", "N", "W"]
-ignore = ["E501"]
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["src"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "langchain.*",
+    "langgraph.*", 
+    "langsmith.*",
+    "playwright.*",
+]
 ignore_missing_imports = true

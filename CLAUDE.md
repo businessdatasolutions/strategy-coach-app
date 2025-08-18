@@ -1,303 +1,356 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+# CLAUDE.md - AI Strategic Co-pilot Project Documentation
 
 ## Project Overview
 
-AI Strategic Co-pilot - A fully-functional multi-agent workflow system that guides business leaders through developing organizational strategy using specialized AI agents with research-backed methodologies.
+**Strategy Coach App v2.0** is an AI-powered strategic co-pilot that guides business leaders through a rigorous, sequential process of developing, refining, and testing their organizational strategy. The system leverages specialist AI agents focused on distinct phases of strategy development: WHY → HOW → WHAT.
 
-**Project Status**: 
-- ✅ **COMPLETE** - Core functionality (Tasks 1.0-6.0 including Web UI)
-- 🚧 **PLANNED** - Enhanced features (Tasks 7.0-8.0)
-  - Task 7.0: Progress Feedback & Strategic Completeness System
-  - Task 8.0: Mistral AI Integration for Multi-Model Support
-- 🔄 **ACTIVE** - Bug fixes and improvements
+### Vision
+To create an AI-powered strategic co-pilot that guides business leaders through a Socratic, sequential process of strategy development, moving from core purpose to actionable planning in a logical sequence using research-backed methodologies.
 
-**Current Configuration**:
-- Default LLM: Claude Sonnet 4.0 (`claude-sonnet-4-20250514`)
-- Supported Providers: Anthropic ✅, OpenAI ✅, Google ✅, Mistral 🚧
+### Target User
+Business Unit Managers at large corporations who need to create clear, defensible strategies to gain alignment and resources within their organization.
 
-## Recent Updates (Aug 2025)
+## System Architecture
 
-- **Claude Sonnet 4.0 Upgrade**: Improved conversation quality and strategic reasoning
-- **Cursor Auto-Focus**: Better UX with automatic input field focus
-- **Progress Feedback Feature**: Added to PRD for better user guidance (Task 7.0)
-- **Mistral AI Integration**: Planned multi-model support (Task 8.0)
-- **Cognitive Bias Detection**: Enhancement planned for Logic Agent
-- **Documentation Updates**: Comprehensive guides for all new features
+### LangGraph-Native StateGraph Model
+The system is built using **LangGraph's StateGraph** architecture, leveraging native LangGraph patterns for state management, agent coordination, and phase transitions.
 
-## Architecture
+1. **WHY Phase** - Discovery of organizational purpose using Simon Sinek "Start with Why" methodology ✅ **COMPLETE**
+2. **HOW Phase** - Strategic logic development using Carroll & Sørensen analogical reasoning + deductive logic ⏳ **READY FOR IMPLEMENTATION**
+3. **WHAT Phase** - Strategy mapping using Kaplan & Norton + Open Strategy frameworks ⏳ **READY FOR IMPLEMENTATION**
 
-**Core Components**:
-- **FastAPI Application** (`src/api/main.py`): RESTful API with comprehensive endpoints
-- **Orchestrator** (`src/agents/orchestrator.py`): Central StateGraph managing conversation flow
-- **Advanced Router** (`src/agents/router.py`): Intelligent agent selection based on context
-- **Strategy Map Agent** (`src/agents/strategy_map_agent.py`): Persistent JSON state management
-- **Conversation Synthesizer** (`src/agents/synthesizer.py`): Response synthesis and integration
+### Core LangGraph Components
 
-**Specialist Agents**:
-- **WHY Agent** (`src/agents/why_agent.py`): Simon Sinek's Golden Circle methodology
-- **Analogy Agent** (`src/agents/analogy_agent.py`): Carroll & Sørensen's analogical reasoning
-- **Logic Agent** (`src/agents/logic_agent.py`): Deductive argument validation
-- **Open Strategy Agent** (`src/agents/open_strategy_agent.py`): Implementation planning
+#### StateGraph Architecture
+- **StateGraph**: Central state machine managing WHY → HOW → WHAT progression
+- **Agent Nodes**: Each specialist agent implemented as LangGraph node functions
+- **Conditional Edges**: Phase transitions handled via LangGraph conditional routing
+- **Built-in Checkpointing**: Session persistence using InMemorySaver/SqliteSaver
+- **Structured State**: StrategyCoachState TypedDict with reducers
 
-**Workflow**: API Request → Session Management → Orchestrator → Router → Specialist Agent → Strategy Map Update → Response Synthesis → API Response
+#### Agent Node Functions
 
-## Quick Start
+##### WHY Agent Node (Phase 1)
+- **Implementation**: `why_agent_node(state: StrategyCoachState)` function
+- **Methodology**: Simon Sinek's "Start with Why" with LangChain structured output
+- **Integration**: Uses `WHYStatement` schema for structured LLM responses
+- **Output**: WHY Statement with Core Beliefs and Values stored in state
 
+##### HOW Agent Node (Phase 2)  
+- **Implementation**: `how_agent_node(state: StrategyCoachState)` function
+- **Methodology**: Carroll & Sørensen analogical reasoning with 9-step coaching workflow
+- **Process**: Target/Source analysis → Horizontal relations → Vertical causal theory → Strategic argument
+- **Key Principles**: Generative analogies, vertical over horizontal focus, avoid confirmation bias
+- **Integration**: Uses `HOWStrategy` schema accessing `why_output` from state
+- **Output**: Firm-specific theory of success with deductive strategic argument
+
+##### WHAT Agent Node (Phase 3)
+- **Implementation**: `what_agent_node(state: StrategyCoachState)` function  
+- **Methodology**: Combined Kaplan & Norton Strategy Map + Open Strategy
+- **Integration**: Uses `WHATStrategy` schema accessing all previous phase outputs
+- **Output**: Complete strategy_map.json with implementation planning
+
+## Technical Stack
+
+### Core Dependencies
+- **LangChain Ecosystem**: langchain, langchain-core, langchain-anthropic, langgraph, langsmith
+- **API Framework**: FastAPI with uvicorn, WebSocket support
+- **Data Validation**: Pydantic v2+ with pydantic-settings
+- **Testing**: pytest with asyncio, coverage, mock support
+- **Browser Automation**: Playwright for E2E testing
+- **Code Quality**: black, isort, flake8, mypy
+
+### Project Structure
+```
+src/
+├── core/           # LangGraph StateGraph and state management
+│   ├── graph.py    # ✅ Main StateGraph implementation
+│   ├── state.py    # ✅ StrategyCoachState TypedDict and reducers  
+│   ├── routing.py  # ✅ Conditional edge functions
+│   ├── models.py   # ✅ Pydantic structured output models
+│   └── config.py   # ✅ Settings and configuration
+├── agents/         # LangGraph agent node functions
+│   └── why_node.py # ✅ WHY phase node function (Simon Sinek)
+├── api/           # FastAPI integration with LangGraph
+│   ├── main.py        # ✅ FastAPI app wrapping StateGraph
+│   └── endpoints.py   # ✅ Routes calling graph.stream()/invoke()
+└── testing/       # Automated testing agent with Playwright
+    ├── testing_agent.py     # Main Playwright testing agent
+    ├── business_case_parser.py # AFAS case parser & user simulation
+    ├── screenshot_manager.py  # Screenshot capture & management
+    └── report_generator.py    # Markdown report generation
+
+tests/
+├── core/          # ✅ StateGraph and checkpointing tests
+│   ├── test_graph.py   # ✅ LangGraph integration tests
+│   ├── test_state.py   # ✅ State management tests
+│   ├── test_routing.py # ✅ Routing logic tests
+│   └── test_models.py  # ✅ Pydantic model tests
+└── agents/        # ✅ Agent node function tests  
+    └── test_why_node.py # ✅ WHY agent comprehensive tests
+
+frontend/
+└── index.html    # ✅ Interactive chat interface for WHY agent testing
+```
+
+## Development Workflow
+
+### Development Strategy
+**Scaffolding Approach**: Build one element at a time and test that element before expanding the system with a new element. This incremental development strategy ensures:
+- Each component is fully functional before integration
+- Issues are isolated and easier to debug
+- System complexity grows manageable increments
+- Continuous validation of functionality at each step
+
+**Documentation Verification**: Before starting any task, verify the implementation requirements against the relevant documentation available through Context7. Use "use context7" in prompts to access up-to-date, version-specific documentation for libraries and frameworks being used. This ensures compliance with current APIs and prevents issues with outdated code examples.
+
+### Task Management Rules
+
+#### Task Implementation Protocol
+1. **One sub-task at a time** - Do NOT start next sub-task until user permission
+2. **Completion Protocol**:
+   - Mark sub-task completed: `[ ]` → `[x]`
+   - When all subtasks complete:
+     - Run unit tests (`pytest tests/core/ tests/agents/ -v`)
+     - Run phase-specific testing (`python -m src.testing.why_phase_tester` for WHY)
+     - Stage changes (`git add .`) only if tests pass
+     - Clean up temporary files/code
+     - Commit with conventional format and descriptive message
+     - Mark parent task as completed
+
+#### Task List Maintenance
+- Update task list after significant work
+- Add newly discovered tasks
+- Maintain "Relevant Files" section accuracy
+- Check which sub-task is next before starting work
+
+### Testing Strategy
+
+#### LangGraph-Native Testing
+- **Graph Testing**: Direct StateGraph testing using `graph.invoke()` with test states
+- **Node Testing**: Unit testing of individual agent node functions
+- **Checkpoint Testing**: State persistence and recovery validation using checkpointer
+- **Streaming Testing**: Real-time conversation testing via `graph.stream()`
+- **Edge Testing**: Conditional routing and phase transition logic
+
+#### Test Coverage
+- **Unit Tests**: Individual agent node functions with mock StrategyCoachState
+- **Graph Tests**: Complete StateGraph execution with realistic scenarios  
+- **Checkpoint Tests**: Session persistence using `graph.get_state()` and history
+- **API Tests**: FastAPI endpoints wrapping LangGraph functionality
+- **E2E Tests**: Browser automation with LangGraph streaming integration
+
+### Code Quality Standards
+
+#### Python Configuration
+- **Black**: Line length 88, Python 3.11 target
+- **isort**: Black profile, known first party "src"
+- **mypy**: Strict typing with untyped definitions disallowed
+- **pytest**: Async mode auto, strict markers and config
+
+#### Git Workflow
+- **Branch Strategy**: Each major version should be started in a new branch on GitHub
+  - Current: `v2-major-rewrite` (for v2.0 development)
+  - Target: `main` (for PRs and stable releases)
+- **Commit Format**: Conventional commits with detailed descriptions
+- **Testing**: All tests must pass before commits
+- **Documentation**: Update relevant files section after changes
+
+## PRD and Task Generation Process
+
+### PRD Creation Rules
+1. **Clarifying Questions**: Must ask clarifying questions before writing PRD
+2. **Target Audience**: Junior developer focused
+3. **Structure**: Introduction, Goals, User Stories, Functional Requirements, Non-Goals, Design/Technical Considerations, Success Metrics, Open Questions
+4. **Output**: Markdown format in `/tasks/` directory as `prd-[feature-name].md`
+
+### Task List Generation Rules
+1. **Two-Phase Process**: 
+   - Phase 1: Generate parent tasks, wait for "Go" confirmation
+   - Phase 2: Generate detailed sub-tasks
+2. **Current State Assessment**: Review existing codebase patterns and components
+3. **File Identification**: List relevant files needing creation/modification
+4. **Output**: Markdown format as `tasks-[prd-file-name].md`
+
+## Current Project Status
+
+### Completed (Task 1.0)
+- ✅ Python project structure with pyproject.toml
+- ✅ All required dependencies (LangChain, LangGraph, FastAPI, Pydantic)
+- ✅ Directory structure (src/, tests/, frontend/, testing/)
+- ✅ Docker configuration
+- ✅ pytest configuration and basic test structure
+- ✅ README.md with setup instructions
+
+### Completed Tasks
+- ✅ **Task 1.0**: Project Foundation & Environment Setup
+- ✅ **Task 2.0**: LangGraph StateGraph Core Implementation
+- ✅ **Task 3.0**: WHY Agent Node Implementation (Simon Sinek methodology)
+- ✅ **Task 6.0**: FastAPI-LangGraph Integration & Web API
+- ✅ **Task 7.0**: Web UI & LangGraph Streaming Integration
+- ✅ **Task 8.0**: LangSmith Tracing & Observability Implementation
+- ✅ **Task 9.0**: Automated Testing Agent with Playwright & HTML Reporting (WHY phase complete)
+- ✅ **UX Enhancements**: Concise responses, auto-focus, beautiful HTML WHY templates
+
+### Architectural Pivot Completed
+- ✅ **LangGraph Documentation Review**: Analyzed LangGraph patterns and identified architecture mismatch
+- ✅ **PRD Updated**: Rewritten to reflect LangGraph-native StateGraph architecture  
+- ✅ **Task List Refactored**: Changed from custom PhaseManager to LangGraph node functions
+- ✅ **LangGraph Implementation**: Complete StateGraph with WHY agent node
+- ✅ **Real API Testing**: Validated with live Anthropic Claude API calls
+
+### Live Testing Environment
+- ✅ **FastAPI Server**: Running at http://localhost:8000 with LangGraph integration
+- ✅ **WHY Agent**: Live testing ready with Simon Sinek methodology
+- ✅ **Frontend UI**: Interactive chat interface for real-time testing
+- ✅ **API Endpoints**: REST and WebSocket endpoints for LangGraph streaming
+- ✅ **Health Check**: http://localhost:8000/health (operational status)
+- ✅ **Debug Endpoints**: Direct WHY agent testing and graph inspection
+- ✅ **AFAS Business Case**: Realistic test data for automated testing agent
+
+### Current Status - WHY Phase COMPLETE, Ready for HOW/WHAT
+**WHY Phase - FULLY OPERATIONAL** ✅
+- ✅ **Complete**: Simon Sinek methodology with beautiful HTML template output
+- ✅ **Complete**: LangSmith tracing and performance monitoring  
+- ✅ **Complete**: Dedicated testing with automatic HTML reports
+- ✅ **Complete**: UX enhancements (concise responses, auto-focus, formatting)
+- ✅ **Complete**: AFAS Software business case validation
+
+**Next Priority**: Task 4.0 & 5.0 - HOW and WHAT Agent Implementation
+- Complete infrastructure ready: LangGraph, tracing, testing, UX
+- Template format established for HOW and WHAT phases
+- All observability and testing framework operational
+
+**Testing Achievements**: Successfully implemented comprehensive testing infrastructure:
+- WHY Phase: Dedicated `why_phase_tester.py` with complete Simon Sinek methodology validation ✅
+- AFAS Software business case with realistic persona simulation ✅ 
+- Complete WHY statement template generation confirmed (interactions 8-9) ✅
+- LangGraph state management working correctly with methodology progression ✅
+- HTML reports with screenshot integration and template validation ✅
+- Playwright browser automation with comprehensive error handling ✅
+
+### **🏆 WHY Phase Implementation - COMPLETE**
+**WHY Statement Template from PRD (lines 129-168): ✅ FULLY IMPLEMENTED & ENHANCED**
+- **Validation Date**: 2025-08-17
+- **Test Method**: Dedicated `why_phase_tester.py` with 9-interaction AFAS Software simulation
+- **Template Format**: Beautiful HTML with icons, styling, and embedded CSS (upgraded from markdown)
+- **Template Sections**: All 6 required sections (🎯 WHY Statement, 💭 Core Beliefs, ⚡ Values, 🔄 Golden Circle Integration, ✅ Validation, 🚀 Transition)
+- **State Management**: LangGraph progression working correctly (welcome → discovery → beliefs → values → distillation → completion)
+- **UX Enhancements**: Concise responses (300-400 chars), auto-focus input, beautiful formatting
+- **Test Evidence**: `testing/logs/why_phase/test-20250817_182737_interactions.json` (template at interaction 5)
+- **HTML Reports**: Organized in `testing/reports/why_phase/` with automatic generation
+- **LangSmith Tracing**: ✅ OPERATIONAL - All interactions traced in strategy-coach project
+
+## Development Environment
+
+### Local Setup
+- **Python**: >=3.11 required
+- **Virtual Environment**: Always use `python3 -m venv venv && source venv/bin/activate`
+- **Dependencies**: Use `pip install -e ".[dev]"` for development setup (in virtual environment)
+- **Environment**: Copy `.env.example` to `.env` and configure API keys
+- **Testing**: Run `pytest` for unit tests (in virtual environment)
+- **WHY Phase Testing**: Use `python -m src.testing.why_phase_tester` for complete WHY methodology validation
+- **Code Quality**: `black`, `isort`, `flake8`, `mypy` configured
+- **Container**: Docker Compose available for development environment
+
+### Testing Strategy
+
+#### WHY Phase Testing
+- **Primary Tool**: `src/testing/why_phase_tester.py` - Dedicated WHY phase testing with complete Simon Sinek methodology
+- **Command**: `python -m src.testing.why_phase_tester` (from project root)
+- **Features**: 
+  - Complete 9-interaction AFAS Software business case simulation
+  - Validates all 6 methodology stages (welcome → discovery → beliefs → values → distillation → completion)
+  - Confirms WHY statement template generation (all 6 required sections)
+  - Screenshots every 3rd interaction + start/complete captures
+  - Generates comprehensive HTML reports with template validation
+
+#### Testing Framework
+- **Base Framework**: `src/testing/testing_agent.py` - Playwright automation foundation
+- **Business Case**: `src/testing/business_case_parser.py` - AFAS Software persona simulation
+- **HTML Reports**: `src/testing/html_report_generator.py` - Interactive test reports
+- **Safety**: `src/testing/safety_config.py` - Comprehensive testing safeguards
+
+#### Testing Commands
 ```bash
-# 1. Setup environment
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+# WHY Phase complete methodology test
+source venv/bin/activate
+python -m src.testing.why_phase_tester
 
-# 2. Configure API keys (create .env file)
-echo "ANTHROPIC_API_KEY=your-key-here" > .env
-echo "DEFAULT_LLM_PROVIDER=anthropic" >> .env
-echo "DEFAULT_MODEL=claude-sonnet-4-20250514" >> .env
-# Optional providers:
-# echo "OPENAI_API_KEY=your-key-here" >> .env
-# echo "GOOGLE_API_KEY=your-key-here" >> .env
-# echo "MISTRAL_API_KEY=your-key-here" >> .env  # Coming soon
+# Generate HTML report from latest test
+python -c "
+import asyncio
+from src.testing.html_report_generator import generate_html_report_from_latest_test
+asyncio.run(generate_html_report_from_latest_test())
+"
 
-# 3. Start the API server
-uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
-
-# 4. Start the Web UI (in separate terminal)
-cd web
-python3 -m http.server 8081
-
-# 5. Access the application
-# Web UI: http://localhost:8081
-# API Docs: http://localhost:8000/docs
-# Health: http://localhost:8000/health
+# Unit tests
+pytest tests/core/ tests/agents/ -v
 ```
 
-## Development Commands
+### API Configuration
+- **Primary LLM**: Anthropic Claude (claude-sonnet-4-20250514)
+- **Backup LLMs**: OpenAI GPT-4, Google Gemini configured
+- **LangSmith**: Tracing enabled for interaction monitoring (Project: strategy-coach)
+- **Rate Limiting**: 60 requests/minute, 1000/hour configured
+- **Real API Testing**: Environment configured with valid API keys for live testing
 
-```bash
-# Testing
-pytest                          # Run all tests (100+ tests)
-pytest tests/api/               # Run API integration tests
-pytest tests/agents/            # Run agent-specific tests
-pytest -v --cov=src            # Run with coverage report
+### Permissions
+- Allowed bash operations: mkdir, git checkout/rm, cp, pytest
+- Additional working directories: `/Users/witoldtenhove/Documents/Projects`
 
-# Code quality
-black src/ tests/              # Format code
-ruff check src/ tests/          # Lint code
-mypy src/                       # Type checking
+### Monitoring and Tracing
+- **LangSmith**: Configured for interaction tracing
+- **Session Management**: In-memory for development, configurable for production
+- **API Monitoring**: Logging setup for performance and error tracking
 
-# Development server
-./venv/bin/uvicorn src.api.main:app --reload  # Auto-reload on changes
-```
+### MCP Server Integration
+- **Optimal MCP Usage**: Make full use of available MCP (Model Context Protocol) servers for enhanced capabilities
+- **Available MCP Tools**: Leverage any connected MCP servers (e.g., IDE integration, file system access, database connections)
+- **Tool Discovery**: Use MCP servers to extend functionality beyond standard tools when available
+- **Integration Strategy**: Prioritize MCP-provided tools over built-in alternatives when available for better performance and capabilities
 
-## Task Management Protocol
+## Success Metrics
 
-When working on tasks from `.claude/tasks/tasks-prd-multi-agent-strategy-coach.md`:
+- **Phase Completion Rate**: Users successfully completing all three phases
+- **Logical Flow**: Smooth guidance through phased journey
+- **Methodological Fidelity**: Faithful implementation of research-backed frameworks
+- **Output Quality**: Well-structured strategy_map.json with complete strategy elements
 
-### Task List Updates
-- **ALWAYS** keep the task list file current by updating completed tasks with `[x]` immediately after completion
-- Use the TodoWrite tool to track internal progress and communicate status to user
-- The task list file serves as the master record of project progress
+## Current Application State (August 2025)
 
-### Sub-task Execution
-1. Complete one sub-task at a time with focused implementation
-2. **ALWAYS ASK** for user permission before proceeding to the next sub-task ("Would you like me to proceed to task X.X?")
-3. Mark completed tasks immediately in both TodoWrite tool and the task list file
-4. When encountering issues, document them clearly and continue with user guidance
+### **🎯 WHY Phase - PRODUCTION READY**
+- **Methodology**: Complete Simon Sinek "Start with Why" implementation
+- **Template Output**: Beautiful HTML formatting with icons and embedded CSS
+- **User Experience**: Concise responses, auto-focus input, professional presentation
+- **Testing**: Comprehensive validation with `why_phase_tester.py`
+- **Observability**: Full LangSmith tracing and performance monitoring
+- **Quality**: Template validates all 6 PRD requirements with enhanced UX
 
-### Task Completion Protocol
-When all sub-tasks in a parent task are complete:
-1. Run comprehensive tests to ensure stability
-2. Update task list file to mark parent task as `[x]`
-3. If requested by user, stage changes and commit with conventional format
-4. Provide summary of completed functionality to user
+### **🔧 Infrastructure - COMPLETE**
+- **LangGraph**: StateGraph with proper state management and methodology progression
+- **API**: FastAPI with performance monitoring and error handling
+- **Frontend**: Interactive chat with HTML rendering and auto-focus
+- **Testing**: Automated Playwright testing with HTML report generation
+- **Tracing**: LangSmith dashboard with comprehensive observability
+- **Organization**: Proper folder structure and testing organization
 
-### Permission and Communication
-- User has explicitly granted permission to continue to next sub-tasks when asked
-- Always ask before starting a new sub-task to maintain user control
-- Provide clear progress updates and explain what each task accomplishes
+### **🚀 Ready for Development**
+- **HOW Agent (Task 4.0)**: Infrastructure ready for Carroll & Sørensen analogical reasoning methodology
+  - Comprehensive 9-step coaching workflow defined in PRD
+  - Rigorous analogical reasoning process: horizontal → vertical relations
+  - Deductive logic integration for strategic argument formalization
+  - Structured output for causal theory and strategic logic
+- **WHAT Agent (Task 5.0)**: Infrastructure ready for Kaplan & Norton strategy map + open strategy
+- **Session Persistence**: Ready for user save/load functionality implementation (GitHub Issue #23)
 
-## Key Implementation Details
+## Non-Goals (Out of Scope)
 
-- **State Management**: Uses LangGraph's `AgentState` TypedDict with `conversation_history` and `strategy_map_path`
-- **Session Files**: Each session creates unique `{session_id}_strategy_map.json` for persistence
-- **Agent Communication**: Agents return structured outputs (questions/topics/plans) to Orchestrator for synthesis
-- **Strategy Map Structure**: Four perspectives with Six Value Components (Financial, Manufactured, Intellectual, Human, Social & Relationship, Natural)
+- Direct business advice or opinions from the coach
+- External data gathering or market analysis
+- Financial models or projections generation
+- Pluggable research agents or "Board of Directors" feedback features
 
-## API Endpoints
+---
 
-### Conversation Management
-- `POST /conversation/start` - Initialize new strategic conversation session
-- `POST /conversation/{session_id}/message` - Send message and receive AI response
-- `GET /conversation/{session_id}/export` - Export complete strategy map with summary
-- `GET /conversation/{session_id}/export/download` - Download strategy map as JSON file
-
-### Session Management  
-- `GET /sessions` - List all active conversation sessions
-- `GET /sessions/{session_id}` - Get detailed session information
-- `DELETE /sessions/{session_id}` - Delete a specific session
-- `POST /sessions/cleanup` - Manually trigger expired session cleanup
-
-### Health & Monitoring
-- `GET /` - API root information
-- `GET /health` - Service health check with component status
-- `GET /docs` - Interactive Swagger UI documentation
-- `GET /redoc` - Alternative ReDoc documentation
-
-## Project Structure
-
-```
-strategy-coach-app-v1/
-├── src/
-│   ├── api/
-│   │   ├── main.py           # FastAPI application with all endpoints
-│   │   └── middleware.py      # Rate limiting, validation, error handling
-│   ├── agents/
-│   │   ├── orchestrator.py   # Central workflow orchestrator
-│   │   ├── router.py         # Advanced routing logic
-│   │   ├── synthesizer.py    # Response synthesis
-│   │   ├── strategy_map_agent.py  # JSON persistence & validation
-│   │   ├── why_agent.py      # WHY discovery (Simon Sinek)
-│   │   ├── analogy_agent.py  # Analogical reasoning
-│   │   ├── logic_agent.py    # Logical validation
-│   │   └── open_strategy_agent.py # Implementation planning
-│   ├── models/
-│   │   └── state.py          # AgentState, StrategyMapState definitions
-│   └── utils/
-│       ├── config.py         # Configuration management
-│       ├── logging_config.py # Comprehensive logging
-│       ├── llm_client.py     # LLM client wrapper
-│       └── prompts.py        # Prompt templates
-├── web/                      # Web UI application
-│   ├── index.html           # Main UI with Alpine.js + Tailwind
-│   ├── demo.html            # Demo page with screenshots
-│   └── interactive-demo.html # Interactive selection demo
-├── tests/                    # 100+ unit and integration tests
-│   ├── agents/              # Agent-specific tests
-│   ├── api/                 # API integration tests
-│   ├── models/              # State model tests
-│   └── utils/               # Utility tests
-├── issues/                  # Known issues and feature specifications
-│   ├── ISSUE_*.md          # Issue documentation
-│   └── FEATURE_*.md        # Feature specifications
-├── data/sessions/           # Strategy map JSON storage
-├── logs/                    # Application logs
-├── requirements.txt         # Python dependencies
-├── .env.example            # Environment template
-└── CLAUDE.md               # This file
-```
-
-## Middleware & Features
-
-- **Rate Limiting**: 60 req/min, 1000 req/hour per IP
-- **Request Validation**: JSON validation, size limits, content-type checks
-- **Session Management**: UUID-based sessions with automatic expiration
-- **Background Tasks**: Async strategy map updates, periodic cleanup
-- **Error Handling**: Comprehensive error responses with logging
-- **CORS Support**: Configurable origins for cross-origin requests
-- **API Documentation**: Auto-generated OpenAPI/Swagger docs
-
-## Testing Coverage
-
-- **Unit Tests**: All agents, models, utilities (~80 tests)
-- **Integration Tests**: Complete conversation flows (~45 tests)
-- **Test Coverage**: Comprehensive coverage of critical paths
-- **Test Fixtures**: Mock LLM clients, orchestrators, state management
-
-## Environment Variables
-
-Create `.env` file with:
-```
-# Required (at least one)
-ANTHROPIC_API_KEY=sk-ant-...
-OPENAI_API_KEY=sk-...
-GOOGLE_API_KEY=AIza...
-
-# LLM Configuration
-DEFAULT_LLM_PROVIDER=anthropic  # Options: anthropic, openai, google, mistral (coming)
-DEFAULT_MODEL=claude-sonnet-4-20250514  # Best for strategic reasoning
-# Alternative models:
-# anthropic: claude-3-5-haiku-20241022 (faster, cheaper)
-# openai: gpt-4, gpt-3.5-turbo
-# google: gemini-2.0-flash-exp
-# mistral: mistral-large-latest (planned)
-
-# Optional
-DEBUG=False
-LOG_LEVEL=INFO
-SESSION_TIMEOUT_MINUTES=60
-RATE_LIMIT_REQUESTS_PER_MINUTE=60
-```
-
-## Known Issues
-
-### 🔴 Open Issues
-
-1. **AI Coach Synthesis Validation Loop** (issues/ISSUE_AI_COACH_SYNTHESIS_VALIDATION_LOOP.md) - **CRITICAL**
-   - AI coach trapped in endless WHY synthesis validation cycles without user progression
-   - Asks validation questions but immediately assumes agreement and attempts transition
-   - Repeats same comprehensive framework 6+ times ignoring user confirmations
-   - Discovered and validated by Testing Agent - affects all coaching sessions
-   - Priority: **Critical** (consolidates Issues #11 and #14)
-
-2. **Logic Agent Cognitive Bias Detection** (issues/ISSUE_LOGIC_AGENT_COGNITIVE_BIAS.md)
-   - Logic Agent needs Kahneman's framework for bias detection
-   - Enhancement to identify cognitive biases in strategic thinking
-   - Priority: High
-
-3. **LangGraph Supervisor Integration** (issues/ISSUE_LANGGRAPH_SUPERVISOR_INTEGRATION.md)
-   - Explore hybrid architecture combining supervisor pattern with our strategic coaching system
-   - Add tool integration and explicit agent handoff capabilities
-   - Priority: Medium-High
-
-### 🚀 Planned Features
-
-1. **Achievement Badges** (issues/FEATURE_ACHIEVEMENT_BADGES.md)
-   - Gamification system with milestone-based badge rewards
-   - Visual recognition for strategic progress achievements
-   - Priority: Medium
-
-2. **Testing Agent User Journey** (issues/FEATURE_TESTING_AGENT_USER_JOURNEY.md)
-   - Intelligent testing agent simulating complete user journey with business case context
-   - Multi-modal recording system with text and visual snapshots
-   - Priority: High (Quality Assurance)
-
-### ✅ Resolved Issues
-
-1. **Cursor Focus** (issues/ISSUE_CURSOR_FOCUS.md) - RESOLVED
-   - Input field now auto-focuses after AI response
-   - Improves conversation flow UX
-
-2. **Duplicate Messages** (issues/ISSUE_DUPLICATE_MESSAGES.md) - PARTIALLY RESOLVED
-   - Fixed initialization issue preventing duplicates
-   - Some edge cases may still occur
-
-3. **Duplicate Interactive Selections** (issues/ISSUE_DUPLICATE_INTERACTIVE_SELECTIONS.md) - RESOLVED
-   - Implemented content-based ID generation for interactive elements
-   - Interactive elements functionality disabled for system stability
-   - Will be re-enabled during gamification feature development
-   - Fixed visual clutter and user confusion issues
-
-4. **Chart.js Stack Overflow** - RESOLVED
-   - Fixed infinite recursion in chart update logic causing stack overflow errors
-   - Implemented proper canvas cleanup and Alpine.js reactivity isolation
-   - Added throttling and concurrent update prevention
-   - Chart functionality now stable without console errors
-
-5. **Simple Testing Agent Message Extraction** (issues/ISSUE_SIMPLE_TESTING_AGENT_MESSAGE_EXTRACTION.md) - RESOLVED
-   - Fixed AI message extraction using Alpine.js data access
-   - Implemented reliable browser automation with Playwright
-   - Testing Agent now successfully validates strategic coaching quality
-   - Produces comprehensive reports with screenshots and interaction data
-
-5. **Question Quality** (issues/ISSUE_QUESTION_QUALITY.md)
-   - Improvements needed for avoiding cognitive biases in questions
-
-## Current Configuration
-
-The application is currently configured to use:
-- **Primary LLM**: Anthropic Claude 3.5 Haiku
-- **CORS**: Supports ports 8080, 8081 for web UI
-- **Session Storage**: JSON files in data/sessions/
-- **Logging**: Comprehensive logging to logs/ directory
+*This documentation consolidates all Claude-specific project information and should be kept updated as the project evolves.*
